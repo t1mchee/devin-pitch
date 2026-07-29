@@ -7,6 +7,16 @@
 # cannot leak into the next one, and each edit is asserted to have applied —
 # a log of an experiment that silently never happened is worse than no log.
 set -u
+# One run at a time. Two copies of this script patch the same four files, so a
+# second one silently shifts every log by an experiment: `delete-rule-ov08.log`
+# came back holding OV-18's failures, which is a plausible-looking transcript of
+# an experiment that never happened. That is the worst failure mode available to
+# an evidence script, so it is a lock rather than a warning.
+exec 9> /tmp/oracle-capture.lock
+if ! flock -n 9; then
+  echo "another capture is already running (/tmp/oracle-capture.lock)" >&2
+  exit 1
+fi
 REPO=/home/ubuntu/repos/devin-pitch
 cd "$REPO/bofa-digital-banking"
 OUT="$REPO/docs/evidence/oracle-logs"
@@ -206,41 +216,106 @@ experiment regress-oracle-stacking-blind "$CONTRAST" \
     const z = Number(getComputedStyle(node).zIndex);
     return Number.isNaN(z) ? level : Math.max(level, z);
   }, 0);'
-# Inertness armed by the presence of a backdrop element: one stray 0x0 node
-# switched the sweep off for every aria-hidden subtree on the page.
-experiment regress-oracle-backdrop-armed "$CONTRAST" \
-  "  const modal = Array.from(
+# The modal rule, in both of the forms that armed it too easily. `MODAL` below is
+# the current source; the two experiments revert it to the round-9 version (any
+# backdrop element at all) and to the round-10 version (any visible pane with a
+# character of text in it — satisfied by a 2x2 pane containing a full stop).
+MODAL="  const modal = Array.from(
     doc.querySelectorAll<HTMLElement>('.cdk-overlay-container .cdk-overlay-pane')
-  ).some((pane) => visible(pane) && (pane.textContent ?? '').trim().length > 0);" \
+  ).some(
+    (pane) =>
+      visible(pane) &&
+      (pane.textContent ?? '').trim().length > 0 &&
+      !!pane.querySelector(
+        '[role=dialog], [role=alertdialog], [aria-modal=true], mat-dialog-container, .mat-dialog-container'
+      )
+  );"
+experiment regress-oracle-backdrop-armed "$CONTRAST" "$MODAL" \
   "  const modal = !!doc.querySelector('.cdk-overlay-backdrop'); // BACKDROP-ARMED"
-# The indicator rule that recognised exactly one way of drawing a caret.
-experiment regress-oracle-indicator-narrow "$CONTRAST" \
-  '    const glyphish =
+experiment regress-oracle-modal-textonly "$CONTRAST" "$MODAL" \
+  "  const modal = Array.from( // MODAL-TEXTONLY, deliberately
+    doc.querySelectorAll<HTMLElement>('.cdk-overlay-container .cdk-overlay-pane')
+  ).some((pane) => visible(pane) && (pane.textContent ?? '').trim().length > 0);"
+
+# The indicator rule, likewise: the round-9 form recognised exactly one way of
+# drawing a caret, and the round-10 form still excluded a four-sided box, a 32px
+# mark and anything drawn in a pseudo-element.
+GLYPHISH='    const [width, height] = label
+      ? [parseFloat(style.width) || 0, parseFloat(style.height) || 0]
+      : [element.clientWidth, element.clientHeight];
+    const glyphish =
+      paints.length > 0 &&
+      (!!label || !element.children.length) &&
+      (!!label || !(element.textContent ?? '"'"''"'"').trim()) &&
+      parseColour(style.backgroundColor).a === 0 &&
+      width <= 64 &&
+      height <= 64;'
+experiment regress-oracle-indicator-narrow "$CONTRAST" "$GLYPHISH" \
+  '    // INDICATOR-NARROW, deliberately: a 0x0 box with exactly one painted side
+    const [width, height] = [element.clientWidth, element.clientHeight];
+    const glyphish = paints.length === 1 && width === 0 && height === 0;'
+experiment regress-oracle-indicator-r10 "$CONTRAST" "$GLYPHISH" \
+  '    // INDICATOR-R10, deliberately: fewer than four sides, 24px, own box only
+    const [width, height] = [element.clientWidth, element.clientHeight];
+    const glyphish =
       paints.length > 0 &&
       paints.length < 4 &&
       !element.children.length &&
       !(element.textContent ?? '"'"''"'"').trim() &&
       parseColour(style.backgroundColor).a === 0 &&
-      element.clientWidth <= 24 &&
-      element.clientHeight <= 24;' \
-  '    // INDICATOR-NARROW, deliberately: a 0x0 box with exactly one painted side
-    const glyphish =
-      paints.length === 1 && element.clientWidth === 0 && element.clientHeight === 0;'
-# And the sr-only detection that matched one spelling of "clipped away".
-experiment regress-oracle-clip-literal "$CONTRAST" \
-  '  const inset = /inset\(\s*(-?\d+(?:\.\d+)?)%/.exec(path);
-  if (inset && parseFloat(inset[1]) >= 45) {
-    return true;
-  }' \
-  '  if (/inset\(\s*(4[5-9]|50)/.test(path)) { // CLIP-LITERAL, deliberately
-    return true;
-  }'
+      width <= 24 &&
+      height <= 24;'
+
+# And "clipped away", in both of the forms that got it wrong: a literal string
+# match (which false-failed the current sr-only recipe) and "first percentage
+# >= 45" (which hid a painted band and showed a box clipped to nothing).
+INSET='    const sides = inset[1]
+      .trim()
+      .split(/\s+/)
+      .map((part) => (/^0(px|%|)$/.test(part) ? 0 : part.endsWith('"'"'%'"'"') ? parseFloat(part) : NaN));
+    if (sides.length && sides.every((side) => !Number.isNaN(side))) {
+      const [top, right = top, bottom = top, left = right] = sides;
+      if (top + bottom >= 100 || left + right >= 100) {
+        return true;
+      }
+    }'
+experiment regress-oracle-clip-literal "$CONTRAST" "$INSET" \
+  '    // CLIP-LITERAL, deliberately: a string match on one spelling of the recipe
+    if (inset && /inset\(\s*(4[5-9]|50)/.test(path)) {
+      return true;
+    }'
+experiment regress-oracle-clip-firstvalue "$CONTRAST" "$INSET" \
+  '    const first = /(-?\d+(?:\.\d+)?)%/.exec(inset[1]); // CLIP-FIRSTVALUE
+    if (first && parseFloat(first[1]) >= 45) {
+      return true;
+    }'
+
+# Coverage as a yes/no: the layer had to contain the whole box, so a veil eight
+# pixels short of the text measured the text as legible.
+experiment regress-oracle-cover-contains "$CONTRAST" \
+  '  const covers = (other: DOMRect): boolean => {
+    const width = Math.min(rect.right, other.right) - Math.max(rect.left, other.left);
+    const height = Math.min(rect.bottom, other.bottom) - Math.max(rect.top, other.top);
+    if (width <= 0 || height <= 0) {
+      return false;
+    }
+    const area = rect.width * rect.height;
+    return area <= 0 || (width * height) / area >= 0.5;
+  };' \
+  '  const covers = (other: DOMRect): boolean => // COVER-CONTAINS, deliberately
+    other.left <= rect.left &&
+    other.right >= rect.right &&
+    other.top <= rect.top &&
+    other.bottom >= rect.bottom;'
 
 # The last experiment leaves the tree patched: restore before anything else runs,
 # or the deliberately-broken helper gets captured — and committed. It has.
 restore
 
-# 27. host renderer against container baselines -> why the image is digest-pinned
+# 27. host renderer against container baselines -> why the image is digest-pinned.
+# Result is font-dependent and this file is overwritten every capture:
+# `host-renderer-drift-prefonts.log` is the same command on the same commit before an
+# apt install put Liberation/DejaVu on this host, and is deliberately never re-captured.
 echo "=== host-renderer (not the pinned image) :: $(date -u +%FT%TZ) ===" > "$OUT/host-renderer-drift.log"
 # Cypress 10.11's Electron segfaults on this box without a real X server, which
 # looks exactly like a product failure in the log. `xvfb-run` is the difference

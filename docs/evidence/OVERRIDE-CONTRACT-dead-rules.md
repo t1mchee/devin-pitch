@@ -288,15 +288,24 @@ the third version of this model. Document order alone was defeated by one `z-ind
 `z-index` over the ancestor chain was then wrong in both directions, because a `transform` or a
 `filter` creates a stacking context a child's `z-index` cannot escape. It is still an approximation:
 `opacity < 1` and nested contexts under `position: relative` are not fully modelled. A covering layer
-must *fully contain* the text to count, so a sticky header that hides 70% of a line is not composited
-(the alternative, rect intersection, produced 38 false positives on tab ink bars). Content behind an
+counts when it covers at least **half** the text's box: requiring full containment (which is how the
+false positives on tab ink bars were killed) let a veil inside a `position: sticky` wrapper fall eight
+pixels short of the line it hid and score white-on-white text at 13.20:1, while compositing a sliver
+would mis-state the colour of the part still on screen. Fifty per cent is a policy, not a
+rasterisation. Content behind an
 open modal is skipped as inert, so a sweep in that state describes the dialog and not the page — and
-that skip now requires a **visible overlay pane with content**, because keying it on the presence of a
-`.cdk-overlay-backdrop` element meant one stray `0×0; opacity: 0` node silenced the sweep for every
-`aria-hidden` subtree on the page. CSS-painted marks are detected by shape rather than by one drawing
-technique (a rotated chevron and an L-shaped corner both used to pass), and a mark that hangs outside
+that skip requires a visible pane holding something with a **dialog role or `aria-modal`**: keying it
+on the presence of a `.cdk-overlay-backdrop` element meant one stray `0×0; opacity: 0` node silenced
+the sweep for every `aria-hidden` subtree on the page, and keying it on "a visible pane with text in
+it" meant a 2×2 pane containing a full stop did the same. CSS-painted marks are detected by shape
+rather than by one drawing technique — a rotated chevron, an L-shaped corner, a four-sided frame, a
+32 px mark and a caret drawn in `::before` each used to pass — and a mark that hangs outside
 its parent is measured against what is behind that parent, because a tooltip arrow is a tail of its
-surface and not a mark on it. And text over a gradient is reported as unmeasurable rather than scored,
+surface and not a mark on it. Clipping is evaluated rather than string-matched: `inset()` is expanded
+to four sides and summed per axis, so `inset(100%)` is hidden and `inset(45%)` is measured, and the
+legacy `clip` property is honoured only where CSS applies it, on a positioned element. Values in
+absolute units (`inset(4px)`) cannot be resolved without the box and are treated as not clipping. And
+text over a gradient is reported as unmeasurable rather than scored,
 which means artwork behind text has to be declared on the artwork element, citing a ratio, by a human
 rather than checked by the gate. Total suite:
-**150 tests**.
+**154 tests**.

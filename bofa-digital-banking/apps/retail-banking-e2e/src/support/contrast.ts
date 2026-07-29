@@ -278,11 +278,22 @@ function paintsAbove(scrim: HTMLElement, element: HTMLElement): boolean {
 
 function scrimsOver(element: HTMLElement, scrims: Scrim[], counted: Set<HTMLElement>): Rgba[] {
   const rect = element.getBoundingClientRect();
-  const covers = (other: DOMRect): boolean =>
-    other.left <= rect.left &&
-    other.right >= rect.right &&
-    other.top <= rect.top &&
-    other.bottom >= rect.bottom;
+  // Coverage is a fraction, not a yes/no. Requiring the layer to *contain* the
+  // target let a veil inside a `position: sticky` wrapper — offset by the sticky
+  // `top`, so eight pixels short of the text's box — measure at 13.20:1 on text
+  // no human can read. Half the glyph area under an opaque layer is illegible
+  // enough to report; less than that is the partial-overlap case the docs still
+  // disclaim, because compositing it would mis-state the colour of the visible
+  // half.
+  const covers = (other: DOMRect): boolean => {
+    const width = Math.min(rect.right, other.right) - Math.max(rect.left, other.left);
+    const height = Math.min(rect.bottom, other.bottom) - Math.max(rect.top, other.top);
+    if (width <= 0 || height <= 0) {
+      return false;
+    }
+    const area = rect.width * rect.height;
+    return area <= 0 || (width * height) / area >= 0.5;
+  };
 
   return scrims
     .filter(
@@ -556,21 +567,45 @@ function visible(element: HTMLElement): boolean {
 }
 
 /**
- * The clipping idioms that hide content from sighted users. Matching the literal
- * string `inset(45–50` — as this did — false-failed `clip-path: inset(100%)`,
- * which is what the current `sr-only` recipe in every CSS framework emits.
+ * The clipping idioms that hide content from sighted users, evaluated as CSS
+ * evaluates them rather than as a string match.
+ *
+ * Three separate wrongs came out of pattern-matching this. `inset(45–50` false-
+ * failed `inset(100%)`, the current `sr-only` recipe. Then "first percentage
+ * >= 45" called `inset(45%)` on a 300x28 box hidden when a 10% band of it is
+ * painted, and called `inset(0 0 100% 0)` — clipped to nothing — visible. And
+ * the legacy `clip` property only applies to absolutely positioned elements, so
+ * honouring `clip: rect(0,0,0,0)` on a static element hid painted text.
+ *
+ * The shorthand is expanded and the axes are summed instead: content survives
+ * only if the insets leave both a horizontal and a vertical band.
  */
 function clipsAway(style: CSSStyleDeclaration): boolean {
   const path = style.clipPath || '';
-  const inset = /inset\(\s*(-?\d+(?:\.\d+)?)%/.exec(path);
-  if (inset && parseFloat(inset[1]) >= 45) {
-    return true;
+  const inset = /inset\(([^)]*)\)/.exec(path);
+  if (inset) {
+    // Percentages and zero only: `inset(4px)` cannot be resolved without the box,
+    // and guessing is how `inset(0 0 100% 0)` — clipped to nothing — read as
+    // visible, because only the first value was ever looked at.
+    const sides = inset[1]
+      .trim()
+      .split(/\s+/)
+      .map((part) => (/^0(px|%|)$/.test(part) ? 0 : part.endsWith('%') ? parseFloat(part) : NaN));
+    if (sides.length && sides.every((side) => !Number.isNaN(side))) {
+      const [top, right = top, bottom = top, left = right] = sides;
+      if (top + bottom >= 100 || left + right >= 100) {
+        return true;
+      }
+    }
   }
   if (/circle\(\s*0(px|%)?[\s)]/.test(path)) {
     return true;
   }
   const legacy = (style as unknown as { clip?: string }).clip || '';
-  return /rect\(\s*0(px)?[\s,]+0(px)?[\s,]+0(px)?[\s,]+0(px)?\s*\)/.test(legacy);
+  return (
+    (style.position === 'absolute' || style.position === 'fixed') &&
+    /rect\(\s*0(px)?[\s,]+0(px)?[\s,]+0(px)?[\s,]+0(px)?\s*\)/.test(legacy)
+  );
 }
 
 /**
@@ -680,11 +715,24 @@ export function sweep(doc: Document): Finding[] {
   // The *presence* of a `.cdk-overlay-backdrop` is not that state. A stray 0x0,
   // `opacity: 0` backdrop with no overlay behind it armed this rule globally and
   // hid a real 1.0:1 defect in every `aria-hidden` subtree on the page: one
-  // leftover node, and the sweep switches itself off. What makes the page inert
-  // is an overlay the user is actually reading, so that is what is required.
+  // leftover node, and the sweep switches itself off.
+  //
+  // Nor is "a visible pane with some text in it": a 2x2 pane containing a full
+  // stop passed that test and switched the gate off just as effectively. What
+  // makes a page inert is a *modal* — the thing `MatDialog` marks with a dialog
+  // role and `aria-modal`, and the same thing that puts `aria-hidden` on the
+  // siblings this rule then trusts. A select panel or a menu is not modal and
+  // does not get to silence anything.
   const modal = Array.from(
     doc.querySelectorAll<HTMLElement>('.cdk-overlay-container .cdk-overlay-pane')
-  ).some((pane) => visible(pane) && (pane.textContent ?? '').trim().length > 0);
+  ).some(
+    (pane) =>
+      visible(pane) &&
+      (pane.textContent ?? '').trim().length > 0 &&
+      !!pane.querySelector(
+        '[role=dialog], [role=alertdialog], [aria-modal=true], mat-dialog-container, .mat-dialog-container'
+      )
+  );
   const inert = (element: HTMLElement): boolean =>
     modal && !element.closest('.cdk-overlay-container') && !!element.closest('[aria-hidden=true]');
 
@@ -729,24 +777,48 @@ export function sweep(doc: Document): Finding[] {
     if (!visible(element) || exempt(element) || inert(element)) {
       return;
     }
-    const style = getComputedStyle(element);
+    // A mark is not always the element's own box. Material draws several of these
+    // in `::before`/`::after`, which `getComputedStyle(el)` cannot see at all, so
+    // a pseudo-element caret was invisible to the gate by construction.
+    const surfaces: { style: CSSStyleDeclaration; label: string }[] = [
+      { style: getComputedStyle(element), label: '' },
+      ...(['::before', '::after'] as const)
+        .map((pseudo) => ({ style: getComputedStyle(element, pseudo), label: pseudo }))
+        .filter(({ style }) => {
+          const content = style.content || 'none';
+          return content !== 'none' && content !== 'normal';
+        }),
+    ];
+    surfaces.forEach(({ style, label }) => measureMark(element, style, label));
+  });
+
+  function measureMark(element: HTMLElement, style: CSSStyleDeclaration, label: string): void {
     const paints = borderPaints(style);
     // Shape-agnostic on purpose. The first version required a 0x0 box with
     // exactly one painted side, which is *one* way to draw a caret: a rotated
     // two-border chevron, an L-shaped corner mark and a two-tone triangle all
-    // have boxes and two painted sides, and all three walked past the gate.
+    // have boxes and two painted sides, and all three walked past the gate. Nor
+    // is a four-sided box exempt — that rule was there to skip elements whose
+    // borders all reported `currentColor` at zero width, which `borderPaints()`
+    // now filters properly — and 24px was too small a ceiling to catch a 32px
+    // mark. What identifies a mark is that it paints borders and nothing else.
+    //
+    // The pseudo-element's own box is the one to size-check, not its host's: the
+    // host is an ordinary control and is usually larger than any ceiling.
+    const [width, height] = label
+      ? [parseFloat(style.width) || 0, parseFloat(style.height) || 0]
+      : [element.clientWidth, element.clientHeight];
     const glyphish =
       paints.length > 0 &&
-      paints.length < 4 &&
-      !element.children.length &&
-      !(element.textContent ?? '').trim() &&
+      (!!label || !element.children.length) &&
+      (!!label || !(element.textContent ?? '').trim()) &&
       parseColour(style.backgroundColor).a === 0 &&
-      element.clientWidth <= 24 &&
-      element.clientHeight <= 24;
+      width <= 64 &&
+      height <= 64;
     if (!glyphish) {
       return;
     }
-    const host = hostSurface(element);
+    const host = label ? element : hostSurface(element);
     if (!host) {
       return;
     }
@@ -757,7 +829,7 @@ export function sweep(doc: Document): Finding[] {
     if (unmeasurable) {
       if (!reviewed(artwork)) {
         findings.push({
-          where: `${describe(element)} (css indicator)`,
+          where: `${describe(element)}${label} (css indicator)`,
           text: 'css-painted indicator',
           required: 3,
           ratio: 0,
@@ -776,14 +848,14 @@ export function sweep(doc: Document): Finding[] {
     const best = Math.max(...ratios);
     if (best + 0.005 < 3) {
       findings.push({
-        where: `${describe(element)} (css indicator)`,
+        where: `${describe(element)}${label} (css indicator)`,
         text: 'css-painted indicator',
         required: 3,
         ratio: best,
         detail: `border ${round(painted[ratios.indexOf(best)])} on ${round(background)}`,
       });
     }
-  });
+  }
 
   doc.body.querySelectorAll<HTMLElement>('*').forEach((element) => {
     const own = Array.from(element.childNodes)

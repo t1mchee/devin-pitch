@@ -32,13 +32,13 @@ recorded reason is the actual migration risk, not the version number.**
 ## 3:00–4:30 — The oracle, and one deliberate failure
 
 ```bash
-npm run visual        # 150 tests: 23 image tests over 21 compared snapshots,
+npm run visual        # 154 tests: 23 image tests over 21 compared snapshots,
                       # + 27 light probes, 11 dark probes, 1 anti-vacuity control,
                       # + 32 WCAG ratios (16 targets x 2 themes),
                       # + 6 tests of the contrast oracle itself,
-                      # + 50 legibility-sweep tests (16 routes x 2 palettes,
+                      # + 54 legibility-sweep tests (16 routes x 2 palettes,
                       #   every visible text node and every painted SVG glyph,
-                      #   + 18 tests that attack the sweep itself)
+                      #   + 22 tests that attack the sweep itself)
 ```
 
 While it runs, say what is in it: the components, **the four real overlays** — dialog, select
@@ -139,7 +139,8 @@ design. CI additionally requires `BASELINE-CHANGE:` in the PR body for any basel
 
 If asked "how do you know 40 px isn't tuned to pass?" — `docs/evidence/ORACLE-noise-floor.md`:
 0 px across three repeat runs on the pinned renderer, 455–5,963 px across renderers (which is why
-it is digest-pinned), 753 px of signal.
+it is digest-pinned — and §2.1 records the same host later agreeing at 0 px after an apt install
+added fonts, which is the argument, not a counter-example), 753 px of signal.
 
 Say: *under a tenth of a percent — the percentage budget we started with allowed 0.1 %, so this
 shipped a wrong red to millions of customers and the suite said green. The budget is now 40
@@ -243,5 +244,5 @@ migration risk they represent lives.
 |---|---|
 | Port 4200 busy / Cypress hangs | `npx nx reset`, kill 4200, rerun |
 | `nx e2e` suspiciously instant | it cached — always use `npm run visual`, which passes `--skip-nx-cache` |
-| Docker unavailable | **do not** fall back to a host `nx e2e` — it fails 21 of 21 on renderer drift (455–5,963 px) and you would be narrating design-system safety over a wall of red. Show `docs/evidence/ORACLE-noise-floor.md` and the last green CI run instead, and say why the renderer is digest-pinned. That story is stronger than the live run anyway |
+| Docker unavailable | **do not** fall back to a host `nx e2e` — on a host whose fonts differ from the image's it fails 21 of 21 on renderer drift (455–5,963 px) and you would be narrating design-system safety over a wall of red; on a host that happens to match it passes and proves nothing. Show `docs/evidence/ORACLE-noise-floor.md` and the last green CI run instead, and say why the renderer is digest-pinned. That story is stronger than the live run anyway |
 | Anything red you didn't plan | show it and read it aloud. A demo that can fail is the point |

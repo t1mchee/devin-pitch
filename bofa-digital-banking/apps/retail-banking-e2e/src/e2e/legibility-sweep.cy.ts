@@ -580,4 +580,164 @@ describe('legibility sweep — the sweep itself', () => {
       expect(report(sweep(doc))).not.to.contain('Skip to main content');
     });
   });
+
+  it('evaluates clipping instead of matching it, in both directions', () => {
+    // "First percentage >= 45" is not what CSS does. It called `inset(45%)` on a
+    // 300x28 box hidden while a 10% band of it is painted, and `inset(0 0 100% 0)`
+    // — clipped to nothing — visible. And the legacy `clip` property applies only
+    // to positioned elements, so honouring it on a static one hid painted text.
+    visit('/accounts', 'light');
+    cy.document().then((doc) => {
+      const plant = (css: string, text: string): HTMLElement => {
+        const node = doc.createElement('p');
+        node.style.cssText = `width:300px;height:28px;margin:0;font-size:14px;color:#ffffff;background:#ffffff;${css}`;
+        node.textContent = text;
+        doc.body.appendChild(node);
+        return node;
+      };
+      const fixed = 'position:fixed;top:8px;left:8px;';
+
+      const band = plant(`${fixed}clip-path:inset(45%)`, 'Available balance 45');
+      expect(report(sweep(doc)), 'a painted centre band is painted').to.contain(
+        'Available balance 45'
+      );
+      band.remove();
+
+      const gone = plant(`${fixed}clip-path:inset(50%)`, 'Available balance 50');
+      expect(report(sweep(doc)), 'inset(50%) leaves nothing').not.to.contain(
+        'Available balance 50'
+      );
+      gone.remove();
+
+      const shorthand = plant(`${fixed}clip-path:inset(0 0 100% 0)`, 'Available balance 100');
+      expect(report(sweep(doc)), 'the shorthand has four sides').not.to.contain(
+        'Available balance 100'
+      );
+      shorthand.remove();
+
+      const staticClip = plant('clip:rect(0,0,0,0)', 'Pending transfers static');
+
+      expect(report(sweep(doc)), 'clip does nothing to a static element').to.contain(
+        'Pending transfers static'
+      );
+      staticClip.remove();
+
+      plant(`${fixed}clip:rect(0,0,0,0)`, 'Pending transfers absolute');
+      expect(report(sweep(doc)), 'and everything to a positioned one').not.to.contain(
+        'Pending transfers absolute'
+      );
+    });
+  });
+
+  it('composites a layer that covers most of the text, not only one that contains it', () => {
+    // Coverage was a yes/no: the layer had to contain the target's whole box. A
+    // veil inside a `position: sticky` wrapper is offset by the sticky `top`, so
+    // it fell eight pixels short and text no human can read measured at 13.20:1.
+    visit('/__showcase/table', 'dark');
+    cy.document().then((doc) => {
+      const holder = doc.createElement('div');
+      holder.style.cssText = 'position:fixed;top:8px;left:8px;width:360px;height:48px';
+      const text = doc.createElement('p');
+      text.style.cssText =
+        'position:absolute;top:8px;left:0;width:360px;height:40px;margin:0;font-size:14px;color:#ffffff;background:#303030';
+      text.textContent = 'Statement total under a sticky veil';
+      const veil = doc.createElement('div');
+      veil.style.cssText =
+        'position:absolute;top:0;left:0;width:360px;height:40px;background:#303030;z-index:10';
+      holder.append(text, veil);
+      doc.body.appendChild(holder);
+
+      const covered = contrastRatio(text);
+      expect(covered.ratio, covered.detail).to.be.lessThan(1.5);
+      expect(report(sweep(doc))).to.contain('sticky veil');
+
+      // A sliver is still the disclosed partial-overlap case: compositing it
+      // would mis-state the colour of the part still on screen.
+      veil.style.height = '10px';
+      expect(report(sweep(doc)), 'a sliver is not a cover').not.to.contain('sticky veil');
+    });
+  });
+
+  it('is silenced by a real modal and by nothing that merely resembles one', () => {
+    // Requiring "a visible pane with text in it" was satisfied by a 2x2 pane
+    // containing a full stop, which switched the gate off for every `aria-hidden`
+    // subtree on the page just as effectively as the stray backdrop did.
+    visit('/accounts', 'light');
+    cy.document().then((doc) => {
+      const container = doc.createElement('div');
+      container.className = 'cdk-overlay-container';
+      const pane = doc.createElement('div');
+      pane.className = 'cdk-overlay-pane';
+      pane.style.cssText = 'position:fixed;top:100px;left:100px;width:2px;height:2px';
+      pane.textContent = '.';
+      container.appendChild(pane);
+      doc.body.appendChild(container);
+
+      const region = doc.createElement('div');
+      region.setAttribute('aria-hidden', 'true');
+      region.style.cssText = 'position:fixed;top:8px;left:8px;background:#ffffff;padding:8px';
+      const text = doc.createElement('p');
+      text.style.cssText = 'color:#ffffff;margin:0;font-size:14px';
+      text.textContent = 'Zelle daily limit';
+      region.appendChild(text);
+      doc.body.appendChild(region);
+
+      expect(report(sweep(doc)), 'a 2x2 pane is not a modal').to.contain('Zelle daily limit');
+
+      // What makes a page inert is the thing MatDialog marks as a dialog — the
+      // same thing that put `aria-hidden` on the siblings this rule trusts.
+      const dialog = doc.createElement('div');
+      dialog.setAttribute('role', 'dialog');
+      dialog.setAttribute('aria-modal', 'true');
+      dialog.style.cssText = 'width:320px;height:180px;background:#ffffff';
+      dialog.textContent = 'Confirm transfer';
+      pane.style.cssText = 'position:fixed;top:100px;left:100px;width:320px;height:180px';
+      pane.textContent = '';
+      pane.appendChild(dialog);
+
+      expect(report(sweep(doc)), 'the page behind a real dialog is inert').not.to.contain(
+        'Zelle daily limit'
+      );
+    });
+  });
+
+  it('measures a mark drawn with four sides, at 32px, or in a pseudo-element', () => {
+    // Three exclusions with no principle behind them: fewer than four painted
+    // sides (a leftover from counting zero-width `currentColor` borders), a 24px
+    // ceiling, and the element's own box — which cannot see `::before`, where
+    // Material draws several of these.
+    visit('/__showcase/select', 'dark');
+    cy.document().then((doc) => {
+      const surface = (top: number): HTMLElement => {
+        const node = doc.createElement('div');
+        node.style.cssText = `position:fixed;top:${top}px;left:8px;width:80px;height:80px;background:#303030`;
+        doc.body.appendChild(node);
+        return node;
+      };
+
+      const boxed = surface(8);
+      const frame = doc.createElement('span');
+      frame.style.cssText = 'display:block;width:12px;height:12px;border:2px solid #303030';
+      boxed.appendChild(frame);
+      expect(report(sweep(doc)), 'four sides is a shape').to.contain('css-painted indicator');
+      boxed.remove();
+
+      const large = surface(100);
+      const mark = doc.createElement('span');
+      mark.style.cssText = 'display:block;width:32px;height:32px;border-bottom:3px solid #303030';
+      large.appendChild(mark);
+      expect(report(sweep(doc)), '32px is still a mark').to.contain('css-painted indicator');
+      large.remove();
+
+      const pseudo = surface(200);
+      pseudo.classList.add('r11-pseudo-caret');
+      const style = doc.createElement('style');
+      style.textContent =
+        '.r11-pseudo-caret::before{content:"";position:absolute;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:6px solid #303030}';
+      doc.head.appendChild(style);
+      expect(report(sweep(doc)), 'a caret in ::before is still a caret').to.contain(
+        'css-painted indicator'
+      );
+    });
+  });
 });

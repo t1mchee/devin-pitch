@@ -24,8 +24,10 @@ Read this before changing anything in this repository.
   out with a `BASELINE-CHANGE: <reason>` line in the PR description, which the "Guard the
   oracle" CI job enforces, and it needs design-system owner review (`.github/CODEOWNERS`).
 - **Run the visual suite through `npm run visual`.** It pins the renderer by digest and
-  passes `--skip-nx-cache`. A host run disagrees with the committed baselines by thousands
-  of pixels (`docs/evidence/ORACLE-noise-floor.md`), and an Nx cache hit is not a test run.
+  passes `--skip-nx-cache`. A host run may disagree with the committed baselines by
+  thousands of pixels depending on the host's fonts — and may also agree, which is not
+  evidence of anything either (`docs/evidence/ORACLE-noise-floor.md` §2–2.1). An Nx cache
+  hit is not a test run.
 - **Overrides in `libs/ui-core/src/lib/theming/_overrides.scss` exist for stated reasons.**
   Each carries an `OV-nn` comment explaining its intent. Preserve the intent, not the
   selector. Deleting an override to make a build or a test pass is never acceptable.

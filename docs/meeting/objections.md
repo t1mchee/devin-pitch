@@ -97,8 +97,28 @@ And the `sr-only` skip matched `inset(45–50%)` as a string, so today's `inset(
 false-failed. All four are self-tests
 (`oracle-logs/regress-oracle-{stacking,backdrop-armed,indicator-narrow,clip-literal}.log`), and one of
 them caught a bad *test*: the first version planted a 1×1 element, which the sweep skips for its size,
-so it passed with the bug still in place. The deliberate regression returning 150/150 is what found
+so it passed with the bug still in place. The deliberate regression returning 154/154 is what found
 that — a self-test that cannot fail is worth less than no self-test.
+
+Then a fifth round found the same family again, and it is the honest thing to lead with rather than
+bury: **four of the five defects were in the fixes from round four.** Coverage was a yes/no — the
+layer had to *contain* the text's box — so a veil inside a `position: sticky` wrapper, offset by the
+sticky `top` and eight pixels short, scored white-on-white text at 13.20:1. "Clipped away" was decided
+by the first percentage in `inset()`, which hid a painted 10% band and showed a box clipped to nothing,
+and the legacy `clip` property was honoured on static elements, where CSS ignores it entirely.
+Inertness was re-armed by any visible pane with a character of text in it — a 2×2 pane containing a
+full stop silenced the whole gate, exactly as the stray backdrop had one round earlier. And the caret
+rule, now shape-agnostic, still excluded a four-sided frame, anything over 24 px, and anything drawn
+in `::before`, which is where Material draws several of them. All five are self-tests with a
+deliberate regression behind them
+(`oracle-logs/regress-oracle-{cover-contains,clip-firstvalue,modal-textonly,indicator-r10}.log`).
+
+What that trend line says, and it is the point to make in the room: the *product* defects stopped
+coming several rounds ago; what keeps failing is the oracle's model of a browser, always in the same
+direction — an approximation narrower than the thing it approximates. That is why the residual
+approximations are enumerated in `OVERRIDE-CONTRACT-dead-rules.md` — sliver coverage, `inset()` in
+absolute units, `opacity < 1` as a stacking context, negative `z-index` — rather than described as
+complete.
 
 The general answer, which is the one that should land: **every gate in this repository has a
 published failure.** The pixel budget has a documented blind spot under 40 px, two probes are
@@ -116,6 +136,12 @@ exactly the kind of change that ships a wrong red to millions of customers. Seco
 in a container pinned by digest (`cypress/included@sha256:058d1834…`, never the mutable tag) with `--skip-nx-cache`, because font hinting
 differs between a laptop and a CI runner by more than 40 pixels, and because an Nx cache hit is
 not a test run. Re-baselining is a separate, reviewable commit.
+
+The best evidence for that pin arrived by accident and is worth telling: the host run in the
+evidence pack disagreed with the baselines by 455–5,963 pixels in the morning and by **0** in the
+evening, same commit, same baselines — because recovering a broken desktop session on that machine
+installed font packages. The renderer moved without a commit. Both transcripts are in
+`oracle-logs/`, and the pinned digest is why no baseline moved with it.
 
 ### "What does this cost us in review time?"
 

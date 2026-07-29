@@ -23,7 +23,7 @@ work needs `--legacy-peer-deps` because of `@angular/flex-layout@14.0.0-beta.41`
 npx nx run-many --target=build --all --skip-nx-cache   # expect: 6 projects
 npx nx run-many --target=test --all --skip-nx-cache    # expect: 6 projects, 8 suites / 43 tests
 npx nx run-many --target=lint --all --skip-nx-cache    # expect: 7 projects, 0 errors / 3 warnings
-npm run visual                                         # expect: 23 + 50 + 77 = 150 passing, 21 snapshots (preferred)
+npm run visual                                         # expect: 23 + 54 + 77 = 154 passing, 21 snapshots (preferred)
 ```
 
 The **test tally is easy to get wrong**, and it changes as specs are added — always re-derive it,
@@ -45,14 +45,23 @@ CI (`.github/workflows/ci.yml`, `env.CYPRESS_IMAGE`) uses the identical digest, 
 `.devin/blueprint.yaml` verifies with `npm run visual`. The image is usually already pulled; docker
 must be running.
 
-**A host run is not evidence of anything.** Baselines are captured in that container, so
-`npx nx e2e retail-banking-e2e --skip-nx-cache` on the host fails **21 of 21 snapshots** — measured
-drift 455 px (`tabs-default`, smallest) to 5,963 px (`accounts-dashboard`), all far over the 40 px
-budget. This is renderer/font-hinting difference, not a regression. Two consequences:
+**A host run is not evidence of anything — in either direction.** Baselines are captured in that
+container, and how far the host disagrees depends on the host's fonts, which is not something the
+repository controls:
+
+| host run | result |
+|---|---|
+| `oracle-logs/host-renderer-drift-prefonts.log` (12:02) | **21 of 21 snapshots fail**, 455 px (`tabs-default`) to 5,963 px (`accounts-dashboard`) |
+| `oracle-logs/host-renderer-drift.log` (20:37, same commit, same baselines) | **0 px on all 21**, fully green |
+
+What changed between them was an apt transaction — recovering the desktop session installed
+`kde-plasma-desktop` and `ffmpeg`, which pull in font packages. Three consequences:
 
 - Never conclude "the suite is broken" from a host run, and never use one to demo the gate.
-- `demo/RUNBOOK.md` offers a host run as the "docker unavailable" fallback. Following that advice
-  live produces a wall of 21 red failures; prefer showing `docs/evidence/ORACLE-noise-floor.md`
+- Never conclude "the pinning is unnecessary" from a *green* host run either. It went green because
+  the machine drifted **towards** the container, uncommitted and unnoticed; it can drift back.
+- `demo/RUNBOOK.md` offers a host run as the "docker unavailable" fallback. On a host without the
+  fonts that produces a wall of 21 red failures; prefer showing `docs/evidence/ORACLE-noise-floor.md`
   and the last CI run instead.
 
 ### `nx e2e` is a CACHED target — this matters for determinism claims
@@ -266,10 +275,10 @@ console.log(n,(n/(a.width*a.height)*100).toFixed(4)+'%');"
 
 `apps/retail-banking-e2e/src/e2e/override-contract.cy.ts` + `src/support/override-probes.ts` hold 27
 probes, one per `OV-nn` intent, asserting `getComputedStyle` values on the running app. Total suite
-is **150 tests = 23 snapshot tests (21 snapshots) + 77 computed-style tests (27 light, 11 dark, 1
+is **154 tests = 23 snapshot tests (21 snapshots) + 77 computed-style tests (27 light, 11 dark, 1
 dark-surface anti-vacuity control, 32 WCAG ratios over 16 targets in both themes, 6 tests of the
-contrast oracle itself) + 50 legibility-sweep tests (`legibility-sweep.cy.ts`: every visible text node
-every painted SVG glyph and every CSS-painted indicator on 16 routes x 2 palettes, plus 18 tests that
+contrast oracle itself) + 54 legibility-sweep tests (`legibility-sweep.cy.ts`: every visible text node
+every painted SVG glyph and every CSS-painted indicator on 16 routes x 2 palettes, plus 22 tests that
 attack the sweep itself)**.
 
 The contrast helper lives in `src/support/contrast.ts` and is shared by both suites. Attack it there,
@@ -303,7 +312,7 @@ surface and the sweep must report an invisible enabled control.
 When writing a new sweep self-test, size the planted element **larger than 1x1**: `visible()` skips
 tiny boxes, so a 1x1 probe passes whether or not the behaviour under test works. The first version of
 the `clip-path: inset(100%)` test did exactly that and proved nothing until the deliberate regression
-returned 150/150.
+returned 154/154.
 
 Three directions are *policy*, not defect: off-screen screen-reader-only text is ignored; text over a
 gradient fails as UNMEASURABLE unless **the artwork element itself** carries a
@@ -488,7 +497,7 @@ text child** via `contrastRatio()` against `requiredRatio()`. Scrims are gathere
 `collectScrims()` and applied by `scrimsOver()`.
 
 **Fixed as of round 11** — every one of these is now a self-test, and re-injecting the old behaviour
-fails exactly that test (`oracle-logs/regress-oracle-*.log`, **150 total**, 1-3 failures each):
+fails exactly that test (`oracle-logs/regress-oracle-*.log`, **154 total**, 1-3 failures each):
 
 - SVG-only content is swept. Recolouring the **enabled paginator arrows** to the paginator surface
   gives `svg "Next page" — 1.00:1, needs 3:1` and moves `paginator-default` ~70 px.
@@ -499,21 +508,30 @@ fails exactly that test (`oracle-logs/regress-oracle-*.log`, **150 total**, 1-3 
 - Below-the-fold text is measured: gate coverage no longer depends on page height.
 - The icon exemption reads **visible** label text, so an `sr-only` label no longer hides a glyph.
 - CSS-painted indicators are measured at 3:1 by **shape**, not by one drawing technique: a rotated
-  two-border chevron and an L-shaped corner used to walk past a 0x0/one-border rule. A mark that hangs
-  outside its parent is measured against what is behind the parent (a tooltip arrow is a tail of its
-  surface, and measuring it against that surface filed a false defect).
-- The `sr-only` skip covers `clip-path: inset(100%)` and `clip: rect(0,0,0,0)`, not just `inset(50%)`.
+  two-border chevron, an L-shaped corner, a four-sided 12px frame, a 32px mark and a caret drawn in
+  `::before` all used to walk past. A mark that hangs outside its parent is measured against what is
+  behind the parent (a tooltip arrow is a tail of its surface, and measuring it against that surface
+  filed a false defect).
+- Clipping is **evaluated**, not matched: `inset()` is expanded to four sides and summed per axis, so
+  `inset(100%)` (the current `sr-only` recipe) and `inset(0 0 100% 0)` are hidden while `inset(45%)`
+  is measured, because a 10% band of it is painted. The legacy `clip` property is honoured only on a
+  positioned element, which is the only place CSS applies it.
+- Coverage is a **fraction**: a layer over >= 50% of the text's box is composited. Requiring
+  containment let a veil inside a `position: sticky` wrapper, offset by the sticky `top` and so eight
+  pixels short, score unreadable white-on-white text at 13.20:1.
 - A `visibility: hidden` scrim is not composited (that false failure scored legible text 1.09:1).
 - `data-contrast-reviewed` must sit on the artwork element and cite a ratio.
-- A sweep with an open modal skips the inert page behind it and measures the overlay — but only with a
-  **visible overlay pane that has content**, so a stray `0x0; opacity: 0` `.cdk-overlay-backdrop`
-  cannot silence the whole gate.
+- A sweep with an open modal skips the inert page behind it and measures the overlay — but only for a
+  visible pane containing something with a **dialog role / `aria-modal`**. A stray `0x0; opacity: 0`
+  `.cdk-overlay-backdrop` silenced the entire gate in round 10, and a 2x2 pane containing a full stop
+  did the same in round 11; a select panel or a menu is not modal and silences nothing.
 
 **Gaps that survive round 11.** Reproduce them rather than trusting this list, and look for new ones:
 
 | Gap | Why the model cannot see it | Symptom |
 |---|---|---|
-| **Partial overlays** (documented) | full containment is required — deliberate, it killed 38 tab-ink-bar false positives. | a sticky header / badge / ripple covering ~70% of a text node ⇒ `scrims counted = 0`, 13.20:1 |
+| **Slivers** (documented) | coverage is an area fraction with a 50% threshold: a policy choice, not glyph rasterisation. Compositing a sliver would mis-state the colour of the half still on screen. | a bar over the top 30% of a text node ⇒ `scrims counted = 0`. Above 50% it is reported |
+| **`inset()` in absolute units** | `inset(4px)` cannot be resolved without the box, so it is treated as not clipping. | an element hidden with `clip-path: inset(9999px)` is still measured |
 | **Stacking contexts, still partly** | resolved at the lowest common ancestor via the first stacking context on each path (`transform`, `filter`, `isolation`, `contain`, `will-change`, fixed/sticky, positioned + numeric `z-index`). `opacity < 1` as a context creator, and negative `z-index` painting behind its parent's background, are **not** modelled. | a scrim inside an `opacity: 0.99` wrapper, or a negative-`z-index` layer, may still be mis-ordered — attack it |
 | **States nobody enumerates** | the sweep visits routes, not states; hover/focus/validation are the override contract's job. | a colour that only appears on `:hover` is unmeasured unless a probe drives it |
 | **One viewport, one renderer** | 1280x720 in the pinned image. | a defect that only appears at another zoom level, webfont or forced-colours mode is out of scope |
@@ -627,11 +645,12 @@ interactive prompt that never appears in a piped log beyond:
 It looks like a slow test run. Free the port first (`pkill -f "nx serve retail-banking"`, then confirm
 with `ss -ltn | grep :4200`), or run the browser walkthrough and the e2e gate in separate phases.
 
-Expected host-run result (this is **not** a product regression, see `ORACLE-noise-floor.md`):
-21 of 23 pixel snapshots fail on host-renderer drift (`accounts-dashboard` ~5,963 px,
-`table-default` ~4,656 px), while the **50 sweep and 77 override-contract tests pass** — those two
-layers are renderer-independent, which is the useful signal from a host run. Only `npm run visual`
-(digest-pinned image) is authoritative for pixels.
+Host-run pixel results are **font-dependent and not authoritative in either direction** (see
+`ORACLE-noise-floor.md` §2.1): on this box the same commit gave 21 of 21 failures at 455–5,963 px in
+the morning and 0 px on all 21 after a desktop install added font packages. The **54 sweep and 77
+override-contract tests pass either way** — those two layers are renderer-independent, which is the
+useful signal from a host run. Only `npm run visual` (digest-pinned image) is authoritative for
+pixels.
 
 ## Finding the X display for `xdotool`/`wmctrl`
 
@@ -668,8 +687,8 @@ plausible CI flake source, so don't mistake it for a real failure.
 ## `visual-diffs/*.diff.png` only appear on FAILURE
 
 The plugin writes a diff PNG only when `diffPixels > MAX_DIFF_PIXELS`. So a full set of 21 diffs means
-some run failed all 21 — almost always a **host-renderer** run (455–5,963 px drift), not a real
-regression. Check mtimes against your own pinned runs before reporting anything; a passing pinned run
+some run failed all 21 — almost always a **host-renderer** run on a host whose fonts differ from the
+image's (455–5,963 px drift), not a real regression. Check mtimes against your own pinned runs before reporting anything; a passing pinned run
 writes none. The dir is gitignored.
 
 ## Verifying baseline integrity without fooling yourself

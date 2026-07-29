@@ -21,7 +21,7 @@ transcript of commands that were actually executed.
 | `docs/evidence/` | Raw command transcripts. Gate 1 proves the automated migration path completes and the build still fails. |
 | `docs/meeting/` | Agenda, persona briefs, objection bank, the delivery/cost plan, the security Q&A, the two use cases not chosen. |
 | `docs/evidence/VARIANCE-phase1-material15.md` | Three independent Devin runs of the same migration hop, including the one that died on a usage limit and the escalation both runs got wrong. |
-| `docs/evidence/ORACLE-noise-floor.md` | The measurement behind the 40-pixel diff budget: 0 px across repeat runs on the pinned renderer, 455–5,963 px across renderers, 753 px of injected signal. |
+| `docs/evidence/ORACLE-noise-floor.md` | The measurement behind the 40-pixel diff budget: 0 px across repeat runs on the pinned renderer, 455–5,963 px across renderers, 753 px of injected signal — and the day the host stopped drifting because an apt install changed its fonts, which is the case for pinning rather than against it. |
 | `playbooks/REVISIONS.md` | What each round of runs changed in the playbook, and on what evidence. |
 | `demo/RUNBOOK.md` | The timed 12-minute live demo, with the failure playbook. |
 
@@ -112,11 +112,20 @@ painted side. Round ten added two more of the same family: a scrim raised inside
 the old "maximum `z-index` on the chain" model read as covering text a browser paints *above* it (a
 stacking context contains its children, and the model did not know that); and inertness armed by the
 mere presence of a `.cdk-overlay-backdrop` element, so one stray `0×0; opacity: 0` leftover switched
-the sweep off for every `aria-hidden` subtree on the page.
+the sweep off for every `aria-hidden` subtree on the page. Round eleven found four more — and all four
+were in round ten's fixes, which is the honest summary of this exercise: a veil inside a
+`position: sticky` wrapper fell eight pixels short of *containing* the line it hid, so unreadable
+white-on-white text scored 13.20:1; "clipped away" was decided by the first percentage in `inset()`,
+which hid a painted 10% band and showed a box clipped to nothing; inertness was re-armed by any
+visible pane with a character of text in it, so a 2×2 pane containing a full stop silenced the gate
+again; and the shape-agnostic caret rule still excluded a four-sided frame, anything above 24 px and
+anything drawn in `::before`, where Material draws several of them.
 
-Five of the eighteen guard the other direction, which matters just as much: a gate that fails correct
-code gets switched off. Hidden text, off-screen skip links, the current `sr-only` recipe
-(`clip-path: inset(100%)`, not just the `inset(50%)` spelling the first version matched), a veil that
+Seven of the twenty-two guard the other direction, which matters just as much: a gate that fails
+correct code gets switched off. Hidden text, off-screen skip links, the current `sr-only` recipe
+(`clip-path: inset(100%)`, not just the `inset(50%)` spelling the first version matched), a box
+clipped to nothing by `inset(0 0 100% 0)`, a `clip: rect(0,0,0,0)` on a *static* element where CSS
+ignores it, a veil that
 paints nothing, a tooltip arrow that matches the surface it is a tail of, and the dimmed page behind
 an open modal must all stay unreported. And text over a gradient fails as unmeasurable
 until a human declares `data-contrast-reviewed="… 8.9:1 at the lightest stop"` **on the element
