@@ -1,0 +1,2 @@
+ M bofa-digital-banking/apps/retail-banking-e2e/src/e2e/legibility-sweep.cy.ts
+ M bofa-digital-banking/apps/retail-banking-e2e/src/support/contrast.ts

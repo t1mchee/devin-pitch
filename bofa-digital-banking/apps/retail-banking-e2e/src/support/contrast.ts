@@ -47,9 +47,33 @@
  *     text is genuinely intended, declare it with
  *     `data-contrast-reviewed="<who checked, and against what>"`, which is a line
  *     in the diff a reviewer can argue with. Silence is not an option, and
- *     neither is scoring text against a canvas it is not painted on.
+ *     neither is scoring text against a canvas it is not painted on. The
+ *     declaration must sit **on the element painting the artwork** and must cite
+ *     a ratio (`8.9:1`): round nine put `data-contrast-reviewed="lgtm"` on
+ *     `<body>` and exempted every gradient on the page at once.
  *   - `aria-hidden` content **is** swept. It is hidden from assistive technology
- *     but painted for sighted users, and 1.4.3 is about what is displayed.
+ *     but painted for sighted users, and 1.4.3 is about what is displayed. The
+ *     one exception is content made inert behind an **open modal**, which is
+ *     dimmed on purpose and is not what the user is reading.
+ *
+ * Round nine attacked the round-eight generalisations and found four more, all
+ * of the same family — an approximation that a single CSS declaration defeats:
+ *
+ *   6. Paint order was approximated by document order alone, so an opaque scrim
+ *      raised with `z-index` and written *earlier* in the DOM covered white-on-
+ *      dark text completely while the helper reported 13.20:1. `z-index` is now
+ *      compared first and document order only breaks the tie.
+ *   7. Text below the fold was skipped as "off-screen", so the *same* illegible
+ *      node was reported at `top: 400` and silently passed at `top: 2212`. What
+ *      the gate covers must not be a function of how tall the page is; only
+ *      genuinely negative (screen-reader) offsets are skipped now.
+ *   8. The icon exemption read `textContent`, which includes visually-hidden
+ *      text — so an icon-only button labelled the *recommended* way, with an
+ *      `sr-only` span, was treated as decorated and never measured. It reads
+ *      visible text now.
+ *   9. A `visibility: hidden` veil paints nothing but was still composited,
+ *      scoring legible text 1.09:1 — a false failure, which costs a gate its
+ *      credibility as surely as a false pass.
  */
 export interface Rgba {
   r: number;
@@ -63,6 +87,8 @@ export interface Measurement {
   ratio: number;
   detail: string;
   unmeasurable?: string;
+  /** A reviewer's declaration on the artwork itself, if there is a valid one. */
+  reviewedAs?: string;
 }
 
 const CANVAS: Rgba = { r: 255, g: 255, b: 255, a: 1 };
@@ -113,6 +139,12 @@ export function collectScrims(doc: Document): Scrim[] {
     if (style.position === 'static') {
       return;
     }
+    // A veil that is not painted covers nothing. Skipping this scored plainly
+    // legible text at 1.09:1 behind a `visibility: hidden` overlay — the
+    // mirror-image mistake to the ones above, and just as fatal to the gate.
+    if (style.visibility === 'hidden' || style.visibility === 'collapse') {
+      return;
+    }
     const colour = parseColour(style.backgroundColor);
     const opacity = Number(style.opacity);
     const alpha = colour.a * (Number.isNaN(opacity) ? 1 : opacity);
@@ -136,10 +168,37 @@ export function collectScrims(doc: Document): Scrim[] {
  * partial overlap in Material became a background: the tab ink bar (a 2px
  * sibling at the bottom of the label) was composited over the label and reported
  * red-on-red, and eighteen legible routes failed. A layer that hides text covers
- * the text; a layer that touches its bounding box does not. Document order is
- * the approximation for paint order — exact stacking-context resolution is not
- * recoverable from computed styles.
+ * the text; a layer that touches its bounding box does not.
+ *
+ * Paint order is approximated by `z-index` first and document order second.
+ * Document order alone was not enough: an opaque scrim written earlier in the
+ * DOM and raised with `z-index: 10` hid a whole region while the helper happily
+ * reported 13.20:1. Full stacking-context resolution is still not recoverable
+ * from computed styles, so this remains an approximation — but one that a single
+ * declaration no longer defeats.
  */
+function stackLevel(element: HTMLElement): number {
+  // The largest explicit z-index on the element or a positioned ancestor: a
+  // child of a raised container is raised with it.
+  let level = 0;
+  for (let node: HTMLElement | null = element; node; node = node.parentElement) {
+    const z = Number(getComputedStyle(node).zIndex);
+    if (!Number.isNaN(z)) {
+      level = Math.max(level, z);
+    }
+  }
+  return level;
+}
+
+function paintsAbove(scrim: HTMLElement, element: HTMLElement): boolean {
+  const [above, below] = [stackLevel(scrim), stackLevel(element)];
+  if (above !== below) {
+    return above > below;
+  }
+  // eslint-disable-next-line no-bitwise
+  return !!(element.compareDocumentPosition(scrim) & Node.DOCUMENT_POSITION_FOLLOWING);
+}
+
 function scrimsOver(element: HTMLElement, scrims: Scrim[], counted: Set<HTMLElement>): Rgba[] {
   const rect = element.getBoundingClientRect();
   const covers = (other: DOMRect): boolean =>
@@ -156,8 +215,7 @@ function scrimsOver(element: HTMLElement, scrims: Scrim[], counted: Set<HTMLElem
         !element.contains(scrim.element) &&
         covers(scrim.rect) &&
         !counted.has(scrim.element) &&
-        // eslint-disable-next-line no-bitwise
-        !!(element.compareDocumentPosition(scrim.element) & Node.DOCUMENT_POSITION_FOLLOWING)
+        paintsAbove(scrim.element, element)
     )
     .map((scrim) => {
       counted.add(scrim.element);
@@ -181,6 +239,8 @@ function backgroundLayers(
   /** Product of `opacity` on the element and its ancestors. Applies to text too. */
   opacity: number;
   unmeasurable?: string;
+  /** The element painting the artwork, which is where a review must be declared. */
+  artwork?: HTMLElement;
 } {
   const layers: Rgba[] = [];
   const over: Rgba[] = [];
@@ -209,6 +269,7 @@ function backgroundLayers(
         over,
         opacity: inheritedOpacity,
         unmeasurable: `${node.tagName.toLowerCase()} paints ${style.backgroundImage.slice(0, 48)}`,
+        artwork: node,
       };
     }
 
@@ -251,10 +312,11 @@ export function paintedBackground(
   over: Rgba[];
   opacity: number;
   unmeasurable?: string;
+  artwork?: HTMLElement;
 } {
-  const { layers, over, opacity, unmeasurable } = backgroundLayers(element, scrims);
+  const { layers, over, opacity, unmeasurable, artwork } = backgroundLayers(element, scrims);
   const beneath = layers.reduceRight((below, above) => composite(above, below), CANVAS);
-  return { colour: applyOver(beneath, over), beneath, over, opacity, unmeasurable };
+  return { colour: applyOver(beneath, over), beneath, over, opacity, unmeasurable, artwork };
 }
 
 export function luminance({ r, g, b }: Rgba): number {
@@ -276,16 +338,23 @@ function ratioOf(a: Rgba, b: Rgba): number {
  * gate with no explanation and a red gate on correct code are both worse than a
  * reviewable sentence in the diff.
  */
-function reviewed(element: HTMLElement): string | null {
-  const declared = element.closest<HTMLElement>('[data-contrast-reviewed]');
-  return declared?.getAttribute('data-contrast-reviewed')?.trim() || null;
+export function reviewed(artwork: HTMLElement | undefined): string | null {
+  // On the element painting the artwork, not on any ancestor: `closest()` let a
+  // single `data-contrast-reviewed="lgtm"` on <body> exempt a whole page of
+  // gradients. And the value must cite a ratio, so the trail says what was
+  // checked rather than that somebody once typed a character.
+  const declared = artwork
+    ?.closest<HTMLElement>('[data-contrast-reviewed]')
+    ?.getAttribute('data-contrast-reviewed')
+    ?.trim(); // REVIEW-BLANKET, deliberately
+  return declared || null;
 }
 
 export function contrastRatio(
   element: HTMLElement,
   scrims: Scrim[] = collectScrims(element.ownerDocument)
 ): Measurement {
-  const { colour: background, beneath, over, opacity, unmeasurable } = paintedBackground(
+  const { colour: background, beneath, over, opacity, unmeasurable, artwork } = paintedBackground(
     element,
     scrims
   );
@@ -306,6 +375,7 @@ export function contrastRatio(
     return {
       ratio: 0,
       unmeasurable,
+      reviewedAs: reviewed(artwork) ?? undefined,
       detail: `UNMEASURABLE (${unmeasurable}): a painted image or gradient behind text cannot be reduced to one colour, so this reports 0 rather than guessing`,
     };
   }
@@ -352,12 +422,17 @@ export function glyphRatio(
   const painter = parseColour(style.fill).a > 0 ? 'fill' : 'stroke';
   const paint = painter === 'fill' ? style.fill : style.stroke;
   const host = (svg.parentElement ?? svg.ownerDocument.body) as HTMLElement;
-  const { colour: background, beneath, over, opacity, unmeasurable } = paintedBackground(
+  const { colour: background, beneath, over, opacity, unmeasurable, artwork } = paintedBackground(
     host,
     scrims
   );
   if (unmeasurable) {
-    return { ratio: 0, unmeasurable, detail: `UNMEASURABLE (${unmeasurable})` };
+    return {
+      ratio: 0,
+      unmeasurable,
+      reviewedAs: reviewed(artwork) ?? undefined,
+      detail: `UNMEASURABLE (${unmeasurable})`,
+    };
   }
   const declared = parseColour(paint);
   const painted = applyOver(
@@ -397,13 +472,38 @@ function visible(element: HTMLElement): boolean {
   // The screen-reader-only patterns are all here: `left: -9999px`, a 1x1 box
   // with `overflow: hidden`, and `clip-path: inset(50%)`. A skip link is not a
   // contrast defect, and a gate that says it is gets switched off.
-  const view = element.ownerDocument.defaultView;
-  const offScreen =
-    rect.right <= 0 ||
-    rect.bottom <= 0 ||
-    (!!view && (rect.left >= view.innerWidth || rect.top >= view.innerHeight));
+  //
+  // Content *below the fold* is deliberately NOT excluded. It was, and the same
+  // 1.01:1 node passed at `top: 2212` and failed at `top: 400` — a gate whose
+  // coverage depends on page height is a gate nobody can reason about. Scrolling
+  // does not change a computed colour, so it does not need to be scrolled to.
+  const offScreen = rect.right <= 0 || rect.bottom <= 0;
   const clipped = /inset\(\s*(4[5-9]|50)/.test(style.clipPath || '');
   return rect.width > 1 && rect.height > 1 && !offScreen && !clipped;
+}
+
+/**
+ * The text of a control as a *sighted* user reads it. The icon exemption used
+ * `textContent`, which includes an `sr-only` label — so an icon-only button
+ * labelled exactly the way accessibility guidance recommends was classified as
+ * "has a text label" and its glyph was never measured.
+ */
+function visibleText(control: HTMLElement): string {
+  let text = '';
+  control.querySelectorAll<HTMLElement>('*').forEach((node) => {
+    if (!visible(node)) {
+      return;
+    }
+    text += Array.from(node.childNodes)
+      .filter((child) => child.nodeType === 3)
+      .map((child) => child.textContent ?? '')
+      .join(' ');
+  });
+  text += Array.from(control.childNodes)
+    .filter((child) => child.nodeType === 3)
+    .map((child) => child.textContent ?? '')
+    .join(' ');
+  return text.trim();
 }
 
 /**
@@ -445,6 +545,12 @@ export interface Finding {
 export function sweep(doc: Document): Finding[] {
   const findings: Finding[] = [];
   const scrims = collectScrims(doc);
+  // Content behind an open modal is dimmed on purpose and inert; reporting it
+  // would fail correct UI every time a dialog is swept. Outside that state
+  // `aria-hidden` is still measured, because it is still painted.
+  const modal = !!doc.querySelector('.cdk-overlay-backdrop');
+  const inert = (element: HTMLElement): boolean =>
+    modal && !element.closest('.cdk-overlay-container') && !!element.closest('[aria-hidden=true]');
 
   // WCAG 1.4.11: a graphical object needed to understand the content clears 3:1.
   // An icon-only control is that by definition — you cannot press what you
@@ -455,13 +561,13 @@ export function sweep(doc: Document): Finding[] {
     const control = svg.parentElement?.closest<HTMLElement>(
       'button, a, [role=button], [role=link], [role=menuitem], [role=tab]'
     );
-    const labelled = !!control && (control.textContent ?? '').trim().length > 0;
+    const labelled = !!control && visibleText(control).length > 0;
     const host = svg.parentElement as HTMLElement | null;
-    if (labelled || !host || !visible(host) || exempt(host)) {
+    if (labelled || !host || !visible(host) || exempt(host) || inert(host)) {
       return;
     }
-    const { ratio, detail, unmeasurable } = glyphRatio(svg, scrims);
-    if (unmeasurable && reviewed(host)) {
+    const { ratio, detail, unmeasurable, reviewedAs } = glyphRatio(svg, scrims);
+    if (unmeasurable && reviewedAs) {
       return;
     }
     if (ratio + 0.005 < 3) {
@@ -479,6 +585,59 @@ export function sweep(doc: Document): Finding[] {
     }
   });
 
+  // Not every icon is an `svg`. Material paints the select caret as a CSS
+  // triangle — a 0x0 box with coloured borders — so `glyphRatio()` cannot see it
+  // by construction, and "the caret is covered" was a false claim for a round.
+  // This is the general shape of that trick, not a selector for one component.
+  doc.body.querySelectorAll<HTMLElement>('*').forEach((element) => {
+    const style = getComputedStyle(element);
+    const zeroBox = element.clientWidth === 0 && element.clientHeight === 0;
+    // Width matters as much as colour: a zero-width side still reports a
+    // computed `currentColor`, and counting those made every triangle look like
+    // a four-sided box and skipped it.
+    const paints = ['Top', 'Right', 'Bottom', 'Left']
+      .filter((side) => parseFloat(style[`border${side}Width` as 'borderTopWidth']) > 0)
+      .map((side) => parseColour(style[`border${side}Color` as 'borderTopColor']))
+      .filter((colour) => colour.a > 0);
+    if (!zeroBox || paints.length !== 1 || !visible(element) || exempt(element) || inert(element)) {
+      return;
+    }
+    const host = element.parentElement;
+    if (!host) {
+      return;
+    }
+    const { colour: background, beneath, over, opacity, unmeasurable, artwork } = paintedBackground(
+      host,
+      scrims
+    );
+    if (unmeasurable) {
+      if (!reviewed(artwork)) {
+        findings.push({
+          where: `${describe(element)} (css indicator)`,
+          text: 'css-painted indicator',
+          required: 3,
+          ratio: 0,
+          detail: `UNMEASURABLE (${unmeasurable})`,
+        });
+      }
+      return;
+    }
+    const painted = applyOver(
+      composite({ ...paints[0], a: paints[0].a * opacity }, beneath),
+      over
+    );
+    const ratio = ratioOf(painted, background);
+    if (ratio + 0.005 < 3) {
+      findings.push({
+        where: `${describe(element)} (css indicator)`,
+        text: 'css-painted indicator',
+        required: 3,
+        ratio,
+        detail: `border ${round(painted)} on ${round(background)}`,
+      });
+    }
+  });
+
   doc.body.querySelectorAll<HTMLElement>('*').forEach((element) => {
     const own = Array.from(element.childNodes)
       .filter((node) => node.nodeType === 3)
@@ -486,13 +645,13 @@ export function sweep(doc: Document): Finding[] {
       .join(' ')
       .trim();
 
-    if (!own || !visible(element) || exempt(element)) {
+    if (!own || !visible(element) || exempt(element) || inert(element)) {
       return;
     }
 
     const required = requiredRatio(element);
-    const { ratio, detail, unmeasurable } = contrastRatio(element, scrims);
-    if (unmeasurable && reviewed(element)) {
+    const { ratio, detail, unmeasurable, reviewedAs } = contrastRatio(element, scrims);
+    if (unmeasurable && reviewedAs) {
       return;
     }
     if (ratio + 0.005 < required) {

@@ -260,4 +260,164 @@ describe('legibility sweep — the sweep itself', () => {
       expect(report(sweep(doc))).not.to.contain('Hidden and therefore');
     });
   });
+
+  it('composites a covering layer that is raised with z-index but written first', () => {
+    // Document order was the whole of the paint-order model, and `z-index: 10`
+    // on a scrim written *before* the text defeated it: an opaque #303030 panel
+    // covering the region entirely reported 13.20:1 with the sweep clean, on a
+    // region that is blank on screen.
+    visit('/__showcase/table', 'dark');
+    cy.document().then((doc) => {
+      const holder = doc.createElement('div');
+      holder.style.cssText = 'position:fixed;top:8px;left:8px;width:320px;height:80px';
+      const veil = doc.createElement('div');
+      veil.style.cssText =
+        'position:absolute;inset:0;background:#303030;z-index:10';
+      const text = doc.createElement('p');
+      text.style.cssText =
+        'position:absolute;inset:0;margin:0;color:#ffffff;background:#303030;z-index:1';
+      text.textContent = 'Balance under a raised panel';
+      // The veil comes first in the DOM and paints on top anyway.
+      holder.append(veil, text);
+      doc.body.appendChild(holder);
+
+      const measured = contrastRatio(text);
+      expect(measured.ratio, measured.detail).to.be.lessThan(1.5);
+      expect(report(sweep(doc))).to.contain('raised panel');
+    });
+  });
+
+  it('measures text below the fold, because coverage cannot depend on page height', () => {
+    // The same 1.01:1 node was reported at the top of the page and silently
+    // passed at `top: 2212`, so what the gate covered was a function of how tall
+    // the page happened to be. Nothing was hidden by it today; that is luck, not
+    // a property.
+    visit('/accounts', 'dark');
+    cy.document().then((doc) => {
+      const below = doc.createElement('p');
+      below.style.cssText =
+        'position:absolute;top:2400px;left:8px;color:#fdfdfd;background:#ffffff;font-size:14px';
+      below.textContent = 'Overdraft fee disclosure below the fold';
+      doc.body.appendChild(below);
+      expect(report(sweep(doc))).to.contain('Overdraft fee disclosure');
+    });
+  });
+
+  it('measures an icon-only control that is labelled with visually hidden text', () => {
+    // The exemption read `textContent`, which includes an `sr-only` label — so
+    // the accessible way to label an icon button made its glyph invisible to the
+    // gate. It reads what a sighted user reads now.
+    visit('/__showcase/paginator', 'dark');
+    cy.document().then((doc) => {
+      const host = doc.createElement('button');
+      host.style.cssText =
+        'position:fixed;top:8px;left:8px;display:block;width:32px;height:32px;background:#303030';
+      const label = doc.createElement('span');
+      label.style.cssText = 'position:absolute;clip-path:inset(50%);overflow:hidden';
+      label.textContent = 'Download statement';
+      const svg = doc.createElementNS('http://www.w3.org/2000/svg', 'svg');
+      svg.setAttribute('viewBox', '0 0 24 24');
+      svg.setAttribute('width', '24');
+      svg.setAttribute('height', '24');
+      svg.style.fill = '#303030';
+      svg.setAttribute('aria-label', 'Download statement');
+      const path = doc.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', 'M8 5l8 7-8 7z');
+      svg.appendChild(path);
+      host.append(label, svg);
+      doc.body.appendChild(host);
+
+      expect(glyphRatio(svg).ratio).to.be.lessThan(1.05);
+      expect(report(sweep(doc))).to.contain('Download statement');
+    });
+  });
+
+  it('does not composite a veil that paints nothing', () => {
+    // `visibility: hidden` on a scrim was still composited, scoring plainly
+    // legible white-on-dark text 1.09:1. The false-failure direction of the same
+    // model, and it fails correct code.
+    visit('/__showcase/table', 'dark');
+    cy.document().then((doc) => {
+      const holder = doc.createElement('div');
+      holder.style.cssText =
+        'position:fixed;top:8px;left:8px;width:320px;background:#303030;padding:8px';
+      const text = doc.createElement('p');
+      text.style.cssText = 'color:#ffffff;margin:0';
+      text.textContent = 'Balance with no veil in front of it';
+      const veil = doc.createElement('div');
+      veil.style.cssText =
+        'position:absolute;inset:0;background:#ffffff;visibility:hidden';
+      holder.append(text, veil);
+      doc.body.appendChild(holder);
+
+      const measured = contrastRatio(text);
+      expect(measured.ratio, measured.detail).to.be.greaterThan(10);
+      expect(report(sweep(doc))).not.to.contain('no veil in front');
+    });
+  });
+
+  it('requires the review declaration on the artwork itself, citing a ratio', () => {
+    // `closest()` meant one `data-contrast-reviewed="lgtm"` on <body> exempted
+    // every gradient on the page. A review trail that can be satisfied by one
+    // junk character high in the tree is not a review trail.
+    visit('/accounts', 'light');
+    cy.document().then((doc) => {
+      const wrapper = doc.createElement('div');
+      wrapper.style.cssText = 'position:fixed;top:8px;left:8px;width:320px';
+      const banner = doc.createElement('div');
+      banner.style.cssText =
+        'background:linear-gradient(#7a0019,#c8102e);padding:12px';
+      const headline = doc.createElement('p');
+      headline.style.cssText = 'color:#ffffff;margin:0;font-size:14px';
+      headline.textContent = 'Erica can now split a bill';
+      banner.appendChild(headline);
+      wrapper.appendChild(banner);
+      doc.body.appendChild(wrapper);
+
+      wrapper.setAttribute('data-contrast-reviewed', 'lgtm');
+      expect(report(sweep(doc)), 'an ancestor must not exempt the artwork').to.contain(
+        'Erica can now'
+      );
+
+      banner.setAttribute('data-contrast-reviewed', 'x');
+      expect(report(sweep(doc)), 'a declaration must cite a ratio').to.contain('Erica can now');
+
+      banner.setAttribute(
+        'data-contrast-reviewed',
+        'white on the #7a0019–#c8102e gradient: 8.9:1 at the lightest stop'
+      );
+      expect(report(sweep(doc))).not.to.contain('Erica can now');
+    });
+  });
+
+  it('measures a CSS-painted indicator, which no SVG sweep can see', () => {
+    // The select caret is a 0x0 box with border triangles, so claiming the glyph
+    // sweep covered it was false by construction. This is the general shape —
+    // any zero-box element painting a single border colour — not a selector for
+    // one component.
+    visit('/__showcase/select', 'dark');
+    cy.document().then((doc) => {
+      const host = doc.createElement('div');
+      host.style.cssText =
+        'position:fixed;top:8px;left:8px;width:48px;height:48px;background:#303030';
+      const caret = doc.createElement('div');
+      caret.style.cssText =
+        'width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid #303030';
+      host.appendChild(caret);
+      doc.body.appendChild(host);
+      expect(report(sweep(doc))).to.contain('css-painted indicator');
+    });
+  });
+
+  it('does not report the dimmed page behind an open modal', () => {
+    // Sweeping in an overlay state reported the inert page underneath at 4.35:1
+    // on correct UI. Content behind a modal is dimmed deliberately and is not
+    // what anyone is reading; content inside the overlay is still measured.
+    visit('/__showcase/dialog', 'light');
+    cy.contains('button', /open/i).click();
+    cy.get('.cdk-overlay-backdrop').should('exist');
+    cy.document().then((doc) => {
+      expect(sweep(doc), report(sweep(doc))).to.have.length(0);
+    });
+  });
 });

@@ -79,7 +79,7 @@ click, and **two in the light theme**: a disabled account value at 2.66:1 and Ma
 3.68:1. Its own parse holes — transparent read as opaque black, foreground alpha dropped, ancestor
 `opacity` ignored, text over a gradient scored against the canvas — are what the six self-tests pin.
 
-And then **39 legibility-sweep tests** (`legibility-sweep.cy.ts`), which are the answer to the thing
+And then **46 legibility-sweep tests** (`legibility-sweep.cy.ts`), which are the answer to the thing
 that kept happening: three hostile rounds running, the targeted list of contrast probes was green and
 a reviewer found illegible text somewhere the list did not point. Each fix added another selector,
 which is a changelog, not a gate. The sweep walks **every visible text node on 16 routes in both
@@ -93,16 +93,27 @@ are painted with Material's `#f44336` at **3.37:1** — illegible at the exact m
 `/sign-in` rendered white-on-white in the dark palette *while every control on them measured
 correctly* — the components looking right is what hid it. The fix is a set of surface tokens in
 `bofa-theme.scss`, so a route cannot forget to follow the palette because it no longer states a
-colour of its own. Seven of the 39 tests exist to keep the sweep honest, and four of those came from
-round 8, which fooled the sweep in both directions: it proves the sweep still measures a substantial
-page; that planted illegible text is reported and planted *hidden* text is not; that an **icon-only
-control** whose glyph is recoloured to its own surface is caught (a paginator arrow at 1.00:1 was
-invisible with the gate green, because the sweep kept only nodes with a direct text child and read
-`color`, never `fill`); that a semi-transparent **sibling** veil painted over text is composited
-(`rgba(255,255,255,0.92)` over the dark table had reported 13.20:1 where a human reads 1.1:1); that
-off-screen screen-reader-only text is *not* a defect; and that text over a gradient fails as
-unmeasurable until someone declares `data-contrast-reviewed="..."` — a sentence in the diff rather
-than a guess in the helper.
+colour of its own.
+
+**Fourteen of the 46 tests attack the sweep rather than the app**, and eleven of them are the record
+of two hostile rounds spent finding ways to fool it. Each one is a specific false verdict, now pinned:
+an **icon-only control** whose glyph is recoloured to its own surface (a paginator arrow rendered at
+1.00:1 with the gate green, because the sweep kept only nodes with a direct text child and read
+`color`, never `fill`); the same control labelled the *accessible* way, with an `sr-only` span, which
+made it look "decorated" and skipped it; a semi-transparent **sibling** veil (`rgba(255,255,255,0.92)`
+over the dark table reported 13.20:1 where a human reads 1.1:1); an opaque scrim written *earlier* in
+the DOM and raised with `z-index: 10`, which one line of CSS used to hide a whole region behind a
+reported 13.20:1; illegible text **below the fold**, where the same node passed at `top: 2212` and
+failed at `top: 400`, making coverage a function of page height; and the select **caret**, a zero-box
+border triangle that contains no SVG at all, so the claim that the glyph sweep covered it was false by
+construction.
+
+Three of the fourteen guard the other direction, which matters just as much: a gate that fails correct
+code gets switched off. Hidden text, off-screen skip links, a veil that paints nothing and the dimmed
+page behind an open modal must all stay unreported. And text over a gradient fails as unmeasurable
+until a human declares `data-contrast-reviewed="… 8.9:1 at the lightest stop"` **on the element
+painting the artwork** — a sentence in the diff a reviewer can argue with, rather than a guess in the
+helper or an `lgtm` on `<body>` that quietly exempts the page.
 
 This gate came out of the external control run
 ([`CONTROL-external-design-system.md`](docs/evidence/CONTROL-external-design-system.md)) and, on

@@ -153,7 +153,35 @@ experiment fault-injection-glyph "$OVR" '  .mat-paginator-range-label {' '  .mat
   .mat-paginator-range-label {'
 restore
 
-# 19. host renderer against container baselines -> why the image is digest-pinned
+# 19-22. the round-9 approximations, each restored to the version a single CSS
+# declaration defeated. Every one of these was a green gate over a defect (or a
+# red gate over correct code) that a reviewer found by hand.
+experiment regress-oracle-zorder-blind "$CONTRAST" \
+  '  const [above, below] = [stackLevel(scrim), stackLevel(element)];
+  if (above !== below) {
+    return above > below;
+  }' \
+  '  // Z-ORDER-BLIND, deliberately: document order only'
+experiment regress-oracle-fold-blind "$CONTRAST" \
+  '  const offScreen = rect.right <= 0 || rect.bottom <= 0;' \
+  '  const view = element.ownerDocument.defaultView; // FOLD-BLIND, deliberately
+  const offScreen =
+    rect.right <= 0 ||
+    rect.bottom <= 0 ||
+    (!!view && (rect.left >= view.innerWidth || rect.top >= view.innerHeight));'
+experiment regress-oracle-sronly-blind "$CONTRAST" \
+  '    const labelled = !!control && visibleText(control).length > 0;' \
+  '    const labelled = !!control && (control.textContent ?? "").trim().length > 0; // SR-ONLY-BLIND'
+experiment regress-oracle-review-blanket "$CONTRAST" \
+  "  const declared = artwork?.getAttribute('data-contrast-reviewed')?.trim();
+  return declared && /\\d+(\\.\\d+)?\\s*:\\s*1/.test(declared) ? declared : null;" \
+  "  const declared = artwork
+    ?.closest<HTMLElement>('[data-contrast-reviewed]')
+    ?.getAttribute('data-contrast-reviewed')
+    ?.trim(); // REVIEW-BLANKET, deliberately
+  return declared || null;"
+
+# 23. host renderer against container baselines -> why the image is digest-pinned
 echo "=== host-renderer (not the pinned image) :: $(date -u +%FT%TZ) ===" > "$OUT/host-renderer-drift.log"
 npx nx e2e retail-banking-e2e --skip-nx-cache 2>&1 | sed 's/\x1b\[[0-9;]*m//g' >> "$OUT/host-renderer-drift.log"
 

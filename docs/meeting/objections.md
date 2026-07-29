@@ -57,7 +57,7 @@ measured correctly**; the components looking right is what hid it. Two fixes, an
 one worth defending: the page surface, muted text, links and borders are now **tokens** declared once
 per palette, so an application route cannot state a colour the other palette has never heard of; and
 the gate is now a **sweep** — every visible text node and every painted glyph on 16 routes in both
-palettes, 39 tests — rather
+palettes, 46 tests — rather
 than a list of the places someone already thought about. On its first run the sweep found an AA
 failure in the **shipping light theme** two nodes from an existing probe: the invalid field's label
 and the required asterisk inside it, Material's `#f44336` at **3.37:1**, illegible at the moment
@@ -71,10 +71,17 @@ this story to tell: an icon-only control — the paginator's arrows — was reco
 sits on and rendered at 1.00:1 with the sweep green, because the sweep kept only nodes with a text
 child and read `color`, never an SVG `fill`; and a semi-transparent veil painted over the dark table
 was reported at 13.20:1 where a human reads 1.1:1, because only the CDK backdrop was treated as a
-covering sibling. Both were the same mistake — a special case where a general rule belonged. Fixed
-generally, with the transcripts of each generalisation removed committed as
-`oracle-logs/regress-oracle-glyph-blind.log`, `regress-oracle-scrim-blind.log` and
-`fault-injection-glyph.log`.
+covering sibling. Both were the same mistake — a special case where a general rule belonged.
+
+Then the *generalisations* were attacked, and four more fell, all to a single CSS declaration each:
+paint order was document order, so `z-index: 10` on a scrim written before the text hid a whole region
+at a reported 13.20:1; text below the fold was skipped, so the same illegible node passed at
+`top: 2212` and failed at `top: 400`; the icon exemption read `textContent`, so labelling an icon
+button the *accessible* way with an `sr-only` span hid its glyph from the gate; and the select caret
+turned out to be a border triangle with no SVG in it at all, so "the caret is covered" had been false
+by construction. Each is now a self-test, with the transcript of the fix removed committed as
+`oracle-logs/regress-oracle-{glyph,scrim,zorder,fold,sronly,review}-*.log`, plus
+`fault-injection-glyph.log` for the product-side version.
 
 The general answer, which is the one that should land: **every gate in this repository has a
 published failure.** The pixel budget has a documented blind spot under 40 px, two probes are

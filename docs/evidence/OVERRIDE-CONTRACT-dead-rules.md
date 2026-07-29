@@ -273,10 +273,21 @@ catching #1 with the fix removed, while every snapshot and probe stays green) an
 validation, and open overlays are still enumerated deliberately by the override contract, and a state
 nobody enumerated is unmeasured. It runs at one viewport. Since round 8 it does judge one kind of
 non-text contrast — every painted SVG glyph, at 1.4.11's 3:1, because a reviewer made the paginator's
-enabled arrows invisible at 1.00:1 with the sweep green — but borders and other painted indicators
-remain named assertions. It measures what the browser computes, so a defect that only appears under a
-real webfont, a customer's zoom level, or forced-colours mode is out of scope. Paint order for
-covering layers is approximated by document order, not by resolving stacking contexts. And text over
-a gradient is reported as unmeasurable rather than scored, which means artwork behind text has to be
-declared (`data-contrast-reviewed`) by a human rather than checked by the gate. Total suite:
-**139 tests**.
+enabled arrows invisible at 1.00:1 with the sweep green — and CSS-painted indicators, because the
+next reviewer pointed out that `mat-select`'s caret is a zero-box border triangle containing no SVG
+at all, so "the caret is covered" had been false by construction. Icons that sit beside *visible*
+label text are still exempt as decoration (the `/accounts` "+" is one), which is WCAG's position and
+not an oversight — but the exemption now reads visible text, because an `sr-only` label used to make
+an icon-only control invisible to the gate.
+
+What remains out of scope is worth stating plainly. It measures what the browser computes, so a
+defect that only appears under a real webfont, a customer's zoom level, or forced-colours mode is not
+covered. Paint order is approximated by `z-index` and then document order, not by resolving stacking
+contexts — better than document order alone, which one `z-index: 10` defeated, but still an
+approximation. A covering layer must *fully contain* the text to count, so a sticky header that hides
+70% of a line is not composited (the alternative, rect intersection, produced 38 false positives on
+tab ink bars). Content behind an open modal is skipped as inert, so a sweep in that state describes
+the dialog and not the page. And text over a gradient is reported as unmeasurable rather than scored,
+which means artwork behind text has to be declared on the artwork element, citing a ratio, by a human
+rather than checked by the gate. Total suite:
+**146 tests**.

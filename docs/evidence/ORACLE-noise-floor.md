@@ -9,23 +9,27 @@ plugin now prints on **every** comparison, pass or fail. Reproduce with
 `npm run visual` (pinned container) or `npx nx e2e retail-banking-e2e
 --skip-nx-cache` (host renderer).
 
-Captures are 1280x720. The full command runs **139 tests**: the 23-test image
+Captures are 1280x720. The full command runs **146 tests**: the 23-test image
 suite (21 compared snapshots plus two interaction tests), 77 computed-style
 tests — 27 light-surface probes, 11 re-asserted on the dark surface, one control
 that fails if the dark surface silently stopped rendering, 32 WCAG contrast
 ratios (16 targets in both themes), and 6 tests of the contrast oracle itself —
-and 39 legibility-sweep tests, which measure **every visible text node and every
-painted SVG glyph on 16 routes in both palettes** rather than a hand-picked list,
-plus 7 tests that attack the sweep itself (it must measure a substantial page,
-report planted illegible text and an invisible icon-only control, composite a
-semi-transparent covering sibling, and *not* report hidden text, off-screen
-screen-reader-only text, or artwork declared `data-contrast-reviewed`).
+and 46 legibility-sweep tests, which measure **every visible text node, every
+painted SVG glyph and every CSS-painted indicator on 16 routes in both palettes**
+rather than a hand-picked list, plus 14 tests that attack the sweep itself. Those
+14 are the record of two hostile rounds spent attacking the sweep rather than the
+app: it must measure a substantial page; report planted illegible text, an
+invisible icon-only control, an icon-only control labelled the accessible way
+with an `sr-only` span, a covering layer raised with `z-index` but written first
+in the DOM, illegible text **below the fold**, and a CSS-painted caret no SVG
+sweep can see; and it must *not* report hidden text, off-screen screen-reader-only
+text, a veil that paints nothing, the dimmed page behind an open modal, or
+artwork whose `data-contrast-reviewed` declaration sits on the artwork itself and
+cites a ratio.
 
-The transcripts under `oracle-logs/` were captured against the 135-test suite
-that preceded round 8; the four extra sweep tests came out of that round's
-findings. The pixel figures and the delete-the-rule outcomes on this page are
-unaffected — no snapshot, probe or route sweep changed — and the re-capture at
-the current head is `oracle-logs/README.md`'s first table row.
+The transcripts under `oracle-logs/` are re-captured whenever the suite changes;
+the first table row of `oracle-logs/README.md` records the suite size the current
+set was captured at.
 
 **The raw transcripts for every number on this page are committed** under
 `docs/evidence/oracle-logs/` — the three repeat runs, the host-renderer run, the

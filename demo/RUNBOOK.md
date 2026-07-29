@@ -32,13 +32,13 @@ recorded reason is the actual migration risk, not the version number.**
 ## 3:00–4:30 — The oracle, and one deliberate failure
 
 ```bash
-npm run visual        # 139 tests: 23 image tests over 21 compared snapshots,
+npm run visual        # 146 tests: 23 image tests over 21 compared snapshots,
                       # + 27 light probes, 11 dark probes, 1 anti-vacuity control,
                       # + 32 WCAG ratios (16 targets x 2 themes),
                       # + 6 tests of the contrast oracle itself,
-                      # + 39 legibility-sweep tests (16 routes x 2 palettes,
+                      # + 46 legibility-sweep tests (16 routes x 2 palettes,
                       #   every visible text node and every painted SVG glyph,
-                      #   + 7 tests that attack the sweep itself)
+                      #   + 14 tests that attack the sweep itself)
 ```
 
 While it runs, say what is in it: the components, **the four real overlays** — dialog, select
@@ -90,20 +90,23 @@ And then the part to land if they only remember one thing about the gate, becaus
 fix rather than another finding: **the targeted list was the wrong shape.** Three rounds running it
 was green and a reviewer found unreadable text somewhere it did not point; each fix added a
 fifteenth selector. So there is now a **legibility sweep** — every visible text node on 16 routes in
-both palettes, 39 tests. On its first run it found an AA failure in the **shipping light theme** two
+both palettes, 46 tests. On its first run it found an AA failure in the **shipping light theme** two
 nodes away from an existing probe (the invalid field's label and its required asterisk, Material's
 `#f44336` at **3.37:1**, illegible exactly when validation fires) and the round-7 defect that all 21
 snapshots and all 38 component probes missed: the app root painted `#fff` over the themed page, so
 the three customer-facing routes were white-on-white in the dark palette *while every control on them
 measured correctly*. Fixed by making the page surface a token instead of a hex, so a route cannot
-state a colour the other palette has never heard of. Seven of the 39 tests keep the sweep honest —
+state a colour the other palette has never heard of. Fourteen of the 46 tests keep the sweep honest —
 it must measure a substantial page, report planted illegible text, *not* report planted hidden text
 or off-screen skip links, catch an **icon-only control** whose glyph is recoloured to its own surface,
 composite a semi-transparent sibling veil, and refuse to score text over a gradient until someone
-declares `data-contrast-reviewed="..."`. Four of those seven are round-8 findings: a hostile reviewer
-fooled the sweep in **both** directions — a paginator arrow at 1.00:1 with the gate green, and a veil
-overstated 12x — which is the honest version of this story and the reason to trust the seventh test
-rather than the claim. `docs/evidence/oracle-logs/regress-root-surface.log` is the sweep catching the
+declares `data-contrast-reviewed="…"` **on the artwork element, citing a ratio**. Eleven of those
+fourteen are findings from two hostile rounds spent attacking the gate rather than the app, and they
+fooled it in **both** directions — a paginator arrow at 1.00:1 with the gate green, an `sr-only` label
+that made an icon-only control look decorated, an opaque scrim hidden behind one `z-index: 10`,
+illegible text that passed only because it was below the fold, a veil overstated 12x, and a
+`visibility: hidden` veil that failed correct code at 1.09:1. That is the honest version of this
+story, and the reason to trust the fourteen tests rather than the claim. `docs/evidence/oracle-logs/regress-root-surface.log` is the sweep catching the
 root-surface defect with the fix removed.
 
 Then change `.bofa-table .mat-header-cell` colour to brand red and re-run:
