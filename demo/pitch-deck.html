@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Devin × Bank of America — Angular 14 → 18</title>
+<style>
+  @page { size: 1280px 720px; margin: 0; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; background: #fff; }
+  body { font-family: "Liberation Sans", Arial, Helvetica, sans-serif; color: #12161d; -webkit-font-smoothing: antialiased; }
+  .slide {
+    position: relative; width: 1280px; height: 720px; padding: 72px 88px 88px;
+    page-break-after: always; break-after: page; overflow: hidden; background: #fff;
+  }
+  .slide::after {
+    content: attr(data-n); position: absolute; right: 40px; bottom: 28px;
+    font-size: 15px; color: #9aa3ae; letter-spacing: .04em;
+  }
+  .rule { position: absolute; left: 0; top: 0; height: 8px; width: 100%;
+    background: linear-gradient(90deg, #012169 0 55%, #c8102e 55% 100%); }
+  .eyebrow { font-size: 17px; letter-spacing: .16em; text-transform: uppercase; color: #c8102e; font-weight: 700; margin: 0 0 22px; }
+  h1 { font-size: 66px; line-height: 1.06; margin: 0 0 28px; letter-spacing: -.02em; }
+  h2 { font-size: 46px; line-height: 1.1; margin: 0 0 30px; letter-spacing: -.015em; }
+  p, li { font-size: 26px; line-height: 1.42; }
+  .lede { font-size: 30px; line-height: 1.38; max-width: 1000px; }
+  ul { margin: 0 0 0 6px; padding-left: 28px; }
+  li { margin-bottom: 16px; }
+  li::marker { color: #c8102e; }
+  .kicker { position: absolute; left: 88px; bottom: 84px; font-size: 30px; line-height: 1.32;
+    max-width: 1060px; font-weight: 700; border-left: 6px solid #c8102e; padding-left: 22px; }
+  .cover { display: flex; flex-direction: column; justify-content: center; height: 100%; }
+  .cover .sub { font-size: 27px; color: #4a5462; margin-top: 8px; }
+  .facts { width: 100%; border-collapse: collapse; margin-top: 6px; }
+  .facts td { padding: 17px 18px 17px 0; border-bottom: 1px solid #e2e6eb; vertical-align: baseline; }
+  .facts td.n { width: 250px; font-size: 44px; font-weight: 700; color: #012169; letter-spacing: -.02em; white-space: nowrap; }
+  .facts td.t { font-size: 25px; color: #2b323c; }
+  .facts tr:last-child td { border-bottom: 0; }
+  .facts tr.hi td.n { color: #c8102e; }
+  .facts tr.hi td.t { font-weight: 700; }
+  blockquote { margin: 0 0 34px; padding: 0 0 0 26px; border-left: 6px solid #012169;
+    font-size: 34px; line-height: 1.34; }
+  blockquote cite { display: block; margin-top: 16px; font-size: 21px; font-style: normal; color: #4a5462; }
+  .cols { display: flex; gap: 44px; }
+  .cols > div { flex: 1; }
+  .cols h3 { font-size: 27px; margin: 0 0 10px; color: #012169; }
+  .cols p { font-size: 23px; line-height: 1.38; color: #2b323c; }
+  pre { background: #f4f6f8; border-left: 6px solid #012169; padding: 22px 24px; font-size: 21px;
+    line-height: 1.5; font-family: "Liberation Mono", "DejaVu Sans Mono", monospace; margin: 0 0 26px; overflow: hidden; }
+  .cmt { color: #6b7480; }
+  .two { display: flex; gap: 56px; margin-top: 8px; }
+  .two > div { flex: 1; border-top: 5px solid #012169; padding-top: 20px; }
+  .two > div.b { border-top-color: #c8102e; }
+  .two h3 { font-size: 30px; margin: 0 0 12px; }
+  .two p { font-size: 23px; line-height: 1.4; color: #2b323c; margin: 0 0 12px; }
+  .out { font-family: "Liberation Mono", monospace; font-size: 20px; background: #f4f6f8; padding: 12px 14px; }
+  .src { position: absolute; left: 88px; bottom: 30px; font-size: 16px; color: #8b939e; max-width: 1000px; }
+  .big { font-size: 40px; font-weight: 700; line-height: 1.24; }
+  .steps li { font-size: 27px; }
+  strong { color: #012169; }
+  .r strong { color: #c8102e; }
+</style>
+</head>
+<body>
+
+<section class="slide" data-n="1"><div class="rule"></div>
+  <div class="cover">
+    <p class="eyebrow">Bank of America · Engineering leadership</p>
+    <h1>The Angular 14 → 18 upgrade,<br>run as a pipeline<br>instead of a project</h1>
+    <p class="sub">Cognition · Devin</p>
+  </div>
+</section>
+
+<section class="slide" data-n="2"><div class="rule"></div>
+  <p class="eyebrow">What we already know about your engineering</p>
+  <table class="facts">
+    <tr><td class="n">~$14B</td><td class="t">annual technology budget — about $4B of it on new initiatives</td></tr>
+    <tr><td class="n">60,000</td><td class="t">people in the technology organisation</td></tr>
+    <tr><td class="n">~59M</td><td class="t">verified digital users · ~30B digital interactions last year, up 14%</td></tr>
+    <tr><td class="n">86%</td><td class="t">of clients rate their digital experience 9 out of 10 or better</td></tr>
+    <tr class="hi"><td class="n">18,500</td><td class="t">developers on GitHub Copilot — up from 500 in under a year</td></tr>
+  </table>
+  <div class="kicker">You are not early on AI in the SDLC. You have already done the hard part: enterprise-wide developer adoption.</div>
+  <p class="src">American Banker, Jun 2026 (budget, headcount, Copilot 500 → 18,500) · Banking Dive, Jun 2026 · BofA newsroom, Mar 2026.</p>
+</section>
+
+<section class="slide" data-n="3"><div class="rule"></div>
+  <p class="eyebrow">So what is actually missing</p>
+  <blockquote>“We have 17,000 programmers using AI coding technology today <strong>saving 10% to 15% in code generation costs</strong>.”
+    <cite>Brian Moynihan, Q2 2025 earnings call</cite></blockquote>
+  <p class="lede">Code generation is the cheap part of an Angular major upgrade. The expensive parts are deciding whether a diff is safe, knowing why an override existed, and telling twenty consuming teams their build is about to break.</p>
+  <div class="kicker">An assistant makes a developer faster inside a file. This work is measured in completed, reviewable pull requests across repositories.</div>
+</section>
+
+<section class="slide" data-n="4"><div class="rule"></div>
+  <p class="eyebrow">Why this use case, of your three</p>
+  <div class="cols">
+    <div>
+      <h3>Angular upgrade</h3>
+      <p>Risk is <strong>fan-out</strong>. One shared library, a custom design system over Material, consumed by teams who did not ask for this upgrade. Failure arrives as somebody else’s broken build in deadline week.</p>
+    </div>
+    <div>
+      <h3>Cloud migration</h3>
+      <p>Risk is runtime — and you already own the harder half: a private cloud you burst out of by design, not a lift-and-shift.</p>
+    </div>
+    <div>
+      <h3>Test coverage</h3>
+      <p>Risk is measurable, and the examination hands you the number to hit.</p>
+    </div>
+  </div>
+  <div class="kicker">Fan-out is the risk no dashboard shows you — and the only one where an agent working across repositories changes the shape of the problem.</div>
+</section>
+
+<section class="slide r" data-n="5"><div class="rule"></div>
+  <p class="eyebrow">The uncomfortable part of your own brief</p>
+  <h2>Angular 14 left LTS in June 2024.<br>Angular 18 reached end of life in November 2025.</h2>
+  <p class="lede">The stated target no longer satisfies the policy that created the deadline. Supported today: 20 (to Nov 2026), 21, 22.</p>
+  <div class="kicker">If one hop is a project, you will land on an unsupported version again. The deliverable isn’t 18 — it’s a hop you can run four times a year.</div>
+  <p class="src">Angular support policy: 6 months active + 12 months LTS per major (angular.dev / endoflife.date).</p>
+</section>
+
+<section class="slide" data-n="6"><div class="rule"></div>
+  <p class="eyebrow">The demo — a real Angular 14.2 Nx monorepo</p>
+  <p class="lede">13 Material components wrapped as <code>bofa-*</code>, 18 documented overrides, three consuming applications, SSO/MFA and analytics stubbed at their boundaries. Live at <strong>t1mchee.github.io/devin-pitch</strong></p>
+  <ul class="steps">
+    <li>The customer surface, so the pixels mean something.</li>
+    <li>Two gates: one tells you <strong>something moved</strong>, one tells you <strong>which promise broke</strong>.</li>
+    <li>Two independent Devin runs of the same hop — and what both of them got wrong.</li>
+  </ul>
+</section>
+
+<section class="slide" data-n="7"><div class="rule"></div>
+  <p class="eyebrow">The risk isn’t the version number</p>
+  <h2>An override with no recorded reason <em>is</em> the migration risk</h2>
+  <pre><span class="cmt">/* OV-05c: header cells carry the slate-900 brand weight,
+   not Material's grey — brand review, Mar 2023 */</span>
+.bofa-table .mat-header-cell { color: $boa-slate-900; }</pre>
+  <p class="lede">Material renames the internal class between majors. The selector dies silently. The intent — a brand decision someone signed off — is now unenforced, and nothing in the repo knows.</p>
+  <div class="kicker">Migrating a design system is migrating intent, not selectors.</div>
+</section>
+
+<section class="slide" data-n="8"><div class="rule"></div>
+  <p class="eyebrow">Two gates</p>
+  <div class="two">
+    <div>
+      <h3>Pixels</h3>
+      <p>21 snapshots, budget 40 absolute pixels.</p>
+      <p class="out">753 pixels differ on table-default</p>
+    </div>
+    <div class="b">
+      <h3>Intent</h3>
+      <p>77 computed-style probes — one per override reason — plus a legibility sweep scoring contrast on every visible text node, 16 routes, both palettes.</p>
+      <p class="out">OV-05c: header cells carry the slate-900<br>brand weight, not the Material grey</p>
+    </div>
+  </div>
+  <div class="kicker">One is a diff. The other is a sentence a reviewer can act on.</div>
+</section>
+
+<section class="slide r" data-n="9"><div class="rule"></div>
+  <p class="eyebrow">Where it failed — the slide that should buy your trust</p>
+  <ul>
+    <li>The pixel budget was 0.1% of pixels. It waved a <strong>wrong brand red through to a customer dashboard</strong>. Now 40 absolute pixels.</li>
+    <li>The first dark-theme check asserted the light-theme colour: two of five transaction rows rendered at <strong>1.07:1</strong> — unreadable balances — and the suite was green.</li>
+    <li>The intent gate’s first run found <strong>three dead overrides in our own library</strong>; one was passing only because Material’s default happened to equal the brand colour.</li>
+    <li>A migration run explained its own red screenshots as a missing-font problem. It wasn’t. <strong>The gate held; the narrative failed.</strong></li>
+  </ul>
+  <div class="kicker">Found by adversarial review, not by design — and all of it written down in the repository.</div>
+</section>
+
+<section class="slide" data-n="10"><div class="rule"></div>
+  <p class="eyebrow">What the agent did, and did not, do</p>
+  <ul>
+    <li>Two independent runs of the same playbook both left CI <strong>red</strong> on the snapshots Material’s MDC rewrite changed — and <strong>neither regenerated a baseline</strong> to get green.</li>
+    <li>Both stopped on the same ambiguous override with the same reasoning. That reasoning was <strong>wrong</strong>; human review caught it, not a test.</li>
+    <li>Against a <strong>third-party</strong> design system with zero intent comments: 3 genuine stops, 1 false stop, and three confident wrong guesses no gate caught.</li>
+  </ul>
+  <div class="kicker">It does not guess when it knows it doesn’t know. It does not yet know when a confident rewrite has quietly stopped applying — so the intent gate is pilot scope, not a nice-to-have.</div>
+</section>
+
+<section class="slide" data-n="11"><div class="rule"></div>
+  <p class="eyebrow">Controls, in your language</p>
+  <ul>
+    <li>The output is a <strong>pull request</strong>. It inherits every control you already have — CODEOWNERS, branch protection, your scanners.</li>
+    <li><strong>No baseline change without a written reason.</strong> CI rejects the PR body without <code>BASELINE-CHANGE:</code>, and the guard cannot be edited by the PR it guards.</li>
+    <li><code>npm ci --ignore-scripts</code> as policy: no transitive lifecycle script runs before a human reads the diff.</li>
+    <li>Renderer pinned by digest, so “it passed on my machine” is not evidence.</li>
+    <li>Every session is a replayable transcript: prompt, commands, diffs, approvals.</li>
+  </ul>
+</section>
+
+<section class="slide" data-n="12"><div class="rule"></div>
+  <p class="eyebrow">Why an examiner prefers this to a person doing it</p>
+  <p class="big">“Who changed the customer-facing control, on what evidence, reviewed by whom?”</p>
+  <p class="lede">Done by hand, that question is answered by a commit message. Here it is answered by a transcript, a named override intent, a measured contrast ratio and a review record — for every hop, every time.</p>
+  <div class="kicker">The audit artefact is a by-product of the work, not a document written afterwards.</div>
+</section>
+
+<section class="slide" data-n="13"><div class="rule"></div>
+  <p class="eyebrow">The pilot</p>
+  <h2>Two weeks · one repository · one named design-system owner</h2>
+  <ul>
+    <li><strong>Week 1</strong> — land the intent gate on the real library, run 14→15 on a branch, open three consumer PRs.</li>
+    <li><strong>Week 2</strong> — run the next hop, measure reviewer minutes per PR, publish the refusal rate.</li>
+    <li><strong>Success</strong> — <em>n</em> consumer PRs merged with no baseline regenerated without a written reason.</li>
+    <li><strong>Failure we would accept</strong> — it stops more often than it ships, and the transcripts tell you exactly why.</li>
+  </ul>
+</section>
+
+<section class="slide" data-n="14"><div class="rule"></div>
+  <p class="eyebrow">The ask</p>
+  <ul class="steps">
+    <li>Name the repository and the design-system owner.</li>
+    <li>One 90-minute working session with the consuming teams’ leads.</li>
+    <li>Read-only passes on the other two initiatives in parallel, at no risk.</li>
+  </ul>
+  <div class="kicker">You have already proven your developers will adopt this. The open question is whether the work arrives finished and reviewable. Two weeks and one repository answers it.</div>
+</section>
+
+</body>
+</html>

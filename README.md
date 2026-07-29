@@ -24,6 +24,7 @@ transcript of commands that were actually executed.
 | `docs/evidence/ORACLE-noise-floor.md` | The measurement behind the 40-pixel diff budget: 0 px across repeat runs on the pinned renderer, 455–5,963 px across renderers, 753 px of injected signal — and the day the host stopped drifting because an apt install changed its fonts, which is the case for pinning rather than against it. |
 | `playbooks/REVISIONS.md` | What each round of runs changed in the playbook, and on what evidence. |
 | `demo/RUNBOOK.md` | The timed 12-minute live demo, with the failure playbook. |
+| `demo/PITCH-DECK.md` + `demo/PITCH-DECK.pdf` | The 14-slide executive deck (`pitch-deck.html` is the source it renders from). |
 | `demo/SPEAKING-NOTES.md` | The whole 45-minute meeting: what to say, what to click, what to volunteer. |
 
 ## Why the Angular upgrade and not the other two
