@@ -28,7 +28,12 @@ export class AppComponent {
     // dead in one theme and load-bearing in the other.
     if (typeof window !== 'undefined') {
       const theme = new URLSearchParams(window.location.search).get('theme');
-      document.body.classList.toggle('bofa-theme-dark', theme === 'dark');
+      const dark = theme === 'dark';
+      document.body.classList.toggle('bofa-theme-dark', dark);
+      // <html> too: it paints the canvas outside the <body> box, and /sign-in's
+      // `margin: 96px auto` exposed a white band above the card in the dark
+      // palette because only <body> was themed.
+      document.documentElement.classList.toggle('bofa-theme-dark', dark);
     }
   }
 }

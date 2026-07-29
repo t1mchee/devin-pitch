@@ -436,22 +436,55 @@ paints a `background-color`. Verified behaviours, useful as regression expectati
 | Point the target selector at nothing | fails on Cypress's implicit existence assertion (`Expected to find element … but never found it`) — cannot be silenced |
 | Regress the value **and** move the probe's `expectDark` to match | the colour probe goes **green** while the contrast assertion still **fails** — this is the whole point of the design, and the best demo of it |
 
-**Two real weaknesses in the helper, neither currently reachable to a green suite:**
+### Historical helper weaknesses — now FIXED, keep as regression expectations
 
-1. `rgba(0,0,0,0)` parses to opaque **black** (the regex takes the first three numbers and drops
-   alpha). If the ancestor walk finds nothing painted it exits still holding `rgba(0, 0, 0, 0)`, so
-   white text scores **21:1 and passes** while rendering invisible. Reaching that state requires
-   every ancestor transparent, which also trips the anti-vacuity control — so the control is the
-   backstop, not the ratio. Fix: treat alpha 0 as "keep walking", and fail loudly if the walk
-   terminates unresolved.
-2. **Alpha is ignored on the foreground.** `rgba(255,255,255,0.5)` is scored as pure white: the
-   helper reports 10.05:1 on `rgb(66,66,66)` where the true blended ratio is **3.84:1**. Material's
-   dark disabled/secondary foregrounds are exactly this shape, so extending the assertions to
-   secondary text without compositing alpha would create false passes.
+These three were live defects in earlier rounds and are now hardened in
+`apps/retail-banking-e2e/src/support/contrast.ts`. Re-injecting each one still fails the self-test
+that names it, so they are useful fault-injection targets (see
+`oracle-logs/regress-oracle-{alpha,opacity,gradient}-blind.log`):
 
-When auditing contrast yourself, composite alpha over the resolved background *and* remember that
-element `opacity` (e.g. disabled chips at `0.4`) is invisible to both this helper and a naive audit.
-Disabled controls are exempt from WCAG 1.4.3, so don't file them as defects.
+1. `rgba(0,0,0,0)` parsing to opaque **black** ⇒ 21:1 on invisible text. Now parses alpha and
+   terminates a transparent chain on the white canvas.
+2. Foreground alpha ignored (`rgba(255,255,255,0.5)` scored 10.05:1 vs a true 3.87:1). Now
+   composited.
+3. Ancestor `opacity` ignored (13.20:1 reported where the truth was 3.28:1). Now folded into **both**
+   foreground and background.
+
+### The page-wide sweep (`legibility-sweep.cy.ts`) — four gaps that survive
+
+`sweep()` iterates `body *`, keeps elements with a **non-empty direct text child**
+(`nodeType === 3`), skips `!visible()`/`exempt()`, and compares `contrastRatio()` to
+`requiredRatio()`. That design implies four holes. All four were reproduced live; expect them to
+still be there unless the diff says otherwise, and re-test them each round:
+
+| Gap | Why the model cannot see it | Symptom |
+|---|---|---|
+| **SVG-only content** | requires a direct *text* node, and only calls `contrastRatio()`. `glyphRatio()` exists but is invoked from **one** place (`override-contract.cy.ts`, datepicker toggle). | **false PASS**: recolour the paginator's enabled arrows to the paginator surface ⇒ `glyphRatio` 1.00:1 (invisible) while `sweep()` reports **0 findings** |
+| **Semi-transparent *sibling* overlay** | `backgroundLayers()` walks `parentElement` and special-cases only `.cdk-overlay-backdrop`. | **false PASS**: an `rgba(255,255,255,0.92)` positioned sibling over the dark table ⇒ helper says **13.20:1**, human sees ~1.1:1 (12× overstatement) |
+| **Legible gradient / image** | `paintsArtwork()` returns UNMEASURABLE ⇒ `ratio: 0` ⇒ reported. Product paints no artwork today, so it is never exercised in-product. | **false FAIL**: white text on `linear-gradient(#7a0019,#c8102e)` is reported as a defect |
+| **Off-screen / clipped text** | `visible()` checks `display`/`visibility`/folded `opacity`/non-zero rect — **not** `left:-9999px`, `clip-path`, or a zero-height `overflow:hidden` ancestor. | **false FAIL**: a standard sr-only skip-link is measured as if on screen |
+
+Also: `aria-hidden="true"` content **is** swept and reported. That may be intended policy; treat it
+as a question to raise rather than an outright bug.
+
+**Beware the anti-vacuity plant.** It sets **both** `color` and `background` inline, so it never
+exercises the ancestor walk — it would still pass if `backgroundLayers()` were wholly broken. The
+test that actually covers that path is reverting `--bofa-surface` to `#fff` (see the root-surface
+section below).
+
+### Method: attack the shipped helper, not a paraphrase of it
+
+Don't re-implement the ratio maths — a bug in your copy becomes a false finding. Mirror the shipped
+`contrast.ts` into a `localStorage`-persisted `__src` string, `eval` it, and expose
+`window.__C.sweep`/`__run`. Then a verdict is the gate's own. Two gotchas:
+
+- `localStorage` is **per-origin**, so the helper must be re-injected for each of :4200/:4201/:4202.
+- Always print the finding *count* alongside a `glyphRatio`/`contrastRatio` of the element you broke;
+  "sweep=0 while this control is 1.00:1" is the whole evidence for a false pass.
+
+Disabled controls are exempt from WCAG 1.4.3, so don't file them as defects — but verify the
+exemption is not over-broad by checking a merely-grey **enabled** control *is* reported. Use
+`/(^|\s)mat-[a-z-]*disabled(\s|$)/`; a naive pattern misses `mat-chip-disabled`.
 
 ## The dark route: "legible" depends on who paints the surface, and `bofa-root` can defeat `body`
 
@@ -459,11 +492,24 @@ This has been the single most productive place to find bugs for three rounds run
 class is always the same: **a light constant surviving onto a dark surface, somewhere the suite does
 not look.** Expect it to recur.
 
+**Status:** as of round 8 this is **fixed** — `app.component.ts` now uses
+`background: var(--bofa-surface)`, with the token declared once per palette in `bofa-theme.scss`
+(`--bofa-surface`, `-raised`, `-sunken`, `--bofa-text-muted`, `--bofa-link`, `--bofa-border`,
+`--bofa-text-success`). `bofa-root` computes to `rgb(48,48,48)` on every dark route. Keep the check
+below anyway: this defect class recurred three rounds running, and a hardcoded hex re-entering any
+stylesheet reintroduces it. **Prefer tokens over per-component `:host-context` rules** — the
+token refactor is what finally fixed it globally instead of route by route.
+
+One remnant survives: the **`html` element itself stays `rgb(255,255,255)`** in dark. On most routes
+`bofa-root`'s `min-height: 100vh` hides that, but any route with a top margin on its own card exposes
+a white band (`/sign-in` has `margin: 96px auto` ⇒ `body.top = 96`). Check
+`getComputedStyle(document.documentElement).backgroundColor` explicitly.
+
 **Check the whole ancestor chain, not just `body`.** Even after `.bofa-theme-dark` correctly sets a
-dark `background`/`color` on `<body>`, an opaque wrapper *below* body can cover it. `bofa-root`
-declares `:host { min-height: 100vh; background: #fff }` in `app.component.ts`; if it has no
-`:host-context(.bofa-theme-dark)` counterpart, every route renders white-on-white while `body` is
-correctly dark. Diagnose in one line rather than trusting the screenshot:
+dark `background`/`color` on `<body>`, an opaque wrapper *below* body can cover it. If `bofa-root`
+ever regains a literal `background: #fff` with no dark counterpart, every route renders
+white-on-white while `body` is correctly dark. Diagnose in one line rather than trusting the
+screenshot:
 
 ```js
 // what actually paints under the text?
@@ -505,6 +551,47 @@ often a light-theme accent, so fields go illegible the moment they are clicked),
 placeholder text, error/required labels, open overlay panels, the showcase index, `/sign-in`, and
 `/accounts?theme=dark`. A fix applied to `.mat-error` did **not** reach the required label, so verify
 each element of a "fixed" pair independently.
+
+## Trap: `npx nx e2e` hangs silently if a dev server holds port 4200
+
+`npx nx e2e retail-banking-e2e --skip-nx-cache` starts its **own** dev server. If you already have
+`nx serve retail-banking` running for a browser walkthrough, the e2e run blocks **forever** on an
+interactive prompt that never appears in a piped log beyond:
+
+```
+? Port 4200 is already in use.
+```
+
+It looks like a slow test run. Free the port first (`pkill -f "nx serve retail-banking"`, then confirm
+with `ss -ltn | grep :4200`), or run the browser walkthrough and the e2e gate in separate phases.
+
+Expected host-run result (this is **not** a product regression, see `ORACLE-noise-floor.md`):
+21 of 23 pixel snapshots fail on host-renderer drift (`accounts-dashboard` ~5,963 px,
+`table-default` ~4,656 px), while the **35 sweep and 77 override-contract tests pass** — those two
+layers are renderer-independent, which is the useful signal from a host run. Only `npm run visual`
+(digest-pinned image) is authoritative for pixels.
+
+## Finding the X display for `xdotool`/`wmctrl`
+
+Don't assume `DISPLAY=:1`. Check `ls /tmp/.X11-unix/` — an `X0` entry means `DISPLAY=:0`. A wrong
+value fails with `Failed creating new xdo instance. / Cannot open display.` Get the window id with
+`xdotool getactivewindow` (searching `--class chrome` can return nothing).
+
+## Verifying a declared `BASELINE-CHANGE` pixel count authoritatively
+
+Don't hand-roll a pixel diff — your threshold metric will disagree with the plugin's (mine reported
+606 px where the plugin reported 280 px on the same pair). Instead, restore the **old** blob as the
+baseline and let the suite print its own number:
+
+```bash
+git show <old-sha>:<path-to>/visual-baselines/form-field-default.png > /tmp/ff-old.png
+cp /tmp/ff-old.png apps/retail-banking-e2e/visual-baselines/form-field-default.png
+npm run visual                      # prints e.g. [visual] form-field-default: 280 px
+git checkout -- apps/retail-banking-e2e/visual-baselines/form-field-default.png
+```
+
+Use Pillow's `ImageChops.difference(...).getbbox()` only for **where** the change is (confirming it is
+confined to the claimed element), not for how many pixels.
 
 ## `--ignore-scripts` installs defer ngcc to build time
 

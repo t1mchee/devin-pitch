@@ -9,14 +9,23 @@ plugin now prints on **every** comparison, pass or fail. Reproduce with
 `npm run visual` (pinned container) or `npx nx e2e retail-banking-e2e
 --skip-nx-cache` (host renderer).
 
-Captures are 1280x720. The full command runs **135 tests**: the 23-test image
+Captures are 1280x720. The full command runs **139 tests**: the 23-test image
 suite (21 compared snapshots plus two interaction tests), 77 computed-style
 tests — 27 light-surface probes, 11 re-asserted on the dark surface, one control
 that fails if the dark surface silently stopped rendering, 32 WCAG contrast
 ratios (16 targets in both themes), and 6 tests of the contrast oracle itself —
-and 35 legibility-sweep tests, which measure **every visible text node on 16
-routes in both palettes** rather than a hand-picked list, plus 3 controls that
-keep the sweep from passing vacuously.
+and 39 legibility-sweep tests, which measure **every visible text node and every
+painted SVG glyph on 16 routes in both palettes** rather than a hand-picked list,
+plus 7 tests that attack the sweep itself (it must measure a substantial page,
+report planted illegible text and an invisible icon-only control, composite a
+semi-transparent covering sibling, and *not* report hidden text, off-screen
+screen-reader-only text, or artwork declared `data-contrast-reviewed`).
+
+The transcripts under `oracle-logs/` were captured against the 135-test suite
+that preceded round 8; the four extra sweep tests came out of that round's
+findings. The pixel figures and the delete-the-rule outcomes on this page are
+unaffected — no snapshot, probe or route sweep changed — and the re-capture at
+the current head is `oracle-logs/README.md`'s first table row.
 
 **The raw transcripts for every number on this page are committed** under
 `docs/evidence/oracle-logs/` — the three repeat runs, the host-renderer run, the

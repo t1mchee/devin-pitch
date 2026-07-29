@@ -119,15 +119,41 @@ experiment regress-oracle-alpha-blind "$CONTRAST" \
   '  return { r: parts[0], g: parts[1], b: parts[2], a: parts.length > 3 ? parts[3] : 1 };' \
   '  return { r: parts[0], g: parts[1], b: parts[2], a: 1 }; // ALPHA-BLIND, deliberately'
 experiment regress-oracle-opacity-blind "$CONTRAST" \
-  '  const foreground = composite({ ...declared, a: declared.a * opacity }, background);' \
-  '  const foreground = composite(declared, background); // OPACITY-BLIND, deliberately'
+  '  const foreground = applyOver(
+    composite({ ...declared, a: declared.a * opacity }, beneath),
+    over
+  );' \
+  '  const foreground = applyOver(composite(declared, beneath), over); // OPACITY-BLIND'
 experiment regress-oracle-gradient-blind "$CONTRAST" \
   '  const image = style.backgroundImage;
   return !!image && image !== '"'"'none'"'"';' \
   '  return false; // GRADIENT-BLIND, deliberately'
+
+# 16-17. the two round-8 false passes, put back one at a time. Both were the same
+# shape of mistake — a special case where a general rule belonged — and both let
+# an *invisible* render pass, so a transcript of the gate failing without them is
+# the only evidence that the generalisation is load-bearing.
+experiment regress-oracle-glyph-blind "$CONTRAST" \
+  "  doc.body.querySelectorAll<SVGElement>('svg').forEach((svg) => {" \
+  '  ([] as SVGElement[]).forEach((svg) => { // GLYPH-BLIND, deliberately'
+experiment regress-oracle-scrim-blind "$CONTRAST" \
+  '  return scrims
+    .filter(' \
+  '  return ([] as Scrim[]) // SCRIM-BLIND, deliberately
+    .filter('
+
+# 18. and the product fault the glyph sweep exists to catch: the paginator arrows
+# recoloured to the surface they sit on. No text node changes, no snapshot budget
+# is threatened, and the control you page a statement with becomes invisible.
+experiment fault-injection-glyph "$OVR" '  .mat-paginator-range-label {' '  .mat-paginator-navigation-next svg,
+  .mat-paginator-navigation-previous svg {
+    fill: #fff; // FAULT INJECTION: invisible arrows on the white paginator
+  }
+
+  .mat-paginator-range-label {'
 restore
 
-# 16. host renderer against container baselines -> why the image is digest-pinned
+# 19. host renderer against container baselines -> why the image is digest-pinned
 echo "=== host-renderer (not the pinned image) :: $(date -u +%FT%TZ) ===" > "$OUT/host-renderer-drift.log"
 npx nx e2e retail-banking-e2e --skip-nx-cache 2>&1 | sed 's/\x1b\[[0-9;]*m//g' >> "$OUT/host-renderer-drift.log"
 
