@@ -32,9 +32,10 @@ recorded reason is the actual migration risk, not the version number.**
 ## 3:00–4:30 — The oracle, and one deliberate failure
 
 ```bash
-npm run visual        # 59 tests: 23 image tests over 21 compared snapshots,
-                      # + 36 computed-style tests (24 light, 8 dark,
-                      # 1 anti-vacuity control, 3 WCAG contrast ratios)
+npm run visual        # 98 tests: 23 image tests over 21 compared snapshots,
+                      # + 27 light probes, 11 dark probes, 1 anti-vacuity control,
+                      # + 32 WCAG ratios (16 targets x 2 themes),
+                      # + 4 tests of the contrast oracle itself
 ```
 
 While it runs, say what is in it: the components, **the four real overlays** — dialog, select
@@ -42,7 +43,7 @@ panel, autocomplete panel, calendar — the keyboard focus ring, two breakpoints
 itself. *The dialog is opened, not drawn: a hand-written copy of Material's DOM would keep matching
 after MDC replaced the real one.*
 
-Then point at the second suite, because it is the better story: **36 computed-style tests**, one
+Then point at the second suite, because it is the better story: **75 computed-style tests**, one
 per `OV-nn` intent, asserting the value on the running app. Say why it exists — the control run on
 somebody else's design system found three theming regressions a screenshot diff cannot see — and
 then say what it did here: **it found three dead overrides in our own library on its first run**,
@@ -60,17 +61,27 @@ of five transaction rows rendered at **1.07:1** contrast — unreadable banking 
 **green, because it was asserting the value that caused it.** A hostile reviewer looking at the
 screen found it; no gate did.
 
-Then the fix, which is the actual lesson: three **WCAG AA contrast ratios** are now asserted on the
-dark statement table, and colour expectations are per-theme. A constant records what someone wrote
-down; a ratio records what the customer can read, and only one of those survives a migration moving
-a library foreground. `docs/evidence/oracle-logs/dark-contrast-regression.log` shows the assertion
+Then the fix, which is the actual lesson: **32 WCAG ratios** — 16 targets across both themes — are
+now asserted, and colour expectations are per-theme. A constant records what someone wrote down; a
+ratio records what the customer can read, and only one of those survives a migration moving a
+library foreground. `docs/evidence/oracle-logs/dark-contrast-regression.log` shows the assertion
 firing at 1.07:1 when the fix is removed.
 
-And be precise about how much the dark block buys: **three probes, not eight.** Three of the eight
-are geometry duplicates that cannot fail dark-only — measured from the compiled bundle, not assumed
-— and OV-10's colour half is vacuous in both themes. The two probes that pass whether or not our
-rule exists are labelled `KNOWN WEAK` in the file, with the log of one *not failing* committed at
-`docs/evidence/oracle-logs/delete-rule-ov08.log`.
+And then the part that makes the point better than any of it, because it happened *after* that fix:
+the first version of the ratio gate covered the statement table only, so a hostile reviewer pointed
+it at the rest of the library. **Six more findings, five of them invisible controls:** the dark page
+never got a surface, so form-field labels and hints, the select trigger, inactive tab labels and the
+datepicker toggle icon — a button you cannot see to click — all rendered at **1.0:1**. And two were
+in the **light** theme, the shipping one: a disabled account field displayed its value at 2.66:1, and
+Material's error red is 3.68:1 against AA's 4.5. The oracle itself had two parse holes on top of
+that — `rgba(0,0,0,0)` read as opaque black (a transparent chain scored 21:1) and foreground alpha
+dropped (`rgba(255,255,255,0.5)` on a dark card scored 10.05:1 instead of 3.87:1). All fixed; the
+oracle now has **four tests of its own**, one per hole.
+
+Be precise about how much the dark block buys: **8 of the 11 dark probes can fail dark-only**; three
+are geometry duplicates that cannot — measured from the compiled bundle, not assumed. The two probes
+that pass whether or not our rule exists are labelled `KNOWN WEAK` in the file, with the log of one
+*not failing* committed at `docs/evidence/oracle-logs/delete-rule-ov08.log`.
 
 Then change `.bofa-table .mat-header-cell` colour to brand red and re-run:
 

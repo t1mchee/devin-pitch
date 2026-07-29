@@ -264,10 +264,11 @@ console.log(n,(n/(a.width*a.height)*100).toFixed(4)+'%');"
 
 ## Attacking the computed-style override contract (the second Cypress suite)
 
-`apps/retail-banking-e2e/src/e2e/override-contract.cy.ts` + `src/support/override-probes.ts` hold 22
+`apps/retail-banking-e2e/src/e2e/override-contract.cy.ts` + `src/support/override-probes.ts` hold 27
 probes, one per `OV-nn` intent, asserting `getComputedStyle` values on the running app. Total suite
-is **59 tests = 23 snapshot tests (21 snapshots) + 36 computed-style tests (24 light, 8 dark, 1
-dark-surface anti-vacuity control, 3 WCAG AA contrast ratios)**.
+is **98 tests = 23 snapshot tests (21 snapshots) + 75 computed-style tests (27 light, 11 dark, 1
+dark-surface anti-vacuity control, 32 WCAG ratios over 16 targets in both themes, 4 tests of the
+contrast oracle itself)**.
 
 Run only this suite (much faster than the whole thing) in the pinned container. **The `--spec` path
 is workspace-relative — `src/e2e/...` silently finds no specs:**
@@ -410,7 +411,52 @@ const ratio = (a,b) => { const L1=Math.max(lum(a),lum(b)), L2=Math.min(lum(a),lu
 
 The anti-vacuity control is real and worth respecting: break the dark theme two independent ways
 (rename `.bofa-theme-dark` in `bofa-theme.scss`; change `get('theme')` in `app.component.ts`) and the
-control fails both times, while **all 7 dark probes pass silently** without it.
+control fails both times, while **all dark probes pass silently** without it (7 at round 6, 8 from
+round 6b onward — recount from the run output rather than quoting a number).
+
+## Attacking the WCAG contrast assertions (the legibility gate)
+
+The dark block computes a real ratio from the computed `color` and the first ancestor that actually
+paints a `background-color`. Verified behaviours, useful as regression expectations:
+
+| Attack | Result |
+|---|---|
+| Remove the dark zebra value | contrast fails at **1.0719326855029048** (matches the committed `oracle-logs/dark-contrast-regression.log`) |
+| Remove the dark header colour | header contrast fails at **1.8041446049984542**; light OV-05c still passes ⇒ genuine dark-only failure |
+| Point the target selector at nothing | fails on Cypress's implicit existence assertion (`Expected to find element … but never found it`) — cannot be silenced |
+| Regress the value **and** move the probe's `expectDark` to match | the colour probe goes **green** while the contrast assertion still **fails** — this is the whole point of the design, and the best demo of it |
+
+**Two real weaknesses in the helper, neither currently reachable to a green suite:**
+
+1. `rgba(0,0,0,0)` parses to opaque **black** (the regex takes the first three numbers and drops
+   alpha). If the ancestor walk finds nothing painted it exits still holding `rgba(0, 0, 0, 0)`, so
+   white text scores **21:1 and passes** while rendering invisible. Reaching that state requires
+   every ancestor transparent, which also trips the anti-vacuity control — so the control is the
+   backstop, not the ratio. Fix: treat alpha 0 as "keep walking", and fail loudly if the walk
+   terminates unresolved.
+2. **Alpha is ignored on the foreground.** `rgba(255,255,255,0.5)` is scored as pure white: the
+   helper reports 10.05:1 on `rgb(66,66,66)` where the true blended ratio is **3.84:1**. Material's
+   dark disabled/secondary foregrounds are exactly this shape, so extending the assertions to
+   secondary text without compositing alpha would create false passes.
+
+When auditing contrast yourself, composite alpha over the resolved background *and* remember that
+element `opacity` (e.g. disabled chips at `0.4`) is invisible to both this helper and a naive audit.
+Disabled controls are exempt from WCAG 1.4.3, so don't file them as defects.
+
+## The dark route only recolours components, so "legible" depends on who paints the surface
+
+`.bofa-theme-dark` uses `mat.all-component-colors`, and the **page/body background stays white**.
+So dark-mode text colours land on whatever surface the component itself paints:
+
+- **Fine** — components that paint their own dark surface: table (`rgb(66,66,66)`), paginator,
+  dialog, and the CDK overlay panels (select, autocomplete, calendar). Chips are fine because they
+  paint a *light* surface and keep dark text.
+- **Invisible at 1.0:1** — components that rely on the page surface: `mat-form-field` labels, hints
+  and disabled input values; **inactive** `mat-tab-label`s; `mat-select` trigger text; and the
+  `mat-datepicker-toggle` icon (`fill: currentColor` → white on white, so the control disappears).
+
+When testing any new dark surface, check these first — they are green in the suite because contrast
+is asserted on the statement table only.
 
 ## `--ignore-scripts` installs defer ngcc to build time
 

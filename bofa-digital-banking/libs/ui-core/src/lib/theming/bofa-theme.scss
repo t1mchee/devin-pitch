@@ -1,3 +1,4 @@
+@use 'sass:map';
 @use '@angular/material' as mat;
 @use './palette' as bofa;
 @use './typography' as type;
@@ -49,6 +50,21 @@ $boa-dark-theme: mat.define-dark-theme(
 
 .bofa-theme-dark {
   @include mat.all-component-colors($boa-dark-theme);
+
+  // `all-component-colors` recolours component *foregrounds* and nothing else —
+  // it never touches the page. A hostile review of the first version of this
+  // block found the consequence: every control that does not paint its own
+  // surface (form-field labels and hints, inactive tab labels, the select
+  // trigger, the datepicker toggle icon, which is `fill: currentColor`) became
+  // white text on a white page — 1.0:1, invisible, and in the datepicker's case
+  // a button you cannot see to click. The suite was green throughout, because
+  // contrast was asserted on the statement table only.
+  //
+  // So the surface has to come with the palette. These two declarations are
+  // what `all-component-themes` would have emitted for a dark theme at the
+  // document root, scoped to the class instead.
+  background: map.get(map.get($boa-dark-theme, background), background);
+  color: map.get(map.get($boa-dark-theme, foreground), text);
 }
 
 @import './overrides';

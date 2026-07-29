@@ -37,6 +37,34 @@
     color: bofa.$boa-slate-600;
   }
 
+  // OV-01c — the same intent, applied to the *value* rather than the label.
+  // The original rule covered the label only, so a read-only account field
+  // showed its label at 5.57:1 and the account name it existed to display at
+  // 2.66:1 (Material's `rgba(0, 0, 0, 0.38)` on the fill surface). Found by the
+  // contrast gate the day it was pointed at anything other than the table —
+  // and it was wrong in the *light* theme, which is the shipping one.
+  // MDC: input is `.mat-mdc-input-element`, label is `.mat-mdc-floating-label`.
+  &.mat-form-field-disabled .mat-mdc-input-element {
+    color: bofa.$boa-slate-600;
+  }
+
+  .bofa-theme-dark &.mat-form-field-disabled .mat-mdc-input-element,
+  .bofa-theme-dark &.mat-form-field-disabled .mat-mdc-floating-label {
+    color: bofa.$boa-slate-300;
+  }
+
+  // OV-01d — Material's error red (#f44336) is 3.68:1 on white: it fails AA at
+  // the one moment the customer must read the text. The brand danger red is
+  // 7.33:1. Same intent as OV-01, same defect class, opposite end of the form.
+  // MDC: `mat-error` renders `.mat-mdc-form-field-error`.
+  .mat-mdc-form-field-error {
+    color: bofa.$boa-danger-600;
+  }
+
+  .bofa-theme-dark & .mat-mdc-form-field-error {
+    color: bofa.$boa-red-100;
+  }
+
   // OV-02 — Error text must sit on a 20px line box so field heights do not jump
   // when validation fires. Layout shift on the transfer form was a 2022 incident.
   // MDC: subscript wrapper is `.mat-mdc-form-field-subscript-wrapper`.
@@ -249,9 +277,33 @@
     color: bofa.$boa-red-600;
   }
 
+  // OV-10b — brand red is 5.88:1 on white but 2.24:1 on the dark surface, so the
+  // *active* section label — the one piece of text on the strip that tells the
+  // customer where they are — failed AA in the dark palette. Brand tint red-100
+  // (8.65:1) carries the same signal. Red-600 stays in the light theme, where it
+  // is the locked brand value.
+  // MDC: active label is `.mat-mdc-tab.mdc-tab--active .mdc-tab__text-label`.
+  .bofa-theme-dark & .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
+    color: bofa.$boa-red-100;
+  }
+
+  // OV-10 ink bar. MDC draws the active-tab indicator as a `border-top` on
+  // `.mdc-tab-indicator__content--underline` — there is no `.mat-ink-bar` and no
+  // real element with a `height`/`background-color`. The 3px brand-red bar is
+  // preserved through the border.
   .mdc-tab-indicator__content--underline {
     border-top-width: 3px;
     border-color: bofa.$boa-red-600;
+  }
+
+  // Dark surface: full-strength red-600 is 2.24:1 against the dark page, below
+  // 1.4.11's 3:1 for a non-text state indicator; red-300 (4.10:1) restores it.
+  // MDC: the indicator colour is the underline's `border-color`, not a
+  // `background-color`, and the dark theme block emits a four-class selector
+  // (`.bofa-theme-dark .mat-mdc-tab-group.mat-primary ... --underline`), so this
+  // rule carries `.mat-mdc-tab-group.mat-primary` to win the cascade.
+  .bofa-theme-dark &.mat-mdc-tab-group.mat-primary .mdc-tab-indicator__content--underline {
+    border-color: bofa.$boa-red-300;
   }
 }
 

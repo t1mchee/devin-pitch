@@ -33,16 +33,27 @@ paints row text white: two of five transaction rows rendered at **1.07:1** again
 unreadable, and the probe was green *because it asserted the value that caused it*. A hostile
 reviewer found it by looking at the screen. No gate did.
 
-What that changes, concretely: the dark statement table now carries three **WCAG AA contrast
-ratios**, not just colour constants, and colour expectations are per-theme
-(`expectDark`). A constant records what someone wrote down; a ratio records what the customer can
-read, and a migration that moves a library foreground keeps the constant right and makes the render
-wrong. `docs/evidence/OVERRIDE-CONTRACT-dead-rules.md`, `oracle-logs/dark-contrast-regression.log`.
+What that changes, concretely: **32 WCAG ratios** — 16 targets in both themes — are now asserted
+alongside the colour constants, and colour expectations are per-theme (`expectDark`). A constant
+records what someone wrote down; a ratio records what the customer can read, and a migration that
+moves a library foreground keeps the constant right and makes the render wrong.
+`docs/evidence/OVERRIDE-CONTRACT-dead-rules.md`, `oracle-logs/dark-contrast-regression.log`.
+
+Then the better half of the story, because it happened to the *fix*: that gate covered the statement
+table only, and the next hostile round pointed it at the other twelve components. Six more defects,
+all green in the suite at the time — five dark controls at **1.0:1** (the dark class recoloured
+foregrounds and never gave the page a surface, so labels, hints, the select trigger, inactive tab
+labels and a datepicker toggle you could not see to click went white-on-white), and **two in the
+light theme, the shipping one**: a disabled account field showing its value at 2.66:1 and Material's
+error red at 3.68:1. The oracle itself had two parse holes — transparent read as opaque black, and
+foreground alpha dropped — either of which could score an invisible render as a pass. It now has
+four tests of its own. §6 of the dead-rules evidence.
 
 The general answer, which is the one that should land: **every gate in this repository has a
 published failure.** The pixel budget has a documented blind spot under 40 px, two probes are
-labelled `KNOWN WEAK` with the log of one not-failing committed, three of the eight dark probes are
-disclosed as geometry duplicates, and this one encoded a defect. That is the standard to hold us to
+labelled `KNOWN WEAK` with the log of one not-failing committed, three of the eleven dark probes are
+disclosed as geometry duplicates, this one encoded a defect, and the oracle that caught it had to be
+tested against itself. That is the standard to hold us to
 during the pilot — not "the gate is green", but "someone has tried to defeat the gate and written
 down what worked".
 

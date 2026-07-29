@@ -78,19 +78,106 @@ function assertProbe(probe: OverrideProbe, theme: 'light' | 'dark'): void {
   });
 }
 
-/** WCAG 2.1 relative luminance / contrast ratio, from computed `rgb()` strings. */
-function contrastRatio(foreground: string, background: string): number {
-  const luminance = (colour: string): number => {
-    const [r, g, b] = (colour.match(/\d+(\.\d+)?/g) ?? []).slice(0, 3).map(Number);
-    const channel = (value: number): number => {
-      const s = value / 255;
-      return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
-    };
-    return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
+/**
+ * WCAG 2.1 contrast, computed the pedantic way. Two shortcuts in the first
+ * version of this helper were found by hostile review, and both of them made an
+ * illegible render *pass*:
+ *
+ *   1. `rgba(0, 0, 0, 0)` parsed as opaque black, so a fully transparent
+ *      ancestor chain scored 21:1 — the maximum — while rendering white on white.
+ *   2. Foreground alpha was dropped, so `rgba(255, 255, 255, 0.5)` scored
+ *      10.05:1 where the composited truth is 3.87:1. Secondary text (hints,
+ *      disabled labels, inactive tabs) is *exactly* where Material uses alpha,
+ *      so this shortcut would have failed precisely on the text it was added to
+ *      protect.
+ *
+ * So: alpha is parsed, every layer is composited over the one behind it, and an
+ * ancestor chain that never becomes opaque terminates on the canvas rather than
+ * on a convenient default.
+ */
+interface Rgba {
+  r: number;
+  g: number;
+  b: number;
+  a: number;
+}
+
+const CANVAS: Rgba = { r: 255, g: 255, b: 255, a: 1 };
+
+function parseColour(value: string): Rgba {
+  const parts = (value.match(/-?\d+(\.\d+)?/g) ?? []).map(Number);
+  if (parts.length < 3) {
+    // `transparent`, `currentColor`, an empty string: treat as fully transparent
+    // rather than as a colour, so it composites away instead of scoring well.
+    return { r: 0, g: 0, b: 0, a: 0 };
+  }
+  return { r: parts[0], g: parts[1], b: parts[2], a: parts.length > 3 ? parts[3] : 1 };
+}
+
+/** Source-over composite of `top` onto an opaque `bottom`. */
+function composite(top: Rgba, bottom: Rgba): Rgba {
+  return {
+    r: top.r * top.a + bottom.r * (1 - top.a),
+    g: top.g * top.a + bottom.g * (1 - top.a),
+    b: top.b * top.a + bottom.b * (1 - top.a),
+    a: 1,
   };
+}
+
+/** The opaque colour actually painted behind `element`, canvas included. */
+function paintedBackground(element: HTMLElement): Rgba {
+  const layers: Rgba[] = [];
+  let node: HTMLElement | null = element;
+
+  while (node) {
+    const layer = parseColour(getComputedStyle(node).backgroundColor);
+    if (layer.a > 0) {
+      layers.push(layer);
+      if (layer.a === 1) {
+        break;
+      }
+    }
+    node = node.parentElement;
+  }
+
+  return layers.reduceRight((below, above) => composite(above, below), CANVAS);
+}
+
+function luminance({ r, g, b }: Rgba): number {
+  const channel = (value: number): number => {
+    const s = value / 255;
+    return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+  };
+  return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
+}
+
+function contrastRatio(element: HTMLElement): { ratio: number; detail: string } {
+  const background = paintedBackground(element);
+  const declared = parseColour(getComputedStyle(element).color);
+  const foreground = composite(declared, background);
 
   const [lighter, darker] = [luminance(foreground), luminance(background)].sort((a, b) => b - a);
-  return (lighter + 0.05) / (darker + 0.05);
+  const ratio = (lighter + 0.05) / (darker + 0.05);
+  const round = ({ r, g, b }: Rgba): string =>
+    `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
+
+  return {
+    ratio,
+    detail: `${getComputedStyle(element).color} → ${round(foreground)} on ${round(background)}`,
+  };
+}
+
+/**
+ * Non-text contrast for a painted state indicator (the tab ink bar): its own
+ * surface against the surface behind it, per WCAG 1.4.11.
+ */
+function indicatorRatio(indicator: HTMLElement): { ratio: number; detail: string } {
+  const bar = paintedBackground(indicator);
+  const behind = paintedBackground(indicator.parentElement as HTMLElement);
+  const [lighter, darker] = [luminance(bar), luminance(behind)].sort((a, b) => b - a);
+  const round = ({ r, g, b }: Rgba): string =>
+    `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
+  return { ratio: (lighter + 0.05) / (darker + 0.05), detail: `${round(bar)} on ${round(behind)}` };
 }
 
 describe('design system — override contract (computed styles)', () => {
@@ -124,37 +211,151 @@ describe('design system — override contract (dark surface)', () => {
   DARK_PROBES.forEach((probe) => {
     it(`${probe.ov} [dark]: ${probe.intent}`, () => assertProbe(probe, 'dark'));
   });
+});
 
-  // Why a ratio and not another constant. A colour constant asserts what someone
-  // wrote down; it cannot notice that the value has become unreadable against a
-  // foreground the *library* controls. That is not hypothetical: this suite
-  // shipped one round asserting the light zebra stripe on the dark surface, so
-  // OV-05d was green while two of five transaction rows rendered at 1.07:1.
-  // A migration moves library foregrounds. The requirement — a customer can read
-  // the amount — survives that; a hard-coded pair of colours does not.
-  ([
-    ['even (striped) statement row', '.bofa-table .mat-mdc-row:nth-child(even) .mat-mdc-cell'],
-    ['odd statement row', '.bofa-table .mat-mdc-row:nth-child(odd) .mat-mdc-cell'],
-    ['header cell', '.bofa-table .mat-mdc-header-cell'],
-  ] as const).forEach(([label, selector]) => {
-    it(`statement text on the dark surface clears WCAG AA — ${label}`, () => {
-      cy.visitShowcase('table', 'dark');
-      cy.get(selector)
+/**
+ * Legibility, asserted as a ratio rather than as a colour.
+ *
+ * Why this is a separate gate and not more probes. A colour constant records
+ * what someone wrote down. It cannot notice that the value has become unreadable
+ * against a foreground the *library* controls — and this suite proved that
+ * against itself twice in two rounds:
+ *
+ *   - the dark block first asserted the *light* zebra colour, so OV-05d was
+ *     green while two of five transaction rows rendered at 1.07:1;
+ *   - `all-component-colors` then turned out to recolour foregrounds without
+ *     touching the page, so form-field labels, inactive tab labels, the select
+ *     trigger and the datepicker toggle icon rendered white on white — 1.0:1,
+ *     one of them a button you cannot see to click — with every probe green.
+ *
+ * Neither was found by a gate. Both are now gated. A migration moves library
+ * foregrounds and surfaces; "a customer can read the amount" survives that,
+ * a hard-coded pair of colours does not.
+ *
+ * Run in BOTH themes on purpose: the light theme is where these values were
+ * captured, so a light-theme failure here means the palette itself regressed.
+ */
+const CONTRAST_TARGETS = [
+  { surface: 'statement table', component: 'table', label: 'even (striped) row', target: '.bofa-table .mat-mdc-row:nth-child(even) .mat-mdc-cell' },
+  { surface: 'statement table', component: 'table', label: 'odd row', target: '.bofa-table .mat-mdc-row:nth-child(odd) .mat-mdc-cell' },
+  { surface: 'statement table', component: 'table', label: 'header cell', target: '.bofa-table .mat-mdc-header-cell' },
+  { surface: 'form field', component: 'form-field', label: 'field label', target: '[data-variant=default] .mat-mdc-floating-label' },
+  { surface: 'form field', component: 'form-field', label: 'entered value', target: '[data-variant=default] input.mat-mdc-input-element' },
+  { surface: 'form field', component: 'form-field', label: 'hint', target: '[data-variant=default] .mat-mdc-form-field-hint' },
+  // OV-01's whole point: a disabled field must stay readable. Material greys
+  // disabled text with alpha, which is why the helper composites rather than
+  // parsing three channels.
+  { surface: 'form field', component: 'form-field', label: 'disabled value', target: '[data-variant=disabled] input.mat-mdc-input-element' },
+  { surface: 'form field', component: 'form-field', label: 'error message', target: '[data-variant=error] .mat-mdc-form-field-error' },
+  { surface: 'tabs', component: 'tabs', label: 'inactive tab label', target: '.bofa-tabs:not(.bofa-legacy-shell) .mat-mdc-tab:not(.mdc-tab--active) .mdc-tab__text-label' },
+  { surface: 'tabs', component: 'tabs', label: 'active tab label', target: '.bofa-tabs:not(.bofa-legacy-shell) .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label' },
+  { surface: 'select', component: 'select', label: 'trigger text', target: '[data-variant=default] .mat-mdc-select-value-text' },
+  { surface: 'chips', component: 'chips', label: 'chip label', target: '[data-variant=default] .mat-mdc-chip.mat-mdc-standard-chip' },
+  { surface: 'paginator', component: 'paginator', label: 'range label', target: '.mat-mdc-paginator-range-label' },
+  { surface: 'currency input', component: 'currency-input', label: 'amount', target: '[data-variant=default] input.mat-mdc-input-element' },
+] as const;
+
+(['light', 'dark'] as const).forEach((theme) => {
+  describe(`design system — legibility (WCAG AA, ${theme} surface)`, () => {
+    CONTRAST_TARGETS.forEach(({ surface, component, label, target }) => {
+      it(`${surface}: ${label} clears 4.5:1`, () => {
+        cy.visitShowcase(component, theme);
+        cy.get(target)
+          .first()
+          .then(($element) => {
+            const { ratio, detail } = contrastRatio($element[0]);
+            cy.log(`${surface} / ${label}: ${detail} = ${ratio.toFixed(2)}:1`);
+            expect(ratio, `${surface} / ${label}: ${detail}`).to.be.at.least(4.5);
+          });
+      });
+    });
+
+    // The datepicker toggle is an icon, not text: WCAG 1.4.11 sets 3:1 for a
+    // control you have to see in order to operate it. Included because this is
+    // the one that was *unclickable* on the dark surface — Material's toggle SVG
+    // is `fill: currentColor`, so it inherited white onto white and vanished.
+    // The ink bar is the only thing on the strip that says which section you are
+    // in besides the label colour, and it is a painted surface rather than text:
+    // 1.4.11, 3:1. Full-strength brand red is 2.24:1 against the dark page, which
+    // is why the dark scope states a tint instead of inheriting the constant.
+    it('tabs: the active-section ink bar clears 3:1 (non-text contrast)', () => {
+      cy.visitShowcase('tabs', theme);
+      cy.get('.bofa-tabs:not(.bofa-legacy-shell) .mdc-tab-indicator__content--underline')
         .first()
-        .then(($cell) => {
-          const colour = getComputedStyle($cell[0]).color;
-          // Cells are transparent; the paint comes from the row, so walk up to
-          // the first ancestor that actually declares a background.
-          let node: HTMLElement | null = $cell[0];
-          let background = 'rgba(0, 0, 0, 0)';
-          while (node && (background === 'rgba(0, 0, 0, 0)' || background === 'transparent')) {
-            background = getComputedStyle(node).backgroundColor;
-            node = node.parentElement;
-          }
-          const ratio = contrastRatio(colour, background);
-          cy.log(`${label}: ${colour} on ${background} = ${ratio.toFixed(2)}:1`);
-          expect(ratio, `${label}: ${colour} on ${background}`).to.be.at.least(4.5);
+        .then(($bar) => {
+          const { ratio, detail } = indicatorRatio($bar[0]);
+          cy.log(`ink bar: ${detail} = ${ratio.toFixed(2)}:1`);
+          expect(ratio, `ink bar: ${detail}`).to.be.at.least(3);
         });
+    });
+
+    it('datepicker: the toggle icon clears 3:1 (non-text contrast)', () => {
+      cy.visitShowcase('datepicker', theme);
+      cy.get('[data-variant=default] .mat-datepicker-toggle button')
+        .first()
+        .then(($button) => {
+          const { ratio, detail } = contrastRatio($button[0]);
+          cy.log(`datepicker toggle icon: ${detail} = ${ratio.toFixed(2)}:1`);
+          expect(ratio, `datepicker toggle icon: ${detail}`).to.be.at.least(3);
+        });
+    });
+  });
+});
+
+/**
+ * A gate is only worth what its oracle is worth, so the oracle is tested too —
+ * against the two exact inputs that made the previous version report 21:1 and
+ * 10.05:1 for renders a customer could not read.
+ */
+describe('design system — the contrast oracle itself', () => {
+  const measure = (
+    styles: { fg: string; bg: string; ancestors?: string[] },
+    assertion: (ratio: number) => void
+  ) => {
+    cy.visitShowcase('table', 'light');
+    cy.document().then((doc) => {
+      const outermost = doc.createElement('div');
+      let host = outermost;
+      (styles.ancestors ?? []).forEach((background) => {
+        host.style.backgroundColor = background;
+        const child = doc.createElement('div');
+        host.appendChild(child);
+        host = child;
+      });
+      host.style.backgroundColor = styles.bg;
+      host.style.color = styles.fg;
+      host.textContent = 'Available balance';
+      doc.body.appendChild(outermost);
+      assertion(contrastRatio(host).ratio);
+    });
+  };
+
+  it('a fully transparent chain resolves to the canvas, not to opaque black', () => {
+    // Previously 21:1. White text on a transparent stack over a white canvas is
+    // invisible, and the ratio has to say so.
+    measure({ fg: 'rgb(255, 255, 255)', bg: 'rgba(0, 0, 0, 0)', ancestors: ['rgba(0, 0, 0, 0)'] }, (ratio) => {
+      expect(ratio).to.be.closeTo(1, 0.01);
+    });
+  });
+
+  it('composites a semi-transparent foreground instead of treating it as opaque', () => {
+    // Previously 10.05:1 (read as opaque white on #424242); composited truth is 3.87:1,
+    // i.e. a fail, which is the entire point.
+    measure({ fg: 'rgba(255, 255, 255, 0.5)', bg: 'rgb(66, 66, 66)' }, (ratio) => {
+      expect(ratio).to.be.closeTo(3.87, 0.02);
+    });
+  });
+
+  it('composites a semi-transparent background over the layer behind it', () => {
+    measure({ fg: 'rgb(255, 255, 255)', bg: 'rgba(0, 0, 0, 0.5)', ancestors: ['rgb(0, 0, 0)'] }, (ratio) => {
+      expect(ratio).to.be.closeTo(21, 0.01);
+    });
+  });
+
+  it('agrees with the published figure on a known opaque pair', () => {
+    // #121d29-ish brand slate on the zebra stripe: the light-theme statement row.
+    measure({ fg: 'rgb(18, 22, 29)', bg: 'rgb(246, 247, 249)' }, (ratio) => {
+      expect(ratio).to.be.greaterThan(15);
     });
   });
 });
