@@ -16,15 +16,17 @@ declare global {
       matchImageSnapshot(name: string): Chainable<CompareResult>;
 
       /** Visit a showcase route with animations and carets suppressed. */
-      visitShowcase(component: string): Chainable<void>;
+      visitShowcase(component: string, theme?: 'light' | 'dark'): Chainable<void>;
     }
   }
 }
 
-Cypress.Commands.add('visitShowcase', (component: string) => {
+Cypress.Commands.add('visitShowcase', (component: string, theme: 'light' | 'dark' = 'light') => {
   // `?vr=1` disables Angular animations app-wide (see app.module.ts) so an
-  // overlay is captured settled rather than mid-transition.
-  cy.visit(`/__showcase/${component}?vr=1`);
+  // overlay is captured settled rather than mid-transition. `?theme=dark`
+  // puts the dark palette on <body> (and therefore on the overlay container).
+  const dark = theme === 'dark' ? '&theme=dark' : '';
+  cy.visit(`/__showcase/${component}?vr=1${dark}`);
   cy.get('.showcase', { timeout: 15000 }).should('be.visible');
   // Let fonts settle before capture; a half-loaded webfont is the classic
   // source of false positives in visual regression.

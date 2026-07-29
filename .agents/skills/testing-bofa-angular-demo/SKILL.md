@@ -23,7 +23,7 @@ work needs `--legacy-peer-deps` because of `@angular/flex-layout@14.0.0-beta.41`
 npx nx run-many --target=build --all --skip-nx-cache   # expect: 6 projects
 npx nx run-many --target=test --all --skip-nx-cache    # expect: 6 projects, 8 suites / 43 tests
 npx nx run-many --target=lint --all --skip-nx-cache    # expect: 7 projects, 0 errors / 3 warnings
-npm run visual                                         # expect: 23 passing, 21 snapshots (preferred)
+npm run visual                                         # expect: 23 + 32 passing, 21 snapshots (preferred)
 ```
 
 The **test tally is easy to get wrong**, and it changes as specs are added — always re-derive it,
@@ -211,29 +211,39 @@ read all counts off one run instead of inferring them from failures.
   (~887 px) while the static `datepicker-default` stays at **0 px**. That asymmetry is the proof;
   before the overlay snapshots existed, no snapshot in the suite could see this class of break.
 
-### KNOWN HOLE: deleting a baseline silently re-creates it and passes
+### The missing-baseline hole (was a real HIGH; FIXED — re-verify it stays fixed)
 
-`visual-regression.plugin.ts` copies the actual screenshot over a **missing** baseline and returns
-`status: 'created'`, and `matchImageSnapshot` only throws on `'diff'` / `'size-mismatch'` — so
-`'created'` passes. Verified: `rm visual-baselines/accounts-dashboard.png` then `npm run visual` →
-`23 passing`, exit 0, and only 20 `[visual]` lines logged because the deleted snapshot was never
-compared.
+Historically `visual-regression.plugin.ts` copied the actual screenshot over a **missing** baseline
+and returned `status: 'created'`, which `matchImageSnapshot` did not throw on. `rm
+visual-baselines/accounts-dashboard.png` then `npm run visual` gave `23 passing`, exit 0, and only
+20 `[visual]` lines. That allowed a **laundering attack**: delete a baseline while a regression is
+live and the regression gets baked into the regenerated baseline and reported green.
 
-This is dangerous, not cosmetic: delete a baseline while a regression is live and the regression is
-baked into the regenerated baseline and reported green. Removing `-e UPDATE_VISUAL_BASELINES` from
-the `visual` script (so a host env var cannot leak in) closed the *altered*-baseline hole but not
-this one.
+As of the override-contract commit this is fixed — the plugin returns `status: 'missing'` when the
+file is absent and `UPDATE_VISUAL_BASELINES` is unset, and `commands.ts` throws `No visual baseline
+for <name>`. **Re-verify rather than assume**, with all three cases:
 
-When testing:
+1. Delete one baseline → that snapshot must FAIL **and** the file must NOT reappear (`ls` after).
+2. Delete a baseline *and* inject a live regression → must fail on both the missing baseline and a
+   pixel diff elsewhere; the deleted file must not be written.
+3. `npm run visual:update` must still recreate it, and the recreated file must be **byte-identical**
+   to the committed one (`md5sum` + `git diff --stat` on `visual-baselines/`). This doubles as a
+   renderer-determinism check.
+
+Always:
 
 - **Count the `[visual]` lines — expect 21.** Fewer means a snapshot was skipped, not that it passed.
-- Do not accept "a deleted baseline fails" without deleting one; check whether the fix rejects
-  `'created'` unless `UPDATE_VISUAL_BASELINES=1`.
 - CI's "Guard the oracle" job (requires a `BASELINE-CHANGE:` line in the PR body when
   `visual-baselines/**`, the plugin, or an app `project.json` changes) catches *committed* baseline
   changes, but does not make a local run honest.
 - Restore with `git checkout -- apps/retail-banking-e2e/visual-baselines/` and re-verify the count
   is back to 21.
+
+### `visual-diffs/` is gitignored — check whose run produced a diff before reporting flakiness
+
+Stray diff PNGs can survive from the **author's** pre-re-baseline run and look like flakiness in
+yours. Cross-check every diff filename against your own run logs; if no run of yours produced it,
+it is a leftover. Do not present it as your evidence.
 
 Always confirm your injected CSS actually reached the browser before concluding the harness is broken:
 
@@ -251,6 +261,107 @@ const d=new PNG({width:a.width,height:a.height});
 const n=pm(a.data,b.data,d.data,a.width,a.height,{threshold:0.1});
 console.log(n,(n/(a.width*a.height)*100).toFixed(4)+'%');"
 ```
+
+## Attacking the computed-style override contract (the second Cypress suite)
+
+`apps/retail-banking-e2e/src/e2e/override-contract.cy.ts` + `src/support/override-probes.ts` hold 22
+probes, one per `OV-nn` intent, asserting `getComputedStyle` values on the running app. Total suite
+is **55 tests = 23 snapshot tests (21 snapshots) + 32 probes (24 light, 7 dark, 1 dark-surface
+anti-vacuity control)**.
+
+Run only this suite (much faster than the whole thing) in the pinned container. **The `--spec` path
+is workspace-relative — `src/e2e/...` silently finds no specs:**
+
+```bash
+docker run --rm -u "$(id -u):$(id -g)" -e HOME=/tmp \
+  -e CYPRESS_CACHE_FOLDER=/root/.cache/Cypress \
+  -v "$PWD/..":/w -w /w/bofa-digital-banking --entrypoint bash \
+  cypress/included@sha256:058d1834239bf09b381325b8369d05e9e0516a46b65b32e6dc0c991801dc517a \
+  -c "npx nx e2e retail-banking-e2e --skip-nx-cache --spec apps/retail-banking-e2e/src/e2e/override-contract.cy.ts"
+```
+
+Four attacks worth running, all as uncommitted edits to `_overrides.scss`, reverted after:
+
+- **Change a value** (e.g. header colour, chip height, dialog padding) → the matching probe must fail
+  printing `-actual` / `+expected`, and **no unrelated probe** should fail.
+- **Break a selector** (rename `.mat-slide-toggle-bar` → `…-DEAD`) → OV-09 must fail measuring
+  Material's default `36px`. This is the MDC-migration failure mode the suite exists for.
+- **Break a probe's own `target`** → must fail on the `cy.get(probe.target).should('exist')` guard
+  ("Expected to find element … but never found it"), not silently skip.
+- **VACUITY (the sharpest test): delete the whole rule and see if the probe still passes.**
+
+### Known-vacuous probes — the palette makes them true regardless of our CSS
+
+`bofa-theme.scss` builds Material's **primary** palette from `$boa-red-600`, so Material already
+paints selected options, selected calendar days and ink bars brand red. These assertions therefore
+pass with the override deleted:
+
+| Probe | Assertion | Vacuous? |
+|---|---|---|
+| OV-08 | `color` on `.mat-option.mat-selected` | yes (disclosed in the dead-rules doc) |
+| OV-13 | `background-color` + `color` on `.mat-calendar-body-selected` | yes |
+| OV-10 | `background-color` on `.mat-ink-bar` | yes — but its `height: 3px` **has** teeth |
+| OV-05d | zebra `background` on `.mat-row:nth-child(even)` | **no** — use as positive control |
+
+Method notes: always include **OV-05d as a positive control** — if deleting its rule does not fail,
+your deletion method is broken and every vacuity result is void. And when a probe asserts several
+properties, a meaningful one can fail first and mask a vacuous one (OV-10 fails on `height` before
+colour is evaluated) — delete only the single suspect declaration to isolate it.
+
+### The three revived dead overrides — reproducible by reverting each fix
+
+All three are also checkable **live in a browser**, which is better client evidence than a probe:
+
+| Revert | Probe | Measured value that reappears | Visible as |
+|---|---|---|---|
+| drop `!important` from `.mat-sort-header-arrow` | OV-06 | `opacity: 0` | sort arrows invisible (should be 0.35, 1 on hover) |
+| drop `min-height: 28px` from the chip rule | OV-11 | `height: 32px` | chips taller than the 28px rhythm |
+| re-wrap OV-15 in `::ng-deep` | OV-15 | `max-height: 256px` | autocomplete panel taller (should be 224px) |
+
+`::ng-deep` in a file compiled into the **global** stylesheet is dropped by the browser — a whole
+block can be silently dead. Worth grepping for.
+
+## Proving `?vr=1` is dead in the production bundle
+
+`app.module.ts` gates the flag on `!environment.production`. In the production bundle the branch is
+constant-folded to `Sz.withConfig({disableAnimations:false})`, so grep for that literal rather than
+for `has('vr')`. Note `URLSearchParams` and `disableAnimations` **do** survive in production from
+unrelated Angular internals (`HttpClient.serializeBody`, the animation engine) — do not call that a
+false pass.
+
+To check it at runtime, serve the built bundle statically and measure the dialog animation:
+
+```bash
+(cd dist/apps/retail-banking && python3 -m http.server 4300)
+```
+
+Then click the real trigger and sample `opacity`/`transform` per `requestAnimationFrame`. **Do not
+assert from a screenshot** — the ~150 ms animation is shorter than capture latency (this was
+inconclusive for two rounds). Two gotchas: the console eval does not await, so stash results on
+`window.__x` and read them back in a second call; and a dialog left open by an earlier probe makes
+`querySelector` return an already-settled container — always start from a fresh page load and assert
+`dialogsBeforeClick === 0`.
+
+Calibrate the instrument in **both** directions before trusting it:
+
+| Scenario | Expected |
+|---|---|
+| dev, no flag | animation curve: opacity `0`→`1`, scale `0.7`→`1` |
+| dev, `?vr=1` | snaps: opacity `1`, transform `none`, every frame |
+| prod, `?vr=1` | animation curve ⇒ flag correctly dead |
+
+## Responsive testing — unmaximize before resizing
+
+`xdotool getactivewindow windowsize W H` **silently does nothing while the window is maximized**
+(`window.innerWidth` stays put and you will wrongly conclude the breakpoints are broken). Do:
+
+```bash
+wmctrl -r :ACTIVE: -b remove,maximized_vert,maximized_horz
+xdotool getactivewindow windowsize 900 900
+```
+
+Verify with `window.innerWidth` before judging, and re-maximize afterwards. At ~600px the
+responsive-grid Detail pane is **removed from the DOM**, not just hidden — check the HTML, not pixels.
 
 ## Repo rules to respect while testing
 

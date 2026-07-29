@@ -32,7 +32,8 @@ recorded reason is the actual migration risk, not the version number.**
 ## 3:00–4:30 — The oracle, and one deliberate failure
 
 ```bash
-npm run visual        # 45 tests: 21 snapshots + 22 computed-style probes, pinned container
+npm run visual        # 55 tests: 21 snapshots + 32 computed-style probes (24 light,
+                      # 7 dark + 1 anti-vacuity control), pinned container
 ```
 
 While it runs, say what is in it: the components, **the four real overlays** — dialog, select
@@ -40,13 +41,19 @@ panel, autocomplete panel, calendar — the keyboard focus ring, two breakpoints
 itself. *The dialog is opened, not drawn: a hand-written copy of Material's DOM would keep matching
 after MDC replaced the real one.*
 
-Then point at the second suite, because it is the better story: **22 computed-style probes**, one
+Then point at the second suite, because it is the better story: **32 computed-style probes**, one
 per `OV-nn` intent, asserting the value on the running app. Say why it exists — the control run on
 somebody else's design system found three theming regressions a screenshot diff cannot see — and
 then say what it did here: **it found three dead overrides in our own library on its first run**,
 including one that was passing only because the library default happened to match the brand
 colour. `docs/evidence/OVERRIDE-CONTRACT-dead-rules.md`. That is the sentence the Chief Architect
 remembers: *the gate we built to check the migration found bugs in the thing we were migrating.*
+
+If they ask what the gate still cannot see — and the Chief Architect will — answer before they
+finish: the control run's worst finding was invisible in the light theme, so seven probes now run
+against the dark palette too, behind a test that proves the dark surface actually rendered. And the
+two probes that pass whether or not our rule exists are labelled `KNOWN WEAK` in the file, with the
+log of one *not failing* committed at `docs/evidence/oracle-logs/delete-rule-ov08.log`.
 
 Then change `.bofa-table .mat-header-cell` colour to brand red and re-run:
 
@@ -58,8 +65,10 @@ Visual regression on accounts-dashboard: <n> pixels differ (0.0xx%).
 …and, in the second suite, a sentence instead of a pixel count:
 
 ```
-OV-05c: Header cells carry the slate-900 brand weight, not the Material grey
-  expected rgb(18, 22, 29)  actual rgb(200, 16, 46)
+1) OV-05c: Header cells carry the slate-900 brand weight, not the Material grey
+   + expected - actual
+   -'rgb(200, 16, 46)'
+   +'rgb(18, 22, 29)'
 ```
 
 *One gate tells you something moved. The other tells you which promise you broke.*
@@ -100,6 +109,27 @@ Open PR #2 and PR #3 — two independent runs of the same playbook, `TARGET_VERS
   room find this before you say it.
 - Run B raised the bundle budget by 50 kB and wrote down that it did; Run A stopped with a failing
   build instead.
+
+## Interject if anyone says "so you only did 14→15"
+
+They will, and the answer is short and unflattering, which is why it lands. **Two of four hops have
+been run, and neither is merged.** The 15→16 hop is PR #5 — the flex-layout removal, which is the
+hop nothing automates. The `fx*` directives were rewritten as CSS against flex-layout's real
+breakpoints and the three `responsive-grid` baselines pass at **0 px in CI** on that rewrite; Node
+moved 16→18; the computed-style contract caught two real MDC v16 regressions (a token-driven toggle
+thumb and a disabled-label colour) that the pixel suite could not attribute.
+
+**And then volunteer the bad part, because it is the most useful thing in the pack:** that run
+explained its own red image suite as a missing-webfont problem. It is not. The same baseline blob
+passes at 0 px in the same pinned container on this branch, and in the run's *own* CI several
+text-bearing snapshots are 0 px while others are thousands. So those pixels are the migration's real
+visual delta, and the run talked itself out of them with a plausible environmental story. Nothing
+was re-baselined — the gate held — **but the narrative failed where the gate did not.** That is
+precisely why the reviewer, not the agent, owns "is this diff acceptable?".
+`docs/evidence/PHASE2-15-to-16.md`, top of file.
+
+16→17 and 17→18 are **unevidenced model estimates** and are labelled that way in
+`docs/meeting/delivery-plan.md`. Do not describe them as anything else.
 
 ## 9:30–11:00 — Variance, told honestly
 

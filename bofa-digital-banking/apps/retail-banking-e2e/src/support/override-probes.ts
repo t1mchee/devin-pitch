@@ -34,6 +34,8 @@ export interface OverrideProbe {
   open?: 'select' | 'datepicker' | 'autocomplete' | 'dialog';
   /** Optional interaction before probing. */
   act?: 'focus-keyboard';
+  /** Optional key to press once the overlay is open. */
+  keyboard?: 'arrow-down';
   /** Element carrying the styled property today. */
   target: string;
   /** Computed properties and the values the intent requires. */
@@ -131,6 +133,22 @@ export const OVERRIDE_PROBES: OverrideProbe[] = [
     expect: { opacity: '0.35' },
   },
   {
+    ov: 'OV-07',
+    intent: 'Active option in the account picker is tinted brand red, not Material grey',
+    component: 'select',
+    open: 'select',
+    // Deliberately the *active, not selected* option. Two traps here, both found
+    // by measuring rather than reasoning: the theme's primary palette is brand
+    // red, so an assertion on the selected option holds with our rule deleted
+    // (see OV-08); and Material's `.mat-option.mat-selected:not(...):not(...)`
+    // rule outranks the active tint, so the selected option reports
+    // rgba(0, 0, 0, 0.12) whatever we write. On a merely-active option the
+    // Material default is rgba(0, 0, 0, 0.04) — so this value is ours.
+    keyboard: 'arrow-down',
+    target: '.bofa-select-panel .mat-option.mat-active:not(.mat-selected)',
+    expect: { 'background-color': 'rgba(200, 16, 46, 0.08)' },
+  },
+  {
     ov: 'OV-08',
     intent: 'Selected option is brand red, not accent navy (navy reads as a link here)',
     component: 'select',
@@ -138,6 +156,10 @@ export const OVERRIDE_PROBES: OverrideProbe[] = [
     // v15/MDC: options are list items; selection is `.mdc-list-item--selected`
     // and the colour lands on the text span.
     target: '.bofa-select-panel .mat-mdc-option.mdc-list-item--selected .mdc-list-item__primary-text',
+    // KNOWN WEAK: passes with the rule deleted, because the theme's primary is
+    // brand red and Material paints the selected option with primary. Kept as a
+    // regression tripwire on the *rendered* colour, not as proof the rule works.
+    // OV-07 above is the load-bearing assertion for this overlay.
     expect: { color: RED_600 },
   },
   {
@@ -160,7 +182,10 @@ export const OVERRIDE_PROBES: OverrideProbe[] = [
     intent: 'Section ink bar is legible on a 4K branch display',
     component: 'tabs',
     // v15/MDC: the ink bar is the underline indicator content, whose thickness is
-    // a border-top width.
+    // a border-top width in Material's own rule — OV-10 redraws it as a 3px fill
+    // so the thickness is measurable here.
+    // `height` is the load-bearing half: the ink bar is brand red under the theme
+    // regardless of this rule, but Material's own bar is 2px.
     target: '.bofa-tabs:not(.bofa-legacy-shell) .mdc-tab-indicator__content--underline',
     expect: { height: '3px', 'background-color': RED_600 },
   },
@@ -195,6 +220,11 @@ export const OVERRIDE_PROBES: OverrideProbe[] = [
     component: 'datepicker',
     open: 'datepicker',
     target: '.mat-calendar-body-selected',
+    // KNOWN WEAK, same reason as OV-08: primary is brand red, so Material fills
+    // the selected day red on its own. The white foreground is ours (Material's
+    // contrast for this palette hue is also white, so treat the whole probe as a
+    // rendered-colour tripwire, not as proof the rule fires). Kept because the
+    // dark-surface run below is where this one earns its place.
     expect: { 'background-color': RED_600, color: 'rgb(255, 255, 255)' },
   },
   {
@@ -226,4 +256,37 @@ export const OVERRIDE_PROBES: OverrideProbe[] = [
     target: '[data-variant=compact] .mat-mdc-form-field-infix',
     expect: { 'padding-top': '6.4px', 'padding-bottom': '6.4px' },
   },
+  {
+    ov: 'OV-18',
+    intent: 'Legacy shell embeds tabs without a second divider line',
+    component: 'tabs',
+    // The `bofa-legacy-shell` variant renders on the tabs route. Material's own
+    // `.mat-tab-header` carries a 1px divider; inside the legacy shell the
+    // surrounding chrome already draws one, so ours must be 0. Measured, not
+    // assumed: OV-10 above asserts the non-legacy group, so the two variants
+    // pin each other.
+    target: '.bofa-tabs.bofa-legacy-shell .mat-tab-header',
+    expect: { 'border-bottom-width': '0px' },
+  },
 ];
+
+/**
+ * The subset re-asserted on the dark surface (`?theme=dark`).
+ *
+ * Selection rule, and it is deliberately narrow: a probe belongs here when its
+ * expected value is a **fixed brand constant or a geometry** — something our CSS
+ * states outright and which therefore must not move when the palette does.
+ * Probes whose expected value is a Material-derived colour are excluded,
+ * because the correct dark-theme value is *different* and asserting the light
+ * one would be a bug in the test, not a finding.
+ *
+ * What this buys: two of the three failure modes the external control run found
+ * (dead selector where the default coincides with the brand value; a
+ * comma-separated selector left half-migrated) are theme-dependent. Under a
+ * second palette the coincidence stops holding and the probe goes red. That is
+ * the class of defect a single-theme oracle cannot see — including a pixel
+ * oracle, which only ever screenshots the light theme here.
+ */
+export const DARK_PROBES: OverrideProbe[] = OVERRIDE_PROBES.filter((probe) =>
+  ['OV-05d', 'OV-07', 'OV-10', 'OV-11', 'OV-15', 'OV-17', 'OV-18'].includes(probe.ov)
+);

@@ -9,7 +9,16 @@ plugin now prints on **every** comparison, pass or fail. Reproduce with
 `npm run visual` (pinned container) or `npx nx e2e retail-banking-e2e
 --skip-nx-cache` (host renderer).
 
-Captures are 1280x720. Suite: 23 tests, 21 compared snapshots.
+Captures are 1280x720. The full command runs 55 tests: the 23-test image suite
+(21 compared snapshots plus two interaction tests) and 32 computed-style tests
+— 24 light-surface probes, 7 re-asserted on the dark surface, and one control
+that fails if the dark surface silently stopped rendering — the 24 computed-style
+override probes.
+
+**The raw transcripts for every number on this page are committed** under
+`docs/evidence/oracle-logs/` — the three repeat runs, the host-renderer run, the
+fault injection, and the delete-the-rule experiments, including the one that
+shows a probe *not* failing. See `oracle-logs/README.md`.
 
 ## 1. Repeatability inside the pinned renderer
 
@@ -83,3 +92,15 @@ for sub-pixel anti-aliasing if a future runner is not perfectly identical.
   first task is baseline coverage of the real customer journeys.
 - pixelmatch runs with `threshold: 0.05` per pixel. A colour change smaller
   than that distance on a handful of pixels is below the floor by construction.
+- **A regression confined to fewer than 40 pixels passes.** The budget is
+  absolute and whole-canvas, so a focus ring, a small icon, or a 2 px border on
+  one control sits under it on a 921,600-pixel capture. The injected faults
+  measured above are ~750 px — they demonstrate that detection works, not where
+  the threshold is. Two consequences, both deliberate: the computed-style
+  probes cover the small-but-meaningful class the pixel budget cannot (a 3 px
+  ink bar, a 28 px chip, a focus outline colour), and a real deployment should
+  add a per-region budget on the surfaces where 40 px is a lot — a payment
+  confirmation button is not a dashboard. The alternative, lowering the global
+  budget toward 0, buys precision with a flake risk on the first BofA runner
+  that is not byte-identical, and 0 px measured on one machine is not a licence
+  to assume it everywhere.

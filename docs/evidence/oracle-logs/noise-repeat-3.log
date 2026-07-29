@@ -1,0 +1,213 @@
+=== repeat-run-3 :: 2026-07-29T05:41:47Z ===
+
+> bofa-digital-banking@0.0.0 visual
+> docker run --rm -u $(id -u):$(id -g) -e HOME=/tmp -e CYPRESS_CACHE_FOLDER=/root/.cache/Cypress -v "$PWD/..":/w -w /w/bofa-digital-banking --entrypoint bash cypress/included@sha256:058d1834239bf09b381325b8369d05e9e0516a46b65b32e6dc0c991801dc517a -c 'npx nx e2e retail-banking-e2e --skip-nx-cache'
+
+
+> nx run retail-banking-e2e:e2e
+
+- Generating browser application bundles (phase: setup)...
+✔ Browser application bundle generation complete.
+
+Initial Chunk Files                                        | Names                    |  Raw Size
+vendor.js                                                  | vendor                   |   4.97 MB | 
+styles.css, styles.js                                      | styles                   | 313.48 kB | 
+polyfills.js                                               | polyfills                | 239.94 kB | 
+main.js                                                    | main                     | 147.15 kB | 
+runtime.js                                                 | runtime                  |  12.61 kB | 
+
+                                                           | Initial Total            |   5.66 MB
+
+Lazy Chunk Files                                           | Names                    |  Raw Size
+apps_retail-banking_src_app_showcase_showcase_module_ts.js | showcase-showcase-module |  46.74 kB | 
+
+Build at: 2026-07-29T05:42:01.315Z - Hash: bdb6573e17024b83 - Time: 11552ms
+
+** Angular Live Development Server is listening on localhost:4200, open your browser on http://localhost:4200/ **
+
+
+✔ Compiled successfully.
+libva error: vaGetDriverNameByIndex() failed with unknown libva error, driver_name = (null)
+[221:0729/054202.199919:ERROR:gpu_memory_buffer_support_x11.cc(44)] dri3 extension not supported.
+====================================================================================================
+  (Run Starting)
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Cypress:        10.11.0                                                                        │
+  │ Browser:        Electron 106 (headless)                                                        │
+  │ Node Version:   v16.16.0 (/usr/local/bin/node)                                                 │
+  │ Specs:          2 found (design-system.cy.ts, override-contract.cy.ts)                         │
+  │ Searched:       src/**/*.cy.{js,jsx,ts,tsx}                                                    │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+────────────────────────────────────────────────────────────────────────────────────────────────────
+                                                                                                    
+  Running:  design-system.cy.ts                                                             (1 of 2)
+
+  design system — visual baseline
+[visual] button-default: 0 px (budget 40)
+    ✓ button renders to spec (816ms)
+[visual] form-field-default: 0 px (budget 40)
+    ✓ form-field renders to spec (430ms)
+[visual] select-default: 0 px (budget 40)
+    ✓ select renders to spec (350ms)
+[visual] datepicker-default: 0 px (budget 40)
+    ✓ datepicker renders to spec (327ms)
+[visual] table-default: 0 px (budget 40)
+    ✓ table renders to spec (340ms)
+[visual] dialog-default: 0 px (budget 40)
+    ✓ dialog renders to spec (339ms)
+[visual] tabs-default: 0 px (budget 40)
+    ✓ tabs renders to spec (538ms)
+[visual] chips-default: 0 px (budget 40)
+    ✓ chips renders to spec (393ms)
+[visual] slide-toggle-default: 0 px (budget 40)
+    ✓ slide-toggle renders to spec (347ms)
+[visual] autocomplete-default: 0 px (budget 40)
+    ✓ autocomplete renders to spec (360ms)
+[visual] paginator-default: 0 px (budget 40)
+    ✓ paginator renders to spec (315ms)
+[visual] currency-input-default: 0 px (budget 40)
+    ✓ currency-input renders to spec (330ms)
+[visual] responsive-grid-default: 0 px (budget 40)
+    ✓ responsive-grid renders to spec (344ms)
+    ✓ form field renders its disabled and error states (263ms)
+    ✓ button exposes a disabled state (109ms)
+[visual] responsive-grid-md: 0 px (budget 40)
+    ✓ responsive grid collapses below the md breakpoint (297ms)
+[visual] responsive-grid-sm: 0 px (budget 40)
+    ✓ responsive grid hides the detail pane below the sm breakpoint (284ms)
+  design system — overlay and interaction states
+[visual] dialog-open: 0 px (budget 40)
+    ✓ opens the real dialog overlay (408ms)
+[visual] select-panel-open: 0 px (budget 40)
+    ✓ opens the select panel (432ms)
+[visual] autocomplete-panel-open: 0 px (budget 40)
+    ✓ opens the autocomplete panel (499ms)
+[visual] datepicker-calendar-open: 0 px (budget 40)
+    ✓ opens the datepicker calendar (601ms)
+[visual] button-focus-ring: 0 px (budget 40)
+    ✓ shows the keyboard focus ring on the primary button (411ms)
+  retail banking — customer surface
+[visual] accounts-dashboard: 0 px (budget 40)
+    ✓ renders the accounts dashboard (416ms)
+  23 passing (9s)
+  (Results)
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Tests:        23                                                                               │
+  │ Passing:      23                                                                               │
+  │ Failing:      0                                                                                │
+  │ Pending:      0                                                                                │
+  │ Skipped:      0                                                                                │
+  │ Screenshots:  21                                                                               │
+  │ Video:        false                                                                            │
+  │ Duration:     9 seconds                                                                        │
+  │ Spec Ran:     design-system.cy.ts                                                              │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+  (Screenshots)
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__button-default.png                                                            
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__form-field-default.png                                                        
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__select-default.png                                                            
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__datepicker-default.png                                                        
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__table-default.png                                                             
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__dialog-default.png                                                            
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__tabs-default.png                                                              
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__chips-default.png                                                             
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__slide-toggle-default.png                                                      
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__autocomplete-default.png                                                      
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__paginator-default.png                                                         
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__currency-input-default.png                                                    
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__responsive-grid-default.png                                                   
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-      (768x720)
+     system.cy.ts/vr__responsive-grid-md.png                                                        
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-      (560x720)
+     system.cy.ts/vr__responsive-grid-sm.png                                                        
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__dialog-open.png                                                               
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__select-panel-open.png                                                         
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__autocomplete-panel-open.png                                                   
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__datepicker-calendar-open.png                                                  
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__button-focus-ring.png                                                         
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__accounts-dashboard.png                                                        
+────────────────────────────────────────────────────────────────────────────────────────────────────
+                                                                                                    
+  Running:  override-contract.cy.ts                                                         (2 of 2)
+
+  design system — override contract (computed styles)
+    ✓ OV-01: Disabled field label stays legible (WCAG AA) against the slate palette (558ms)
+    ✓ OV-01b: Field underline uses the BoA slate rule, not the Material default (152ms)
+    ✓ OV-02: Error text sits on a 20px line box so field height never jumps on validation (147ms)
+    ✓ OV-03: Primary button is brand red with 8px optical icon/label spacing (130ms)
+    ✓ OV-04: Keyboard focus ring is visible on white and on slate-50 (216ms)
+    ✓ OV-05: Statement rows keep fixed heights so 50 rows paginate predictably in print (176ms)
+    ✓ OV-05b: Currency figures use tabular numerals and right-align on the decimal (188ms)
+    ✓ OV-05c: Header cells carry the slate-900 brand weight, not the Material grey (179ms)
+    ✓ OV-05d: Zebra striping on even rows for statement scanability (147ms)
+    ✓ OV-06: Sort arrow is dimmed until hover so it does not read as an active filter (111ms)
+    ✓ OV-07: Active option in the account picker is tinted brand red, not Material grey (273ms)
+    ✓ OV-08: Selected option is brand red, not accent navy (navy reads as a link here) (283ms)
+    ✓ OV-09: Consent toggle is unambiguous at arm’s length on a tablet (125ms)
+    ✓ OV-09b: A granted consent reads green, not brand red (111ms)
+    ✓ OV-10: Section ink bar is legible on a 4K branch display (180ms)
+    ✓ OV-11: Category chips keep a 28px rhythm inside the filter drawer (132ms)
+    ✓ OV-12: Step-up dialog matches the mobile MFA modal: tight padding, squared corners (189ms)
+    ✓ OV-12b: A short confirmation body never acquires an inner scrollbar (179ms)
+    ✓ OV-13: Selected day is brand red; today is outlined, not a second filled circle (356ms)
+    ✓ OV-14: Range label stays on screen on a 1280px branch terminal (109ms)
+    ✓ OV-15: Payee panel never covers the Confirmation of Payee copy (256ms)
+    ✓ OV-16: Amount entry right-aligns on tabular numerals (114ms)
+    ✓ OV-17: Compact density is materially shorter than the default field (112ms)
+    ✓ OV-18: Legacy shell embeds tabs without a second divider line (114ms)
+  design system — override contract (dark surface)
+    ✓ the dark surface is actually dark (else every probe below is vacuous) (415ms)
+    ✓ OV-05d [dark]: Zebra striping on even rows for statement scanability (165ms)
+    ✓ OV-07 [dark]: Active option in the account picker is tinted brand red, not Material grey (252ms)
+    ✓ OV-10 [dark]: Section ink bar is legible on a 4K branch display (106ms)
+    ✓ OV-11 [dark]: Category chips keep a 28px rhythm inside the filter drawer (111ms)
+    ✓ OV-15 [dark]: Payee panel never covers the Confirmation of Payee copy (249ms)
+    ✓ OV-17 [dark]: Compact density is materially shorter than the default field (109ms)
+    ✓ OV-18 [dark]: Legacy shell embeds tabs without a second divider line (223ms)
+  32 passing (6s)
+  (Results)
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Tests:        32                                                                               │
+  │ Passing:      32                                                                               │
+  │ Failing:      0                                                                                │
+  │ Pending:      0                                                                                │
+  │ Skipped:      0                                                                                │
+  │ Screenshots:  0                                                                                │
+  │ Video:        false                                                                            │
+  │ Duration:     6 seconds                                                                        │
+  │ Spec Ran:     override-contract.cy.ts                                                          │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+====================================================================================================
+  (Run Finished)
+       Spec                                              Tests  Passing  Failing  Pending  Skipped  
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ ✔  design-system.cy.ts                      00:09       23       23        -        -        - │
+  ├────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ ✔  override-contract.cy.ts                  00:06       32       32        -        -        - │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+    ✔  All specs passed!                        00:15       55       55        -        -        -  
+
+ 
+
+ >  NX   Successfully ran target e2e for project retail-banking-e2e
+
+

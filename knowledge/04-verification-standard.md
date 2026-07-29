@@ -7,7 +7,7 @@
 1. `npx nx run-many --target=build --all` passes.
 2. `npx nx run-many --target=test --all` passes.
 3. `npm run visual` passes, or every visual diff is explained in the PR. It runs Cypress in the
-   pinned `cypress/included:10.11.0` image with `--skip-nx-cache`: pixel baselines are only
+   pinned `cypress/included@sha256:058d1834…` image (digest, not the mutable tag) with `--skip-nx-cache`: pixel baselines are only
    comparable against a fixed renderer, and a cached Nx result is not a run.
 4. Any change to a `ui-core` public API has a characterisation test.
 5. The PR contains a per-file rationale for everything under `theming/`.

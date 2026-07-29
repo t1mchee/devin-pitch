@@ -355,6 +355,39 @@ is a gate: **a computed-style assertion for every custom override, captured befo
 migration and re-asserted after.** That single check would have caught §5.1, §5.2 and §5.3
 automatically, on any codebase, commented or not.
 
+## 10. Gaps in this evidence pack, audited afterwards
+
+A reviewer went through every claim above against the committed files. Two things worth having on
+the record, one in each direction.
+
+**§5.1 / §5.2 are fully corroborated pre-fix, contrary to a first reading.** The three-state
+measurement is committed, and this is the sequence to quote:
+
+| measurement | v14 | v15 after schematic (pre-fix) | v15 after fix |
+|---|---|---|---|
+| table hover row background | `rgb(232, 234, 246)` | **`rgb(229, 229, 229)`** | `rgb(232, 234, 246)` |
+| `mat-nav-list` width / max-width | 350 px / `350px` | **1166 px / `none`** | 350 px / `350px` |
+
+Files: `evidence/runtime-measurements-v14.json`, `-v15-after-schematic.json`,
+`-v15-after-fixes.json`. The middle column is the regression, measured before it was fixed, and it
+is the whole reason this control run is worth more than the migrations we ran on our own repo: the
+brand-red-to-grey hover and the full-bleed list both **passed build, unit tests and lint**.
+
+**§5.3 (top menu) is the one claim not fully backed by a committed artefact.** `topmenu-v14.json`
+and `topmenu-v15-after-fixes.json` are both here; there is **no** `topmenu-v15-after-schematic.json`.
+The `v15: rgb(0, 0, 0)` figure in §5.3 was read in-session and not written to a file, and the
+`topmenu` key in the three `runtime-measurements-*.json` files reads `"no topmenu"` — the probe ran
+on a route where the top menu was not mounted. So: the *fix* is verified (`rgba(0, 0, 0, 0.87)`
+restored, committed), and the *pre-fix* value is self-reported. Do not present §5.3 as measured
+evidence; present it as a mechanism (an MDC rule outranking a correctly-renamed override) whose
+before-state was recorded loosely. Reproducing it is a ten-minute job on the branch, and it is not
+done here rather than being quietly implied.
+
+Also, so nobody has to count: **5 of 17 routes have committed before/after screenshot pairs**
+(`dashboard`, `material-card`, `material-form-field`, `material-list`, `tables-kitchen-sink`). The
+other twelve routes have pixel counts in `evidence/pixel-diffs.md` but no committed images. The
+counts are reproducible from the branch; they are not independently verified.
+
 ---
 
 *Wall clock: 03:15–04:25 UTC, ~1h10m, of which ~25m was baseline + environment (Chrome
