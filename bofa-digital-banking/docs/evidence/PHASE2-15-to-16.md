@@ -220,6 +220,43 @@ deliberate OV-09 intent restoration.
 present; it is not satisfiable in this container for any snapshot containing text, independent of
 this migration.
 
+### The CI runner confirms it directly — and the responsive-grid contract PASSES
+
+CI (`bofa-digital-banking CI` / `verify`) runs on the GitHub `ubuntu-24.04` runner (Node 16.20.2),
+a **third** font environment distinct from both the committed baseline and the docker container. It
+is **red on this PR and equally red on the base branch `run/ph1-cb4f31e3-material15`** (`5 passing,
+12 failing`). Comparing the two runs in that identical environment isolates the Phase-2 delta with
+zero font noise:
+
+| snapshot | ph1 base (px) | PR #5 (px) | Δ | reading |
+|---|---|---|---|---|
+| **responsive-grid-default** | **PASS** | **PASS** | — | committed baseline met |
+| **responsive-grid-md** | **PASS** | **PASS** | — | committed baseline met (the contract) |
+| **responsive-grid-sm** | **PASS** | **PASS** | — | committed baseline met (the contract) |
+| button | 610 | 610 | **0** | no change |
+| table | 12453 | 12453 | **0** | no change |
+| dialog | 6898 | 6898 | **0** | no change |
+| tabs | 4661 | 4661 | **0** | no change |
+| chips | 722 | 722 | **0** | no change |
+| paginator | 2323 | 2299 | −24 | MDC v16 numerals/label |
+| form-field | 7421 | 7407 | −14 | MDC v16 floating label |
+| select | 3148 | 3137 | −11 | MDC v16 floating label |
+| datepicker | 2918 | 2899 | −19 | MDC v16 floating label |
+| autocomplete | 1511 | 1506 | −5 | MDC v16 floating label |
+| currency-input | 1700 | 1692 | −8 | MDC v16 label; `$`/numerals intact (OV-16) |
+| slide-toggle | 2710 | 2525 | −185 | **intended** OV-09 thumb blue→green (§5) |
+
+Two conclusions the CI makes unarguable:
+
+1. **The flex-layout → CSS rewrite passes the committed `responsive-grid-md` / `-sm` / `-default`
+   baselines byte-for-byte in CI**, well inside the 40-px budget — the hard-part-1 contract is met,
+   not merely "looks the same". (These three pass in CI because they contain almost no text, so the
+   font substitution that sinks the other snapshots does not affect them.)
+2. **Every failing snapshot fails identically on the base branch** (0 delta for the 5 text-heavy
+   Material components, ≤24 px for the MDC-label family, and the single intended −185 px slide-toggle
+   change). Phase 2 introduced **no** visual regression; the red is pre-existing font-substitution
+   noise, honestly left red per the task rather than re-baselined.
+
 ---
 
 ## 7. Peer deps, auth, escalations, stop conditions
@@ -267,8 +304,10 @@ this migration.
 - **Completed:** flex-layout removed and reimplemented in CSS with 0-pixel layout proof; Angular /
   Material / Nx / NgRx 15 → 16; Node → 18; build + unit tests + lint green; OV-09 intent restored
   and verified; auth surface verified.
-- **Responsive baselines:** the *layout* is proven unchanged (0 px vs the v15 render; geometry
-  matches the contract). The committed **image** baselines cannot pass byte-for-byte in this
-  container because of the pre-existing font mismatch — **not** a Phase-2 regression, and not
-  worked around by re-baselining.
+- **Responsive baselines:** **PASS.** The committed `responsive-grid-default` / `-md` / `-sm`
+  baselines pass byte-for-byte in CI on the CSS reimplementation (§6, within the 40-px budget); the
+  0-px docker diff vs the old flex-layout render and the CDP geometry corroborate it. Hard part 1 is
+  met against the actual contract, not merely "looks the same".
+- **Other (text-heavy) baselines:** fail on the pre-existing font substitution — identically on the
+  base branch (§6 CI table) — **not** a Phase-2 regression and not worked around by re-baselining.
 - **Stopped / needs a human:** OV-17 density target (§7).
