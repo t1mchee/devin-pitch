@@ -23,7 +23,7 @@ work needs `--legacy-peer-deps` because of `@angular/flex-layout@14.0.0-beta.41`
 npx nx run-many --target=build --all --skip-nx-cache   # expect: 6 projects
 npx nx run-many --target=test --all --skip-nx-cache    # expect: 6 projects, 8 suites / 43 tests
 npx nx run-many --target=lint --all --skip-nx-cache    # expect: 7 projects, 0 errors / 3 warnings
-npm run visual                                         # expect: 23 + 32 passing, 21 snapshots (preferred)
+npm run visual                                         # expect: 23 + 36 passing, 21 snapshots (preferred)
 ```
 
 The **test tally is easy to get wrong**, and it changes as specs are added — always re-derive it,
@@ -266,8 +266,8 @@ console.log(n,(n/(a.width*a.height)*100).toFixed(4)+'%');"
 
 `apps/retail-banking-e2e/src/e2e/override-contract.cy.ts` + `src/support/override-probes.ts` hold 22
 probes, one per `OV-nn` intent, asserting `getComputedStyle` values on the running app. Total suite
-is **55 tests = 23 snapshot tests (21 snapshots) + 32 probes (24 light, 7 dark, 1 dark-surface
-anti-vacuity control)**.
+is **59 tests = 23 snapshot tests (21 snapshots) + 36 computed-style tests (24 light, 8 dark, 1
+dark-surface anti-vacuity control, 3 WCAG AA contrast ratios)**.
 
 Run only this suite (much faster than the whole thing) in the pinned container. **The `--spec` path
 is workspace-relative — `src/e2e/...` silently finds no specs:**
@@ -360,8 +360,80 @@ wmctrl -r :ACTIVE: -b remove,maximized_vert,maximized_horz
 xdotool getactivewindow windowsize 900 900
 ```
 
-Verify with `window.innerWidth` before judging, and re-maximize afterwards. At ~600px the
-responsive-grid Detail pane is **removed from the DOM**, not just hidden — check the HTML, not pixels.
+Verify with `window.innerWidth` before judging, and re-maximize afterwards.
+
+At ~600px the responsive-grid Detail pane is **hidden with `display:none`, NOT removed from the
+DOM** — the wrapper `.bofa-responsive-grid__detail` gets flex-layout's `fxHide.lt-sm`. Earlier
+rounds of this skill claimed DOM removal; that was wrong. The trap that caused it: the **stripped
+page HTML returned alongside screenshots omits `display:none` subtrees**, so "absent from the HTML I
+was shown" is NOT "absent from the DOM". To judge hide-vs-remove, walk the ancestor chain in the
+console and read `display` at each level:
+
+```js
+let el = document.querySelectorAll('bofa-responsive-grid section')[1], out = [];
+while (el && el !== document.documentElement) {
+  out.push([el.tagName, el.className, getComputedStyle(el).display]); el = el.parentElement;
+}
+out // the `display:none` ancestor is the real mechanism
+```
+
+A `0×0` rect with `offsetParent === null` while the element's own `display` is `flex` means an
+*ancestor* is hidden — keep walking up.
+
+## Dark theme (`?theme=dark`): what it does and does not cover
+
+`.bofa-theme-dark` is built with `mat.all-component-colors`, **not** `all-component-themes`, so it
+re-emits **colours only**. Prove it from the compiled bundle rather than arguing from source — parse
+`dist/apps/retail-banking/styles.*.css` for rules scoped under `.bofa-theme-dark` and collect the
+property names; expect ~397 rules and no `height`/`min-height`/`max-height`/`padding*`/
+`border-bottom-width` (only `border-radius` sneaks in). Consequences:
+
+- A dark probe asserting a **geometry** cannot fail dark-only; it fails symmetrically with its light
+  twin. Those are **duplicates, not vacuous** — a materially different claim, so say which you mean.
+- A dark probe asserting a **Material-primary-derived colour** is vacuous in dark too, because
+  primary is BofA red in both themes (OV-10's `background-color`).
+- The page `body` background stays white under `?theme=dark`. The dark surface is a partial QA
+  surface, not a shipped customer theme — scope severity accordingly.
+
+**Always check dark mode for contrast, not just for asserted values.** A brand-constant override that
+is correct in light can become illegible in dark: OV-05d pins the zebra row background to light
+slate-50 while the dark palette sets text to white → **1.07:1** contrast, unreadable rows, and the
+dark probe **asserts that state as correct** so the suite stays green. Compute ratios in the console
+(WCAG AA body text needs 4.5:1) instead of eyeballing:
+
+```js
+const lum = ([r,g,b]) => { const f=c=>{c/=255; return c<=0.03928?c/12.92:Math.pow((c+0.055)/1.055,2.4);};
+  return 0.2126*f(r)+0.7152*f(g)+0.0722*f(b); };
+const ratio = (a,b) => { const L1=Math.max(lum(a),lum(b)), L2=Math.min(lum(a),lum(b));
+  return ((L1+0.05)/(L2+0.05)).toFixed(2); };
+```
+
+The anti-vacuity control is real and worth respecting: break the dark theme two independent ways
+(rename `.bofa-theme-dark` in `bofa-theme.scss`; change `get('theme')` in `app.component.ts`) and the
+control fails both times, while **all 7 dark probes pass silently** without it.
+
+## `--ignore-scripts` installs defer ngcc to build time
+
+`npm ci --legacy-peer-deps --ignore-scripts` skips `postinstall`
+(`decorate-angular-cli.js && ngcc`). Build, unit tests and `npm run visual` all still pass (verified
+55/55 from a genuinely emptied `node_modules`). Confirm scripts really were skipped via: no
+`node_modules/.ngcc_entry_points.json`, zero `__ivy_ngcc__` dirs, and `node_modules/.bin/ng` not
+decorated. Expect `Another process, with id …, is currently running ngcc` lock notices on the first
+parallel build — the CLI runs ngcc lazily. Harmless here (exit 0, no stale `.ngcc_lock_file`) but a
+plausible CI flake source, so don't mistake it for a real failure.
+
+## `visual-diffs/*.diff.png` only appear on FAILURE
+
+The plugin writes a diff PNG only when `diffPixels > MAX_DIFF_PIXELS`. So a full set of 21 diffs means
+some run failed all 21 — almost always a **host-renderer** run (455–5,963 px drift), not a real
+regression. Check mtimes against your own pinned runs before reporting anything; a passing pinned run
+writes none. The dir is gitignored.
+
+## Verifying baseline integrity without fooling yourself
+
+`md5sum <dir>/*.png | md5sum` embeds the **filenames**, so hashing from the repo root vs the workspace
+dir yields different manifest hashes for identical files. Always hash from the same cwd, and treat
+`git status --porcelain <baselines dir>` as authoritative instead.
 
 ## Repo rules to respect while testing
 

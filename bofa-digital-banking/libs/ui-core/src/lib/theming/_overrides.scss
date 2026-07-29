@@ -79,6 +79,14 @@
     color: bofa.$boa-slate-900;
   }
 
+  // OV-05c, dark surface. Same lesson as OV-05d below, found by the same
+  // WCAG assertion: slate-900 header text on Material's dark surface is
+  // 1.80:1. The weight is the palette-independent half of this intent; the
+  // colour is not.
+  .bofa-theme-dark & .mat-header-cell {
+    color: bofa.$boa-slate-100;
+  }
+
   .mat-header-cell,
   .mat-cell {
     padding: 0 16px 0 0;
@@ -103,6 +111,21 @@
 
   .mat-row:nth-child(even) {
     background: bofa.$boa-slate-50;
+  }
+
+  // OV-05d, dark surface. The *intent* is contrast between adjacent statement
+  // rows; the slate-50 value only delivers it under a light palette. Under the
+  // dark palette Material paints row text white, so a near-white stripe renders
+  // transaction amounts at 1.07:1 against WCAG AA's 4.5:1 — legible in the light
+  // theme, unreadable in the dark one.
+  //
+  // Found by hostile review of the dark-theme probe that was asserting the light
+  // value as correct: the gate could not see the defect because it was enforcing
+  // it. Hence the rule the probe file now encodes — a *colour* constant is
+  // palette-dependent and must never be asserted across themes; a *geometry* is
+  // not. The intent is unchanged; only the value that satisfies it is.
+  .bofa-theme-dark & .mat-row:nth-child(even) {
+    background: bofa.$boa-slate-750;
   }
 
   // OV-06 — Sort arrows are dimmed until hover; a permanently visible arrow tested

@@ -68,9 +68,29 @@ function assertProbe(probe: OverrideProbe, theme: 'light' | 'dark'): void {
   // onto an element that no longer exists.
   cy.get(probe.target).should('exist');
 
-  Object.entries(probe.expect).forEach(([property, value]) => {
+  // Colour expectations are palette-dependent; geometry is not. Asserting the
+  // light constant on the dark surface is how OV-05d spent a round certifying
+  // an unreadable statement row as correct.
+  const expected = theme === 'dark' && probe.expectDark ? probe.expectDark : probe.expect;
+
+  Object.entries(expected).forEach(([property, value]) => {
     cy.get(probe.target).should('have.css', property, value);
   });
+}
+
+/** WCAG 2.1 relative luminance / contrast ratio, from computed `rgb()` strings. */
+function contrastRatio(foreground: string, background: string): number {
+  const luminance = (colour: string): number => {
+    const [r, g, b] = (colour.match(/\d+(\.\d+)?/g) ?? []).slice(0, 3).map(Number);
+    const channel = (value: number): number => {
+      const s = value / 255;
+      return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+    };
+    return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
+  };
+
+  const [lighter, darker] = [luminance(foreground), luminance(background)].sort((a, b) => b - a);
+  return (lighter + 0.05) / (darker + 0.05);
 }
 
 describe('design system — override contract (computed styles)', () => {
@@ -103,5 +123,38 @@ describe('design system — override contract (dark surface)', () => {
 
   DARK_PROBES.forEach((probe) => {
     it(`${probe.ov} [dark]: ${probe.intent}`, () => assertProbe(probe, 'dark'));
+  });
+
+  // Why a ratio and not another constant. A colour constant asserts what someone
+  // wrote down; it cannot notice that the value has become unreadable against a
+  // foreground the *library* controls. That is not hypothetical: this suite
+  // shipped one round asserting the light zebra stripe on the dark surface, so
+  // OV-05d was green while two of five transaction rows rendered at 1.07:1.
+  // A migration moves library foregrounds. The requirement — a customer can read
+  // the amount — survives that; a hard-coded pair of colours does not.
+  ([
+    ['even (striped) statement row', '.bofa-table .mat-row:nth-child(even) .mat-cell'],
+    ['odd statement row', '.bofa-table .mat-row:nth-child(odd) .mat-cell'],
+    ['header cell', '.bofa-table .mat-header-cell'],
+  ] as const).forEach(([label, selector]) => {
+    it(`statement text on the dark surface clears WCAG AA — ${label}`, () => {
+      cy.visitShowcase('table', 'dark');
+      cy.get(selector)
+        .first()
+        .then(($cell) => {
+          const colour = getComputedStyle($cell[0]).color;
+          // Cells are transparent; the paint comes from the row, so walk up to
+          // the first ancestor that actually declares a background.
+          let node: HTMLElement | null = $cell[0];
+          let background = 'rgba(0, 0, 0, 0)';
+          while (node && (background === 'rgba(0, 0, 0, 0)' || background === 'transparent')) {
+            background = getComputedStyle(node).backgroundColor;
+            node = node.parentElement;
+          }
+          const ratio = contrastRatio(colour, background);
+          cy.log(`${label}: ${colour} on ${background} = ${ratio.toFixed(2)}:1`);
+          expect(ratio, `${label}: ${colour} on ${background}`).to.be.at.least(4.5);
+        });
+    });
   });
 });

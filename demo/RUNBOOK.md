@@ -32,8 +32,9 @@ recorded reason is the actual migration risk, not the version number.**
 ## 3:00–4:30 — The oracle, and one deliberate failure
 
 ```bash
-npm run visual        # 55 tests: 21 snapshots + 32 computed-style probes (24 light,
-                      # 7 dark + 1 anti-vacuity control), pinned container
+npm run visual        # 59 tests: 23 image tests over 21 compared snapshots,
+                      # + 36 computed-style tests (24 light, 8 dark,
+                      # 1 anti-vacuity control, 3 WCAG contrast ratios)
 ```
 
 While it runs, say what is in it: the components, **the four real overlays** — dialog, select
@@ -41,7 +42,7 @@ panel, autocomplete panel, calendar — the keyboard focus ring, two breakpoints
 itself. *The dialog is opened, not drawn: a hand-written copy of Material's DOM would keep matching
 after MDC replaced the real one.*
 
-Then point at the second suite, because it is the better story: **32 computed-style probes**, one
+Then point at the second suite, because it is the better story: **36 computed-style tests**, one
 per `OV-nn` intent, asserting the value on the running app. Say why it exists — the control run on
 somebody else's design system found three theming regressions a screenshot diff cannot see — and
 then say what it did here: **it found three dead overrides in our own library on its first run**,
@@ -50,10 +51,26 @@ colour. `docs/evidence/OVERRIDE-CONTRACT-dead-rules.md`. That is the sentence th
 remembers: *the gate we built to check the migration found bugs in the thing we were migrating.*
 
 If they ask what the gate still cannot see — and the Chief Architect will — answer before they
-finish: the control run's worst finding was invisible in the light theme, so seven probes now run
-against the dark palette too, behind a test that proves the dark surface actually rendered. And the
-two probes that pass whether or not our rule exists are labelled `KNOWN WEAK` in the file, with the
-log of one *not failing* committed at `docs/evidence/oracle-logs/delete-rule-ov08.log`.
+finish, and tell this one against yourself, because it is the best thing in the pack:
+
+**the dark block shipped the exact defect it was built to catch.** The control run's worst finding
+was invisible in the light theme, so eight probes now run against the dark palette. The first
+version asserted the *light* zebra colour there. Material paints dark-theme row text white, so two
+of five transaction rows rendered at **1.07:1** contrast — unreadable banking data — and OV-05d was
+**green, because it was asserting the value that caused it.** A hostile reviewer looking at the
+screen found it; no gate did.
+
+Then the fix, which is the actual lesson: three **WCAG AA contrast ratios** are now asserted on the
+dark statement table, and colour expectations are per-theme. A constant records what someone wrote
+down; a ratio records what the customer can read, and only one of those survives a migration moving
+a library foreground. `docs/evidence/oracle-logs/dark-contrast-regression.log` shows the assertion
+firing at 1.07:1 when the fix is removed.
+
+And be precise about how much the dark block buys: **three probes, not eight.** Three of the eight
+are geometry duplicates that cannot fail dark-only — measured from the compiled bundle, not assumed
+— and OV-10's colour half is vacuous in both themes. The two probes that pass whether or not our
+rule exists are labelled `KNOWN WEAK` in the file, with the log of one *not failing* committed at
+`docs/evidence/oracle-logs/delete-rule-ov08.log`.
 
 Then change `.bofa-table .mat-header-cell` colour to brand red and re-run:
 

@@ -24,6 +24,28 @@ they could not recover the intended density level. `AGENTS.md` forbids deleting 
 green, and the runs are the evidence that the instruction holds. Also: no baseline was regenerated
 in either run, so the failing snapshots are still failing in CI, visibly.
 
+### "Your own gate can be wrong, and then you'd never know."
+
+Correct, and it happened here — volunteer it. The computed-style contract gained a dark-theme pass
+because the external control run's worst regression was invisible in the light theme. The first
+version of that pass asserted the **light** zebra-stripe colour on the dark surface, where Material
+paints row text white: two of five transaction rows rendered at **1.07:1** against WCAG AA's 4.5:1,
+unreadable, and the probe was green *because it asserted the value that caused it*. A hostile
+reviewer found it by looking at the screen. No gate did.
+
+What that changes, concretely: the dark statement table now carries three **WCAG AA contrast
+ratios**, not just colour constants, and colour expectations are per-theme
+(`expectDark`). A constant records what someone wrote down; a ratio records what the customer can
+read, and a migration that moves a library foreground keeps the constant right and makes the render
+wrong. `docs/evidence/OVERRIDE-CONTRACT-dead-rules.md`, `oracle-logs/dark-contrast-regression.log`.
+
+The general answer, which is the one that should land: **every gate in this repository has a
+published failure.** The pixel budget has a documented blind spot under 40 px, two probes are
+labelled `KNOWN WEAK` with the log of one not-failing committed, three of the eight dark probes are
+disclosed as geometry duplicates, and this one encoded a defect. That is the standard to hold us to
+during the pilot — not "the gate is green", but "someone has tried to defeat the gate and written
+down what worked".
+
 ### "Visual regression suites are flaky. You'll re-baseline until it's green."
 
 Two things. First, the budget is absolute — 40 pixels — not a percentage: an earlier ratio budget
