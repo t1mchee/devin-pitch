@@ -40,10 +40,16 @@ there so you can judge that yourself — the diffs differ between runs, the *que
 
 ### "Can it run inside our network, against our internal registry?"
 
-The library is consumed as a private package in this repo's model, and the workspace is configured
-against a private registry rather than the public one. Anything beyond that — your egress rules,
-your artifact hosts, your identity provider — I don't know, and I'll come back with a written
-answer rather than guess in the room.
+Straight answer on this repo first: it does **not** configure a private registry. There is no
+`.npmrc`, and `package-lock.json` resolves against public npm. `@bofa/ui-core` is a workspace
+library consumed through a TypeScript path mapping — which models the fan-out and the build
+coupling, not your artifact hosting. Pointing it at an internal registry is an `.npmrc` and a
+publish target; I have not done it here and I am not going to claim I have.
+
+What I can say about the agent side is scoped in `docs/meeting/security-qa.md`: what this
+repository evidences, and what your team has to decide before a pilot. Anything about your egress
+rules, artifact hosts or identity provider I will come back with in writing rather than guess in
+the room.
 
 ### "Who is accountable when it breaks production?"
 

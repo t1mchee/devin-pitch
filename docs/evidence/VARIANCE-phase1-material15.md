@@ -2,7 +2,13 @@
 
 **Task given to each run:** the parameterised `ng-upgrade-consumer` playbook, `TARGET_VERSION=15`,
 against `bofa-digital-banking` at Angular/Material 14. Each run got its own machine, its own branch
-and no access to the others. Nothing below is estimated — every number is from the run's own PR.
+and no access to the others.
+
+Every pixel count, override tally and terminal state below is read from that run's own PR or
+session. Where a figure is not directly sourced it says so rather than being filled in: wall clock
+is session start-to-last-message and only Run B's is recorded, and Run A's elapsed time is not
+reported here because the session was interleaved with unrelated work and the elapsed figure would
+not mean what a reader assumes it means.
 
 | | Run A | Run B | Run C |
 |---|---|---|---|
@@ -14,18 +20,33 @@ and no access to the others. Nothing below is estimated — every number is from
 | Overrides migrated | 16 / 18 | 17 / 18 | — |
 | Overrides refused | OV-17, OV-18 | OV-17 | — |
 | Baselines regenerated | **no** | **no** | — |
-| Wall clock | — | 18 min | — |
+| Wall clock | not reported (see above) | 18 min (session start → final message) | — |
+| CI visual job | did not run to completion | did not run to completion | — |
 
 ## What the two completed runs agreed on
 
 - **Neither regenerated a baseline to get green.** Both left CI red on exactly the snapshots MDC
   changed and asked whether the appearance change is approved. That is the behaviour the repo's
   `AGENTS.md` demands, and it is the single most important result on this page.
-- **Both refused OV-17.** v14 expressed "compact" through `.mat-form-field-infix` padding and the
-  border-top label spacer; MDC has neither and quantises height through `mat.form-field-density`
-  (56/52/48/44/40 px). The override comment says "tightened" but not to what height, and no
-  baseline exercises the compact variant, so the level cannot be recovered from the repository.
-  Both runs left the rule inert and marked rather than deleting it or guessing a level.
+- **Both refused OV-17 — and both gave a reason that is factually wrong.** v14 expressed "compact"
+  through `.mat-form-field-infix` padding and the border-top label spacer; MDC has neither and
+  quantises height through `mat.form-field-density` (56/52/48/44/40 px). That part is correct. Both
+  runs then justified stopping with "no baseline exercises the compact variant", and that is false:
+  `showcase.component.html` renders `<bofa-form-field [compact]="true">`, the component emits
+  `.bofa-density-compact`, and the compact field is visible in `form-field-default.png`. **A human
+  review caught this, not the agent, and not a test.**
+
+  What it means: the target density level *is* recoverable — measure the compact field in the
+  committed baseline and pick the `mat.form-field-density` step that reproduces it. The correct
+  outcome was a proposal with a measured level and a visual diff, not a stop. The stop was safe
+  (nothing was deleted, nothing was guessed) but it was a **false stop**, and two independent runs
+  producing the same false stop is the more interesting finding: identical wrong reasoning is what
+  you get when the input evidence is thin, and it is an argument for reviewing the *reason* an
+  escalation gives, not just the fact that one happened.
+
+  It also carries a design-system lesson worth more than the fix: an override whose intent is
+  "tightened" without a number is unrecoverable-by-default. The repair is to write the intended
+  density into the override comment — see `playbooks/REVISIONS.md`.
 - **Both surfaced the bundle-budget question rather than silently widening it.** Run A stopped with
   a failing build; Run B raised the budget by 50 kB and wrote down that it did so and why.
 - **Both flagged `@angular/flex-layout` as a hard stop at v16.** It is v15-compatible at
@@ -57,12 +78,19 @@ repeatable set of questions, not 20 unrelated judgement calls.
 **Run C is included deliberately.** It stopped on an account usage limit before producing a diff.
 A vendor slide would drop it; the sample is 2 completed of 3 started.
 
+**What was *not* independently reproduced.** Neither PR's visual numbers were re-run by a third
+party: they are the figures each run reported from its own uncached container run, and CI on those
+branches did not complete the visual job. Treat them as self-reported and reproducible
+(`npm run visual` on the branch), not as independently verified.
+
 ## The questions both runs escalated
 
 1. Accept the MDC appearance and re-baseline in a separate reviewed commit, or stay on the
    `legacy-*` components to preserve v14 pixels?
 2. What height should `.bofa-density-compact` be at v15 — i.e. which `mat.form-field-density`
-   level does OV-17 mean?
+   level does OV-17 mean? *(Legitimate question, wrong stated reason — see above. The design-system
+   owner still has to confirm the level; the agent should have proposed one from the baseline
+   instead of declaring it unrecoverable.)*
 3. Raise the retail-banking bundle budget for MDC, or optimise?
 
 These are design-system ownership decisions. They are the right things to be asked, and answering

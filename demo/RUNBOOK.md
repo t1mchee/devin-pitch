@@ -10,7 +10,7 @@ nvm use 16.20.2
 npm ci --legacy-peer-deps
 npx nx reset                 # a stale Nx daemon is the #1 live-demo failure
 lsof -ti:4200 | xargs -r kill
-docker pull cypress/included:10.11.0
+docker pull cypress/included@sha256:058d1834239bf09b381325b8369d05e9e0516a46b65b32e6dc0c991801dc517a
 ```
 
 Open, in tabs: the repo, PR [#2](https://github.com/t1mchee/devin-pitch/pull/2),
@@ -32,17 +32,29 @@ recorded reason is the actual migration risk, not the version number.**
 ## 3:00–4:30 — The oracle, and one deliberate failure
 
 ```bash
-npm run visual        # 17 passing, in a pinned container, cache skipped
+npm run visual        # 23 tests, 21 snapshots, pinned container, cache skipped
 ```
+
+While it runs, say what is in it: the components, **the four real overlays** — dialog, select
+panel, autocomplete panel, calendar — the keyboard focus ring, two breakpoints, and `/accounts`
+itself. *The dialog is opened, not drawn: a hand-written copy of Material's DOM would keep matching
+after MDC replaced the real one.*
 
 Then change `.bofa-table .mat-header-cell` colour to brand red and re-run:
 
 ```
 Visual regression on table-default: <n> pixels differ (0.0xx%).
+Visual regression on accounts-dashboard: <n> pixels differ (0.0xx%).
 ```
 
-Read the number off the screen — it is renderer- and baseline-dependent and has moved every time
-the baselines were regenerated (785 → 875 → 753). On the current baselines it is ~753 px / 0.082 %.
+Read the numbers off the screen — they are renderer- and baseline-dependent and have moved every
+time the baselines were regenerated (785 → 875 → 753). On the current baselines: **two** failures,
+~753 px on `table-default` and ~788 px on `accounts-dashboard`. Point at the second one: *it is
+caught on the customer's dashboard, not only in the component gallery.*
+
+If asked "how do you know 40 px isn't tuned to pass?" — `docs/evidence/ORACLE-noise-floor.md`:
+0 px across three repeat runs on the pinned renderer, 455–5,963 px across renderers (which is why
+it is digest-pinned), 753 px of signal.
 
 Say: *under a tenth of a percent — the percentage budget we started with allowed 0.1 %, so this
 shipped a wrong red to millions of customers and the suite said green. The budget is now 40
@@ -59,6 +71,11 @@ Open PR #2 and PR #3 — two independent runs of the same playbook, `TARGET_VERS
 
 - Both left CI **red** on the 12 snapshots MDC changed, and **neither regenerated a baseline**.
 - Both refused OV-17 with the same reasoning, and left the rule inert and annotated.
+- **Volunteer the failure:** that shared reasoning was wrong. Both said "no baseline exercises the
+  compact variant"; it does — `form-field-default.png`. Human review caught it, not a test. Then
+  say why it still matters: two runs producing the *same* false stop is the reviewable property,
+  and the repair is one number in an override comment (`playbooks/REVISIONS.md`). Do not let the
+  room find this before you say it.
 - Run B raised the bundle budget by 50 kB and wrote down that it did; Run A stopped with a failing
   build instead.
 
@@ -72,6 +89,10 @@ Run C died on a usage limit — **2 of 3 completed** — before anyone asks.
 
 One repo, one named design-system owner, two weeks. Success = *n* consumer PRs merged with no
 baseline regenerated without a written reason.
+
+If the VP pushes on dates and cost, go to `docs/meeting/delivery-plan.md` — every number there is
+labelled measured or modelled. If the Security Engineer pushes on controls, go to
+`docs/meeting/security-qa.md`.
 
 ## What is stubbed — say it before you are asked
 
