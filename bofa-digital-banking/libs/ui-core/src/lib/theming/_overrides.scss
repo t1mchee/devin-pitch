@@ -53,6 +53,16 @@
     color: bofa.$boa-slate-300;
   }
 
+  // Same intent as OV-01c, on the *enabled, resting* label. `all-component-colors`
+  // leaves the floating label at Material's secondary alpha
+  // (`rgba(255, 255, 255, 0.6)`); composited on the dark filled surface that is
+  // 4.40:1 under MDC — a hair under AA where v14's slightly higher alpha cleared
+  // it. slate-300 (5.5:1) restores it. Scoped away from the focused state so the
+  // brand-red focus label survives, and from the disabled state (OV-01c above).
+  .bofa-theme-dark &:not(.mat-focused):not(.mat-form-field-disabled) .mat-mdc-floating-label {
+    color: bofa.$boa-slate-300;
+  }
+
   // OV-01d — Material's error red (#f44336) is 3.68:1 on white: it fails AA at
   // the one moment the customer must read the text. The brand danger red is
   // 7.33:1. Same intent as OV-01, same defect class, opposite end of the form.
