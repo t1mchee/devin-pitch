@@ -181,9 +181,20 @@ experiment regress-oracle-review-blanket "$CONTRAST" \
     ?.trim(); // REVIEW-BLANKET, deliberately
   return declared || null;"
 
+# The last experiment leaves the tree patched: restore before anything else runs,
+# or the deliberately-broken helper gets captured — and committed. It has.
+restore
+
 # 23. host renderer against container baselines -> why the image is digest-pinned
 echo "=== host-renderer (not the pinned image) :: $(date -u +%FT%TZ) ===" > "$OUT/host-renderer-drift.log"
 npx nx e2e retail-banking-e2e --skip-nx-cache 2>&1 | sed 's/\x1b\[[0-9;]*m//g' >> "$OUT/host-renderer-drift.log"
 
 git -C "$REPO" status --porcelain -- bofa-digital-banking > "$OUT/../oracle-logs-tree-clean.txt"
+# Not decoration: a missing `restore` once left a deliberately-broken helper in
+# the tree, and it was committed. The evidence run now says so out loud.
+if [ -s "$OUT/../oracle-logs-tree-clean.txt" ]; then
+  echo "TREE NOT RESTORED — an experiment leaked into the working tree:"
+  cat "$OUT/../oracle-logs-tree-clean.txt"
+  exit 1
+fi
 echo DONE

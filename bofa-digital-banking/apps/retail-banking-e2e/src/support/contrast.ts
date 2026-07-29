@@ -343,11 +343,8 @@ export function reviewed(artwork: HTMLElement | undefined): string | null {
   // single `data-contrast-reviewed="lgtm"` on <body> exempt a whole page of
   // gradients. And the value must cite a ratio, so the trail says what was
   // checked rather than that somebody once typed a character.
-  const declared = artwork
-    ?.closest<HTMLElement>('[data-contrast-reviewed]')
-    ?.getAttribute('data-contrast-reviewed')
-    ?.trim(); // REVIEW-BLANKET, deliberately
-  return declared || null;
+  const declared = artwork?.getAttribute('data-contrast-reviewed')?.trim();
+  return declared && /\d+(\.\d+)?\s*:\s*1/.test(declared) ? declared : null;
 }
 
 export function contrastRatio(
