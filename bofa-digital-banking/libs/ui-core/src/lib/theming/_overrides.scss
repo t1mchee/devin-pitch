@@ -196,8 +196,17 @@
 //
 // MDC: the bar is `.mdc-switch__track` and the thumb is `.mdc-switch__handle`.
 // The switch width itself is driven by `.mdc-switch`, and the selected thumb
-// colour is painted by `.mdc-switch__handle::after`.
+// colour is a design token (`--mdc-switch-selected-*-handle-color`), not a
+// paintable background. In v16 Angular Material derives that token from the
+// theme *primary* (BoA red); painting `.mdc-switch__handle::after` directly no
+// longer wins against the token, so the OV-09 intent (green thumb) is expressed
+// by setting the token itself for every selected interaction state.
 .bofa-slide-toggle {
+  --mdc-switch-selected-handle-color: #{bofa.$boa-success-600};
+  --mdc-switch-selected-focus-handle-color: #{bofa.$boa-success-600};
+  --mdc-switch-selected-hover-handle-color: #{bofa.$boa-success-600};
+  --mdc-switch-selected-pressed-handle-color: #{bofa.$boa-success-600};
+
   .mdc-switch {
     width: 40px;
   }
@@ -210,10 +219,6 @@
   .mdc-switch__handle {
     width: 20px;
     height: 20px;
-  }
-
-  &.mat-mdc-slide-toggle-checked .mdc-switch__handle::after {
-    background-color: bofa.$boa-success-600;
   }
 }
 

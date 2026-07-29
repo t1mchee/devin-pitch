@@ -80,7 +80,6 @@ const MATERIAL = [
   imports: [CommonModule, FormsModule, ReactiveFormsModule, ...MATERIAL],
   declarations: [...COMPONENTS],
   exports: [...COMPONENTS, ReactiveFormsModule],
-  entryComponents: [BofaDialogComponent],
 })
 export class UiCoreModule {
   constructor(registry: MatIconRegistry, sanitizer: DomSanitizer) {

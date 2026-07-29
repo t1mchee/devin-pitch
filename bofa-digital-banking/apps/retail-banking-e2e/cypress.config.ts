@@ -1,5 +1,5 @@
 import { defineConfig } from 'cypress';
-import { nxE2EPreset } from '@nrwl/cypress/plugins/cypress-preset';
+import { nxE2EPreset } from '@nx/cypress/plugins/cypress-preset';
 
 import { registerVisualRegressionTasks } from './src/support/visual-regression.plugin';
 

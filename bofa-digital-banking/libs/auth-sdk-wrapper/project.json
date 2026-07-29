@@ -6,10 +6,11 @@
   "prefix": "bofa",
   "targets": {
     "build": {
-      "executor": "@nrwl/angular:ng-packagr-lite",
+      "executor": "@nx/angular:ng-packagr-lite",
       "outputs": ["{workspaceRoot}/dist/libs/auth-sdk-wrapper"],
       "options": {
-        "project": "libs/auth-sdk-wrapper/ng-package.json"
+        "project": "libs/auth-sdk-wrapper/ng-package.json",
+        "updateBuildableProjectDepsInPackageJson": true
       },
       "configurations": {
         "production": {
@@ -22,7 +23,7 @@
       "defaultConfiguration": "production"
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/libs/auth-sdk-wrapper"],
       "options": {
         "jestConfig": "libs/auth-sdk-wrapper/jest.config.ts",
@@ -30,7 +31,7 @@
       }
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "options": {
         "lintFilePatterns": [
           "libs/auth-sdk-wrapper/**/*.ts",
