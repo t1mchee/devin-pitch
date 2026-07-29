@@ -4,8 +4,16 @@ import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { BofaAuthInterceptor } from './bofa-auth.interceptor';
 import { BofaAuthService } from './bofa-auth.service';
 
-export function initialiseSession(auth: BofaAuthService): () => void {
-  return () => auth.startSessionRefresh();
+/**
+ * The initializer returns a promise so that bootstrap blocks until the first
+ * principal has been fetched. Returning void here lets the router evaluate
+ * guards against a null principal and deny the first navigation.
+ */
+export function initialiseSession(auth: BofaAuthService): () => Promise<unknown> {
+  return () => {
+    auth.startSessionRefresh();
+    return auth.sessionReady();
+  };
 }
 
 @NgModule({})

@@ -22,7 +22,7 @@ export type BofaButtonVariant = 'primary' | 'secondary' | 'ghost';
         [disabled]="disabled"
         (click)="pressed.emit($event)"
       >
-        <mat-icon *ngIf="icon">{{ icon }}</mat-icon>
+        <mat-icon *ngIf="icon" [svgIcon]="icon"></mat-icon>
         <ng-container *ngTemplateOutlet="label"></ng-container>
       </button>
 
@@ -36,7 +36,7 @@ export type BofaButtonVariant = 'primary' | 'secondary' | 'ghost';
         [disabled]="disabled"
         (click)="pressed.emit($event)"
       >
-        <mat-icon *ngIf="icon">{{ icon }}</mat-icon>
+        <mat-icon *ngIf="icon" [svgIcon]="icon"></mat-icon>
         <ng-container *ngTemplateOutlet="label"></ng-container>
       </button>
 
@@ -49,7 +49,7 @@ export type BofaButtonVariant = 'primary' | 'secondary' | 'ghost';
         [disabled]="disabled"
         (click)="pressed.emit($event)"
       >
-        <mat-icon *ngIf="icon">{{ icon }}</mat-icon>
+        <mat-icon *ngIf="icon" [svgIcon]="icon"></mat-icon>
         <ng-container *ngTemplateOutlet="label"></ng-container>
       </button>
     </ng-container>

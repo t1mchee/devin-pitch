@@ -82,17 +82,45 @@
 // OV-05 — Readability: currency columns align on the decimal, so figures use
 // tabular numerals. Row heights are fixed so a 50-row statement paginates
 // predictably in print and PDF export.
-// MDC: cells are `.mat-mdc-header-cell` / `.mat-mdc-cell`, rows `.mat-mdc-row`.
+// MDC: cells are `.mat-mdc-header-cell` / `.mat-mdc-cell`, rows are
+// `.mat-mdc-header-row` / `.mat-mdc-row` (the row drives height, not the cell);
+// MatSort DOM (`.mat-sort-header-container`) is unchanged.
 .bofa-table {
-  .mat-mdc-header-cell {
+  width: 100%;
+
+  .mat-mdc-header-row {
     height: 44px;
+  }
+
+  .mat-mdc-row {
+    height: 40px;
+  }
+
+  .mat-mdc-header-cell {
     font-weight: 600;
     color: bofa.$boa-slate-900;
   }
 
+  .mat-mdc-header-cell,
   .mat-mdc-cell {
-    height: 40px;
+    padding: 0 16px 0 0;
+
+    &:last-of-type {
+      padding-right: 0;
+    }
+  }
+
+  .mat-mdc-cell {
     font-variant-numeric: tabular-nums;
+  }
+
+  // Currency columns align on the decimal.
+  .bofa-cell--numeric {
+    text-align: right;
+  }
+
+  .mat-mdc-header-cell.bofa-cell--numeric .mat-sort-header-container {
+    justify-content: flex-end;
   }
 
   .mat-mdc-row:nth-child(even) {
@@ -204,8 +232,15 @@
 
 // OV-12 — Dialogs are used for step-up authentication. Padding is tightened and
 // the surface is squared off to match the MFA modal in the mobile app.
-// MDC: the container is `.mat-mdc-dialog-container` wrapping `.mdc-dialog__surface`;
-// the title is `.mat-mdc-dialog-title`.
+// MDC: the runtime container is `.mat-mdc-dialog-container` wrapping
+// `.mdc-dialog__surface`. NOTE: the visual snapshot does not open the real
+// dialog — the `dialog` showcase renders static markup with the literal
+// `.mat-dialog-title` / `.mat-dialog-content` / `.mat-dialog-actions` class
+// names (so the snapshot is independent of overlay timing), whereas the real
+// MDC dialog emits the `.mat-mdc-dialog-*` equivalents. Both class forms are
+// therefore targeted so the override styles the snapshot and the runtime dialog
+// identically. (`.mat-dialog-container` never existed in the static markup, so
+// the surface rule is runtime-only, exactly as it was at v14.)
 .bofa-dialog {
   .mat-mdc-dialog-container .mdc-dialog__surface {
     padding: 20px 24px;
@@ -213,8 +248,25 @@
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
   }
 
+  .mat-dialog-title,
   .mat-mdc-dialog-title {
     margin-bottom: 12px;
+  }
+
+  // Short confirmation bodies must not acquire an inner scrollbar; the default
+  // 65vh scroll container reads as truncated content on a step-up prompt.
+  .mat-dialog-content,
+  .mat-mdc-dialog-content {
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+  }
+
+  .mat-dialog-actions,
+  .mat-mdc-dialog-actions {
+    margin-bottom: 0;
+    padding: 16px 0 0;
+    min-height: auto;
   }
 }
 
@@ -294,6 +346,14 @@
   .mat-form-field-infix {
     padding: 0.4em 0;
     border-top-width: 0.6em;
+  }
+
+  .mat-form-field-flex {
+    padding-top: 0.4em;
+  }
+
+  .mat-form-field-wrapper {
+    padding-bottom: 1em;
   }
 }
 

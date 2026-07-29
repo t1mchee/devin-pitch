@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { DomSanitizer } from '@angular/platform-browser';
+import { MatIconRegistry } from '@angular/material/icon';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';
 
@@ -32,6 +34,7 @@ import { BofaSlideToggleComponent } from './components/bofa-slide-toggle/bofa-sl
 import { BofaTableComponent } from './components/bofa-table/bofa-table.component';
 import { BofaTabsComponent } from './components/bofa-tabs/bofa-tabs.component';
 import { BofaResponsiveGridComponent } from './layout/bofa-responsive-grid/bofa-responsive-grid.component';
+import { BOFA_ICONS } from './icons/bofa-icons';
 
 const COMPONENTS = [
   BofaAutocompleteComponent,
@@ -80,4 +83,10 @@ const MATERIAL = [
   exports: [...COMPONENTS, ReactiveFormsModule],
   entryComponents: [BofaDialogComponent],
 })
-export class UiCoreModule {}
+export class UiCoreModule {
+  constructor(registry: MatIconRegistry, sanitizer: DomSanitizer) {
+    Object.entries(BOFA_ICONS).forEach(([name, svg]) =>
+      registry.addSvgIconLiteral(name, sanitizer.bypassSecurityTrustHtml(svg))
+    );
+  }
+}
