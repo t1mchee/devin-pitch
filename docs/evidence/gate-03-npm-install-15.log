@@ -1,0 +1,84 @@
+npm ERR! code ERESOLVE
+npm ERR! ERESOLVE could not resolve
+npm ERR! 
+npm ERR! While resolving: bofa-digital-banking@0.0.0
+npm ERR! Found: @angular-devkit/build-angular@14.2.13
+npm ERR! node_modules/@angular-devkit/build-angular
+npm ERR!   dev @angular-devkit/build-angular@"15.2.9" from the root project
+npm ERR!   peer @angular-devkit/build-angular@">=12.2.18 <16.0.0" from jest-preset-angular@12.2.6
+npm ERR!   node_modules/jest-preset-angular
+npm ERR!     dev jest-preset-angular@"13.0.0" from the root project
+npm ERR! 
+npm ERR! Could not resolve dependency:
+npm ERR! dev @angular-devkit/build-angular@"15.2.9" from the root project
+npm ERR! 
+npm ERR! Conflicting peer dependency: @angular/compiler-cli@15.2.9
+npm ERR! node_modules/@angular/compiler-cli
+npm ERR!   peer @angular/compiler-cli@"^15.0.0" from @angular-devkit/build-angular@15.2.9
+npm ERR!   node_modules/@angular-devkit/build-angular
+npm ERR!     dev @angular-devkit/build-angular@"15.2.9" from the root project
+npm ERR! 
+npm ERR! Fix the upstream dependency conflict, or retry
+npm ERR! this command with --force, or --legacy-peer-deps
+npm ERR! to accept an incorrect (and potentially broken) dependency resolution.
+npm ERR! 
+npm ERR! See /home/ubuntu/.npm/eresolve-report.txt for a full report.
+
+npm ERR! A complete log of this run can be found in:
+npm ERR!     /home/ubuntu/.npm/_logs/2026-07-29T00_19_48_970Z-debug-0.log
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'node-releases@2.0.51',
+npm WARN EBADENGINE   required: { node: '>=18' },
+npm WARN EBADENGINE   current: { node: 'v16.20.2', npm: '8.19.4' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'sass@1.102.0',
+npm WARN EBADENGINE   required: { node: '>=20.19.0' },
+npm WARN EBADENGINE   current: { node: 'v16.20.2', npm: '8.19.4' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'chokidar@5.0.0',
+npm WARN EBADENGINE   required: { node: '>= 20.19.0' },
+npm WARN EBADENGINE   current: { node: 'v16.20.2', npm: '8.19.4' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'readdirp@5.0.0',
+npm WARN EBADENGINE   required: { node: '>= 20.19.0' },
+npm WARN EBADENGINE   current: { node: 'v16.20.2', npm: '8.19.4' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'less@4.8.1',
+npm WARN EBADENGINE   required: { node: '>=18' },
+npm WARN EBADENGINE   current: { node: 'v16.20.2', npm: '8.19.4' }
+npm WARN EBADENGINE }
+npm WARN deprecated @babel/plugin-proposal-private-property-in-object@7.21.11: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-private-property-in-object instead.
+npm WARN deprecated glob@8.1.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+npm WARN deprecated @babel/plugin-proposal-async-generator-functions@7.20.7: This proposal has been merged to the ECMAScript standard and thus this plugin is no longer maintained. Please use @babel/plugin-transform-async-generator-functions instead.
+npm WARN deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+
+> bofa-digital-banking@0.0.0 postinstall
+> node ./decorate-angular-cli.js && ngcc --properties es2020 browser module main
+
+
+ >  NX   Decoration of the Angular CLI is deprecated and will be removed in a future version
+
+   Please replace usage of "ng <command>" in any scripts, particularly for CI, with "nx <command>"
+
+
+ >  NX   Angular CLI has been decorated to enable computation caching.
+
+
+added 204 packages, removed 198 packages, changed 175 packages, and audited 1596 packages in 19s
+
+260 packages are looking for funding
+  run `npm fund` for details
+
+87 vulnerabilities (4 low, 15 moderate, 65 high, 3 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.

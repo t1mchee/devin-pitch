@@ -1,0 +1,49 @@
+name: bofa-digital-banking CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: bofa-digital-banking
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      # Angular 14 requires Node 14–16. The runtime moves during the upgrade,
+      # so this line is part of the migration, not part of the scaffolding.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '16.20.2'
+          cache: npm
+          cache-dependency-path: bofa-digital-banking/package-lock.json
+
+      - name: Install
+        run: npm ci --legacy-peer-deps
+
+      - name: Build all
+        run: npx nx run-many --target=build --all
+
+      - name: Unit tests
+        run: npx nx run-many --target=test --all
+
+      - name: Visual regression
+        run: npx nx e2e retail-banking-e2e
+
+      - name: Upload visual diffs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-diffs
+          path: bofa-digital-banking/apps/retail-banking-e2e/visual-diffs
+          if-no-files-found: ignore

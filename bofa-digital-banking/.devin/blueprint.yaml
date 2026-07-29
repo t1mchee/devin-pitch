@@ -1,0 +1,35 @@
+version: 1
+name: bofa-digital-banking
+
+# Angular 14 requires Node 14–16; Angular 20+ requires Node 20 or 22. The runtime
+# moves during this upgrade, which is why the environment is declared here rather
+# than assumed. An agent that cannot change its own runtime cannot do this migration.
+setup:
+  - name: node
+    uses: nvm
+    version: '16.20.2'
+
+  - name: install
+    run: |
+      cd bofa-digital-banking
+      npm ci --legacy-peer-deps
+
+  - name: browsers
+    run: |
+      cd bofa-digital-banking
+      npx cypress install
+      npx cypress verify
+
+verify:
+  - cd bofa-digital-banking && npx nx run-many --target=build --all
+  - cd bofa-digital-banking && npx nx run-many --target=test --all
+  - cd bofa-digital-banking && npx nx e2e retail-banking-e2e
+
+# Visual baselines are captured and compared inside the same container image.
+# Font rendering differs between images; comparing across them produces false
+# positives that cost more time than the suite saves.
+notes:
+  visual_regression:
+    baselines: bofa-digital-banking/apps/retail-banking-e2e/visual-baselines
+    runner: cypress 10.11.0, electron 106, viewport 1280x900
+    diff_budget: 0.1% of pixels

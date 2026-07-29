@@ -1,0 +1,61 @@
+# BoA Digital Banking — agent conventions
+
+Read this before changing anything in this repository.
+
+## Architecture
+
+- Nx monorepo. `libs/ui-core` is the shared design system, published internally as
+  `@bofa/ui-core`. Three applications consume it: `retail-banking`, `card-services`,
+  `wealth-portal`. **Breaking `ui-core` breaks all three.**
+- Every Material component is wrapped as `bofa-*`. Application code must never import
+  from `@angular/material` directly. The wrapper layer is what makes a Material major
+  upgrade a change in one library rather than a change in every application.
+- `libs/auth-sdk-wrapper` is the only permitted route to SSO/MFA.
+- `libs/analytics-sdk-shim` is the boundary that contains the untyped vendor analytics
+  SDK. `any` inside it is deliberate.
+
+## Non-negotiables
+
+- **Never bypass `@bofa/auth-sdk-wrapper`.** All auth, session and MFA flows go through it.
+- **Never modify a visual regression baseline to make a test pass.** Baselines live in
+  `apps/retail-banking-e2e/visual-baselines`. If a snapshot changes, the change is either
+  intentional and documented in the PR with a reason, or it is a bug. Regenerating a
+  baseline (`UPDATE_VISUAL_BASELINES=1`) is a deliberate, reviewable act and must be
+  called out explicitly in the PR description.
+- **Overrides in `libs/ui-core/src/lib/theming/_overrides.scss` exist for stated reasons.**
+  Each carries an `OV-nn` comment explaining its intent. Preserve the intent, not the
+  selector. Deleting an override to make a build or a test pass is never acceptable.
+- **Never widen a dependency constraint you have not verified.** If a peer range blocks,
+  read the package's actual API usage against the target version first and write what you
+  checked into the PR.
+- **Never disable a lint rule, a type check, or a test to get to green.**
+
+## Commands
+
+```bash
+nvm use 16.20.2                     # Angular 14 requires Node 14–16
+npm ci
+npx nx build ui-core
+npx nx run-many --target=build --all
+npx nx run-many --target=test --all
+npx nx e2e retail-banking-e2e       # visual regression, compares to baselines
+UPDATE_VISUAL_BASELINES=1 npx nx e2e retail-banking-e2e   # re-baseline (reviewable act)
+```
+
+## Definition of done
+
+A change is complete when **all** of the following hold:
+
+1. `nx run-many --target=build --all` passes.
+2. `nx run-many --target=test --all` passes.
+3. `nx e2e retail-banking-e2e` passes, **or** every visual diff is explained in the PR.
+4. Any change to a `ui-core` public API has a characterisation test.
+5. The PR contains a per-file rationale for everything under `theming/`.
+
+## PR format
+
+- Conventional commits: `type(scope): message`.
+- Every PR touching `ui-core` includes a per-file rationale.
+- Any dependency version change states why the previous constraint was safe to move and
+  what was verified.
+- List downstream consumers affected by any public API change.

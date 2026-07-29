@@ -1,0 +1,17 @@
+Fetching meta data about packages.
+It may take a few minutes.
+Fetching @angular/core@15.2.9
+
+ NX   The migrate command has run successfully.
+
+- package.json has been updated.
+- migrations.json has been generated.
+
+
+ NX   Next steps:
+
+- Make sure package.json changes make sense and then run 'npm install',
+- Run 'npx nx migrate --run-migrations'
+- To learn more go to https://nx.dev/features/automate-updating-dependencies
+- You may run 'npm run nx -- connect-to-nx-cloud' to get faster builds, GitHub integration, and more. Check out https://nx.app
+
