@@ -20,7 +20,8 @@ transcript of commands that were actually executed.
 | `knowledge/` | The five Knowledge entries, in version control so a change to a standard is reviewable. |
 | `docs/evidence/` | Raw command transcripts. Gate 1 proves the automated migration path completes and the build still fails. |
 | `docs/meeting/` | Agenda, persona briefs, objection bank, the two use cases not chosen. |
-| `demo/` | The presenter: variance data, the run log, and the narration. |
+| `docs/evidence/VARIANCE-phase1-material15.md` | Three independent Devin runs of the same migration hop, including the one that died on a usage limit. |
+| `demo/RUNBOOK.md` | The timed 12-minute live demo, with the failure playbook. |
 
 ## Why the Angular upgrade and not the other two
 
@@ -38,7 +39,8 @@ preserving ordering, what happens to the on-prem Oracle dependency) and volume s
 behind a four-nines SLA on fraud alerts. Wrong first project on both axes. Test coverage
 is the strongest *second* project; the risk there is generating assertions that move a
 percentage without improving assurance, which is worse than nothing in front of an
-examiner. Both are written up in `docs/meeting/use-cases-not-chosen.md`.
+examiner. Both are written up in `docs/meeting/usecase-cloud-migration.md` and
+`docs/meeting/usecase-test-coverage.md`.
 
 ## Running it
 
@@ -49,7 +51,7 @@ npm ci --legacy-peer-deps
 npx nx run-many --target=build --all
 npx nx run-many --target=test --all
 npm run visual                           # visual regression in the pinned Cypress image
-npx nx serve retail-banking              # http://localhost:4200/__showcase/button
+npx nx serve retail-banking              # http://localhost:4200/accounts, /__showcase
 ```
 
 The design-system showcase at `/__showcase/:component` is the surface the visual
