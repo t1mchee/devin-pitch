@@ -5,15 +5,15 @@ Every figure quoted in `ORACLE-noise-floor.md`, `OVERRIDE-CONTRACT-dead-rules.md
 to the same standard the external control run was held to. Each log is a full
 `npm run visual` transcript (digest-pinned `cypress/included@sha256:058d1834…`, `--skip-nx-cache`),
 captured by `scripts/capture-oracle-logs.sh` on 2026-07-29. Everything except
-`dark-contrast-regression.log` was re-captured after the legibility sweep landed, so those logs show
-the current **135-test** suite (23 image + 77 computed-style + 35 sweep).
+`dark-contrast-regression.log` was re-captured after the round-8 sweep fixes landed, so those logs
+show the current **139-test** suite (23 image + 77 computed-style + 39 sweep).
 `dark-contrast-regression.log` is kept as originally captured against the 59-test suite because it is
 the record of a specific defect at a specific moment; `delete-rule-dark-zebra.log` is its current
 equivalent.
 
 | log | what it establishes | result |
 |---|---|---|
-| `noise-repeat-{1,2,3}.log` | renderer noise floor: three consecutive runs, unmodified tree | **0 px on all 21 snapshots**, all 135 tests green, three times |
+| `noise-repeat-{1,2,3}.log` | renderer noise floor: three consecutive runs, unmodified tree | **0 px on all 21 snapshots**, all 139 tests green, three times |
 | `host-renderer-drift.log` | why the image is digest-pinned: the same suite on the host renderer against the same baselines | **21 of 21 fail**, `tabs-default` 455 px … `accounts-dashboard` 5,963 px |
 | `fault-injection-colour.log` | the budget catches a real regression: one brand colour swapped to red in `_overrides.scss` | `table-default` **753 px**, `accounts-dashboard` **788 px** — and probe `OV-05c` fails |
 | `delete-rule-ov05d.log` | positive control for the probe method: delete the zebra-striping rule | **OV-05d fails** |
@@ -30,6 +30,9 @@ equivalent.
 | `regress-oracle-opacity-blind.log` | the oracle attacked again: stop folding ancestor `opacity` into the composite | the oracle's own self-test fails (`expected 2.00 to be close to 1.33`) — a 1.5x misreport on a number used to argue a threshold |
 | `regress-oracle-gradient-blind.log` | and again: let it score text over a `background-image` against the canvas | the self-test fails (`the helper must say it cannot measure this: expected undefined to be a string`) — over artwork it must report UNMEASURABLE, not the maximum ratio |
 | `regress-oracle-alpha-blind.log` | the oracle attacked instead of the CSS: the alpha-blind parse restored | **33 failures**, including the oracle's own self-test. Every alpha-composited target collapses to `rgb(0,0,0)` on `rgb(0,0,0)` = 1:1 — i.e. the alpha-blind version would have *inverted* the gate rather than merely weakened it. A gate tested against itself. |
+| `fault-injection-glyph.log` | the product fault the glyph sweep exists to catch: the paginator's arrows recoloured to the paginator's own surface — no text node changes | the sweep reports **`svg "Next page" — 1.00:1, needs 3:1`** on `/accounts`, and `paginator-default` moves **70 px**. Before round 8 this same fault was **fully green**: an enabled control you cannot see, through a gate built to find exactly that |
+| `regress-oracle-glyph-blind.log` | the round-8 hole restored: `sweep()` measures text nodes only, never an SVG `fill` | the icon-only self-test fails (`expected 0 to equal 1`) — the sweep reports nothing about an invisible enabled control |
+| `regress-oracle-scrim-blind.log` | the other round-8 hole: only `.cdk-overlay-backdrop` treated as a covering sibling | the veil self-test fails at **13.20:1** where a human reads ~1.1:1 — a 12x overstatement on the loading-scrim pattern |
 | `dark-contrast-regression.log` | the defect the dark block itself shipped, reproduced: remove the dark zebra value and the WCAG assertion fires | **`expected 1.0719326855029048 to be at least 4.5`** — white statement text on the light stripe, plus `OV-05d [dark]` |
 
 Read `fault-injection-colour.log` and `delete-rule-ov08.log` together: the first is the gate

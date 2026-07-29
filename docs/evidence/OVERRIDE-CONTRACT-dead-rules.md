@@ -258,15 +258,25 @@ fixed: `.each()` over every match, and a `glyphRatio` that reads what is painted
 **The fix that matters is the shape, not the seven values.** `legibility-sweep.cy.ts` walks every
 visible text node on **16 routes in both palettes** — 32 tests — resolves the composited background
 behind each one, applies WCAG 1.4.3 (4.5:1, or 3:1 for large text) and exempts only what 1.4.3 exempts
-(inactive controls). It found #6 on its first run. Three further tests keep it from going quietly
-green: it must measure >25 text nodes on `/accounts`, it must report planted illegible text, and it
-must **not** report planted hidden text. Raw logs: `oracle-logs/regress-root-surface.log` (the sweep
+(inactive controls). It found #6 on its first run. Seven further tests keep it from going quietly
+green: it must measure >25 text nodes on `/accounts`, report planted illegible text and an icon-only
+control whose glyph is recoloured to its own surface, composite a semi-transparent covering sibling,
+and **not** report planted hidden text, off-screen screen-reader-only text, or artwork that carries a
+`data-contrast-reviewed` declaration. Four of those seven exist because round 8 fooled the sweep in
+both directions — an invisible paginator arrow reported as clean, and a legible gradient banner
+reported as a defect — which is worth stating plainly: the sweep's *shape* is right, and it still took
+an adversary to find where the shape had been implemented too narrowly. Raw logs: `oracle-logs/regress-root-surface.log` (the sweep
 catching #1 with the fix removed, while every snapshot and probe stays green) and
 `oracle-logs/delete-rule-ov01f.log`.
 
 **Limits of the sweep, stated.** It is complete about *elements*, not about *states*: focus, hover,
 validation, and open overlays are still enumerated deliberately by the override contract, and a state
-nobody enumerated is unmeasured. It runs at one viewport. It cannot judge non-text contrast (icons,
-borders, indicators) — those remain named assertions. And it measures what the browser computes, so a
-defect that only appears under a real webfont, a customer's zoom level, or forced-colours mode is out
-of scope. Total suite: **135 tests**.
+nobody enumerated is unmeasured. It runs at one viewport. Since round 8 it does judge one kind of
+non-text contrast — every painted SVG glyph, at 1.4.11's 3:1, because a reviewer made the paginator's
+enabled arrows invisible at 1.00:1 with the sweep green — but borders and other painted indicators
+remain named assertions. It measures what the browser computes, so a defect that only appears under a
+real webfont, a customer's zoom level, or forced-colours mode is out of scope. Paint order for
+covering layers is approximated by document order, not by resolving stacking contexts. And text over
+a gradient is reported as unmeasurable rather than scored, which means artwork behind text has to be
+declared (`data-contrast-reviewed`) by a human rather than checked by the gate. Total suite:
+**139 tests**.

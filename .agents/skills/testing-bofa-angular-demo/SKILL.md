@@ -266,10 +266,10 @@ console.log(n,(n/(a.width*a.height)*100).toFixed(4)+'%');"
 
 `apps/retail-banking-e2e/src/e2e/override-contract.cy.ts` + `src/support/override-probes.ts` hold 27
 probes, one per `OV-nn` intent, asserting `getComputedStyle` values on the running app. Total suite
-is **135 tests = 23 snapshot tests (21 snapshots) + 77 computed-style tests (27 light, 11 dark, 1
+is **139 tests = 23 snapshot tests (21 snapshots) + 77 computed-style tests (27 light, 11 dark, 1
 dark-surface anti-vacuity control, 32 WCAG ratios over 16 targets in both themes, 6 tests of the
-contrast oracle itself) + 35 legibility-sweep tests (`legibility-sweep.cy.ts`: every visible text node
-on 16 routes x 2 palettes, plus 3 anti-vacuity controls)**.
+contrast oracle itself) + 39 legibility-sweep tests (`legibility-sweep.cy.ts`: every visible text node
+and every painted SVG glyph on 16 routes x 2 palettes, plus 7 tests that attack the sweep itself)**.
 
 The contrast helper lives in `src/support/contrast.ts` and is shared by both suites. Attack it there,
 not in the spec: the six self-tests in `override-contract.cy.ts` pin transparent parsing, foreground
@@ -279,6 +279,17 @@ text over a gradient. Useful attacks — flip `paintsArtwork` to `return false`,
 For the sweep, the highest-value attack is a whole-page one: set `background: #fff` back on
 `bofa-root` in `apps/retail-banking/src/app/app.component.ts` and confirm the three customer routes
 fail in the dark palette **while all 21 snapshots and all 38 component probes stay green**.
+
+The sweep's own two round-8 false passes are now self-tested, so attack the generalisations rather
+than re-deriving them: stub out the `querySelectorAll<SVGElement>('svg')` loop in `sweep()` (the
+icon-only test must go red — that hole let a paginator arrow render at 1.00:1 with the gate green),
+and make `scrimsOver` return `[]` (the covering-sibling test must go red — that hole overstated a
+veiled dark table by 12x). Both are scripted in `scripts/capture-oracle-logs.sh` as
+`regress-oracle-glyph-blind` and `regress-oracle-scrim-blind`, with `fault-injection-glyph` as the
+product-side version: recolour the paginator arrows to the paginator surface and the sweep must
+report an invisible enabled control. Note the two directions that are *policy*, not defect: off-screen
+screen-reader-only text is ignored, and text over a gradient fails as UNMEASURABLE unless an ancestor
+carries `data-contrast-reviewed="..."`.
 
 Run only this suite (much faster than the whole thing) in the pinned container. **The `--spec` path
 is workspace-relative — `src/e2e/...` silently finds no specs:**
@@ -567,7 +578,7 @@ with `ss -ltn | grep :4200`), or run the browser walkthrough and the e2e gate in
 
 Expected host-run result (this is **not** a product regression, see `ORACLE-noise-floor.md`):
 21 of 23 pixel snapshots fail on host-renderer drift (`accounts-dashboard` ~5,963 px,
-`table-default` ~4,656 px), while the **35 sweep and 77 override-contract tests pass** — those two
+`table-default` ~4,656 px), while the **39 sweep and 77 override-contract tests pass** — those two
 layers are renderer-independent, which is the useful signal from a host run. Only `npm run visual`
 (digest-pinned image) is authoritative for pixels.
 

@@ -1,4 +1,4 @@
-=== regress-oracle-alpha-blind :: 2026-07-29T08:58:46Z ===
+=== regress-oracle-alpha-blind :: 2026-07-29T10:42:36Z ===
 
 > bofa-digital-banking@0.0.0 visual
 > docker run --rm -u $(id -u):$(id -g) -e HOME=/tmp -e CYPRESS_CACHE_FOLDER=/root/.cache/Cypress -v "$PWD/..":/w -w /w/bofa-digital-banking --entrypoint bash cypress/included@sha256:058d1834239bf09b381325b8369d05e9e0516a46b65b32e6dc0c991801dc517a -c 'npx nx e2e retail-banking-e2e --skip-nx-cache'
@@ -13,7 +13,7 @@ Initial Chunk Files                                        | Names              
 vendor.js                                                  | vendor                   |   4.97 MB | 
 styles.css, styles.js                                      | styles                   | 315.42 kB | 
 polyfills.js                                               | polyfills                | 239.94 kB | 
-main.js                                                    | main                     | 147.92 kB | 
+main.js                                                    | main                     | 148.25 kB | 
 runtime.js                                                 | runtime                  |  12.61 kB | 
 
                                                            | Initial Total            |   5.67 MB
@@ -21,14 +21,14 @@ runtime.js                                                 | runtime            
 Lazy Chunk Files                                           | Names                    |  Raw Size
 apps_retail-banking_src_app_showcase_showcase_module_ts.js | showcase-showcase-module |  47.78 kB | 
 
-Build at: 2026-07-29T08:59:00.088Z - Hash: ed2d6f6f9d2e7b2a - Time: 11627ms
+Build at: 2026-07-29T10:42:51.532Z - Hash: 99077f3ec8ad061a - Time: 12294ms
 
 ** Angular Live Development Server is listening on localhost:4200, open your browser on http://localhost:4200/ **
 
 
 ✔ Compiled successfully.
 libva error: vaGetDriverNameByIndex() failed with unknown libva error, driver_name = (null)
-[222:0729/085900.892693:ERROR:gpu_memory_buffer_support_x11.cc(44)] dri3 extension not supported.
+[218:0729/104252.361761:ERROR:gpu_memory_buffer_support_x11.cc(44)] dri3 extension not supported.
 ====================================================================================================
   (Run Starting)
   ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
@@ -44,51 +44,51 @@ libva error: vaGetDriverNameByIndex() failed with unknown libva error, driver_na
 
   design system — visual baseline
 [visual] button-default: 0 px (budget 40)
-    ✓ button renders to spec (845ms)
+    ✓ button renders to spec (822ms)
 [visual] form-field-default: 0 px (budget 40)
-    ✓ form-field renders to spec (396ms)
+    ✓ form-field renders to spec (415ms)
 [visual] select-default: 0 px (budget 40)
-    ✓ select renders to spec (308ms)
+    ✓ select renders to spec (318ms)
 [visual] datepicker-default: 0 px (budget 40)
-    ✓ datepicker renders to spec (318ms)
+    ✓ datepicker renders to spec (327ms)
 [visual] table-default: 0 px (budget 40)
-    ✓ table renders to spec (454ms)
+    ✓ table renders to spec (345ms)
 [visual] dialog-default: 0 px (budget 40)
-    ✓ dialog renders to spec (340ms)
+    ✓ dialog renders to spec (344ms)
 [visual] tabs-default: 0 px (budget 40)
-    ✓ tabs renders to spec (398ms)
+    ✓ tabs renders to spec (380ms)
 [visual] chips-default: 0 px (budget 40)
-    ✓ chips renders to spec (403ms)
+    ✓ chips renders to spec (524ms)
 [visual] slide-toggle-default: 0 px (budget 40)
-    ✓ slide-toggle renders to spec (383ms)
+    ✓ slide-toggle renders to spec (419ms)
 [visual] autocomplete-default: 0 px (budget 40)
-    ✓ autocomplete renders to spec (370ms)
+    ✓ autocomplete renders to spec (411ms)
 [visual] paginator-default: 0 px (budget 40)
-    ✓ paginator renders to spec (354ms)
+    ✓ paginator renders to spec (358ms)
 [visual] currency-input-default: 0 px (budget 40)
-    ✓ currency-input renders to spec (433ms)
+    ✓ currency-input renders to spec (396ms)
 [visual] responsive-grid-default: 0 px (budget 40)
-    ✓ responsive-grid renders to spec (337ms)
-    ✓ form field renders its disabled and error states (122ms)
-    ✓ button exposes a disabled state (139ms)
+    ✓ responsive-grid renders to spec (357ms)
+    ✓ form field renders its disabled and error states (124ms)
+    ✓ button exposes a disabled state (215ms)
 [visual] responsive-grid-md: 0 px (budget 40)
-    ✓ responsive grid collapses below the md breakpoint (313ms)
+    ✓ responsive grid collapses below the md breakpoint (386ms)
 [visual] responsive-grid-sm: 0 px (budget 40)
-    ✓ responsive grid hides the detail pane below the sm breakpoint (294ms)
+    ✓ responsive grid hides the detail pane below the sm breakpoint (319ms)
   design system — overlay and interaction states
 [visual] dialog-open: 0 px (budget 40)
-    ✓ opens the real dialog overlay (416ms)
+    ✓ opens the real dialog overlay (467ms)
 [visual] select-panel-open: 0 px (budget 40)
-    ✓ opens the select panel (411ms)
+    ✓ opens the select panel (425ms)
 [visual] autocomplete-panel-open: 0 px (budget 40)
-    ✓ opens the autocomplete panel (587ms)
+    ✓ opens the autocomplete panel (495ms)
 [visual] datepicker-calendar-open: 0 px (budget 40)
-    ✓ opens the datepicker calendar (457ms)
+    ✓ opens the datepicker calendar (456ms)
 [visual] button-focus-ring: 0 px (budget 40)
-    ✓ shows the keyboard focus ring on the primary button (369ms)
+    ✓ shows the keyboard focus ring on the primary button (607ms)
   retail banking — customer surface
 [visual] accounts-dashboard: 0 px (budget 40)
-    ✓ renders the accounts dashboard (400ms)
+    ✓ renders the accounts dashboard (389ms)
   23 passing (9s)
   (Results)
   ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
@@ -99,7 +99,7 @@ libva error: vaGetDriverNameByIndex() failed with unknown libva error, driver_na
   │ Skipped:      0                                                                                │
   │ Screenshots:  21                                                                               │
   │ Video:        false                                                                            │
-  │ Duration:     8 seconds                                                                        │
+  │ Duration:     9 seconds                                                                        │
   │ Spec Ran:     design-system.cy.ts                                                              │
   └────────────────────────────────────────────────────────────────────────────────────────────────┘
   (Screenshots)
@@ -167,32 +167,38 @@ libva error: vaGetDriverNameByIndex() failed with unknown libva error, driver_na
     15) /__showcase/currency-input: all text clears WCAG AA
     16) /__showcase/responsive-grid: all text clears WCAG AA
   legibility sweep — every visible text node (dark)
-    ✓ /accounts (customer dashboard): all text clears WCAG AA (382ms)
-    ✓ /__showcase (index): all text clears WCAG AA (123ms)
-    ✓ /sign-in: all text clears WCAG AA (121ms)
-    ✓ /__showcase/button: all text clears WCAG AA (122ms)
-    ✓ /__showcase/form-field: all text clears WCAG AA (134ms)
-    ✓ /__showcase/select: all text clears WCAG AA (131ms)
-    ✓ /__showcase/datepicker: all text clears WCAG AA (130ms)
-    ✓ /__showcase/table: all text clears WCAG AA (242ms)
-    ✓ /__showcase/dialog: all text clears WCAG AA (147ms)
-    ✓ /__showcase/tabs: all text clears WCAG AA (140ms)
-    ✓ /__showcase/chips: all text clears WCAG AA (129ms)
+    17) /accounts (customer dashboard): all text clears WCAG AA
+    ✓ /__showcase (index): all text clears WCAG AA (184ms)
+    18) /sign-in: all text clears WCAG AA
+    19) /__showcase/button: all text clears WCAG AA
+    ✓ /__showcase/form-field: all text clears WCAG AA (256ms)
+    ✓ /__showcase/select: all text clears WCAG AA (218ms)
+    20) /__showcase/datepicker: all text clears WCAG AA
+    ✓ /__showcase/table: all text clears WCAG AA (149ms)
+    21) /__showcase/dialog: all text clears WCAG AA
+    ✓ /__showcase/tabs: all text clears WCAG AA (151ms)
+    ✓ /__showcase/chips: all text clears WCAG AA (168ms)
     ✓ /__showcase/slide-toggle: all text clears WCAG AA (130ms)
-    ✓ /__showcase/autocomplete: all text clears WCAG AA (133ms)
-    ✓ /__showcase/paginator: all text clears WCAG AA (246ms)
-    ✓ /__showcase/currency-input: all text clears WCAG AA (205ms)
-    ✓ /__showcase/responsive-grid: all text clears WCAG AA (183ms)
+    ✓ /__showcase/autocomplete: all text clears WCAG AA (135ms)
+    22) /__showcase/paginator: all text clears WCAG AA
+    ✓ /__showcase/currency-input: all text clears WCAG AA (238ms)
+    ✓ /__showcase/responsive-grid: all text clears WCAG AA (163ms)
   legibility sweep — the sweep itself
-    ✓ measures a substantial number of nodes on a real route (163ms)
-    ✓ catches illegible text planted on a swept route (144ms)
-    ✓ ignores text that is hidden rather than reporting it as a defect (138ms)
-  19 passing (7s)
-  16 failing
+    ✓ measures a substantial number of nodes on a real route (267ms)
+    ✓ catches illegible text planted on a swept route (196ms)
+    ✓ catches an icon-only control whose glyph is invisible (140ms)
+    ✓ composites a semi-transparent sibling painted over the text (126ms)
+    ✓ does not report off-screen screen-reader-only text (176ms)
+    23) fails text over artwork until the artwork is declared reviewed
+    ✓ ignores text that is hidden rather than reporting it as a defect (179ms)
+  16 passing (8s)
+  23 failing
   1) legibility sweep — every visible text node (light)
        /accounts (customer dashboard): all text clears WCAG AA:
-     AssertionError: 43 illegible text node(s) on /accounts (customer dashboard) (light):
+     AssertionError: 45 illegible text node(s) on /accounts (customer dashboard) (light):
+  span.mat-button-wrapper > svg "Next page" — 1.00:1, needs 3:1 (fill rgba(0, 0, 0, 0.54) → rgb(0, 0, 0) on rgb(0, 0, 0))
   h1 "Accounts" — 1.16:1, needs 3:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))
+  span.mat-button-wrapper "Make a transfer" — 1.00:1, needs 4.5:1 (rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0))
   span.mat-select-min-line "Advantage Plus Banking ••4410" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
   mat-label "Account" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.6) → rgb(0, 0, 0) on rgb(0, 0, 0))
   span "$" — 3.61:1, needs 4.5:1 (rgb(93, 102, 115) → rgb(93, 102, 115) on rgb(0, 0, 0))
@@ -235,7 +241,7 @@ libva error: vaGetDriverNameByIndex() failed with unknown libva error, driver_na
   div.mat-paginator-page-size-label "Items per page:" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.54) → rgb(0, 0, 0) on rgb(0, 0, 0))
   span.mat-select-min-line "25" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
   div.mat-paginator-range-label "1 – 25 of 240" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.54) → rgb(0, 0, 0) on rgb(0, 0, 0))
-: expected [ Array(43) ] to have a length of 0 but got 43
+: expected [ Array(45) ] to have a length of 0 but got 45
       at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
 
   2) legibility sweep — every visible text node (light)
@@ -262,23 +268,25 @@ libva error: vaGetDriverNameByIndex() failed with unknown libva error, driver_na
 
   3) legibility sweep — every visible text node (light)
        /sign-in: all text clears WCAG AA:
-     AssertionError: 4 illegible text node(s) on /sign-in (light):
+     AssertionError: 5 illegible text node(s) on /sign-in (light):
   span.sign-in__eyebrow "Bank of America" — 3.61:1, needs 4.5:1 (rgb(93, 102, 115) → rgb(93, 102, 115) on rgb(0, 0, 0))
   h1.sign-in__title "Sign in to continue" — 1.16:1, needs 3:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))
   p.sign-in__body "Your session does not carry the entitlem" — 3.61:1, needs 4.5:1 (rgb(93, 102, 115) → rgb(93, 102, 115) on rgb(0, 0, 0))
   code "/accounts" — 3.61:1, needs 4.5:1 (rgb(93, 102, 115) → rgb(93, 102, 115) on rgb(0, 0, 0))
-: expected [ Array(4) ] to have a length of 0 but got 4
+  span.mat-button-wrapper "Continue to sign in" — 1.00:1, needs 4.5:1 (rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0))
+: expected [ Array(5) ] to have a length of 0 but got 5
       at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
 
   4) legibility sweep — every visible text node (light)
        /__showcase/button: all text clears WCAG AA:
-     AssertionError: 5 illegible text node(s) on /__showcase/button (light):
+     AssertionError: 6 illegible text node(s) on /__showcase/button (light):
   a.showcase__back "← all components" — 1.42:1, needs 4.5:1 (rgb(1, 33, 105) → rgb(1, 33, 105) on rgb(0, 0, 0))
   span.showcase__eyebrow "@bofa/ui-core" — 3.61:1, needs 4.5:1 (rgb(93, 102, 115) → rgb(93, 102, 115) on rgb(0, 0, 0))
   h1.showcase__title "button" — 1.16:1, needs 3:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))
-  span.mat-button-wrapper "Download statement" — 1.42:1, needs 4.5:1 (rgb(1, 33, 105) → rgb(1, 33, 105) on rgb(0, 0, 0))
-  span.mat-button-wrapper "Cancel" — 1.16:1, needs 4.5:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))
-: expected [ Array(5) ] to have a length of 0 but got 5
+  span.mat-button-wrapper "Make a transfer" — 1.00:1, needs 4.5:1 (rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  span.mat-button-wrapper "Download statement" — 1.00:1, needs 4.5:1 (rgb(1, 33, 105) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  span.mat-button-wrapper "Cancel" — 1.00:1, needs 4.5:1 (rgb(18, 22, 29) → rgb(0, 0, 0) on rgb(0, 0, 0))
+: expected [ Array(6) ] to have a length of 0 but got 6
       at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
 
   5) legibility sweep — every visible text node (light)
@@ -309,12 +317,13 @@ libva error: vaGetDriverNameByIndex() failed with unknown libva error, driver_na
 
   7) legibility sweep — every visible text node (light)
        /__showcase/datepicker: all text clears WCAG AA:
-     AssertionError: 4 illegible text node(s) on /__showcase/datepicker (light):
+     AssertionError: 5 illegible text node(s) on /__showcase/datepicker (light):
+  span.mat-button-wrapper > svg "Open calendar" — 1.00:1, needs 3:1 (fill rgba(0, 0, 0, 0.54) → rgb(0, 0, 0) on rgb(0, 0, 0))
   a.showcase__back "← all components" — 1.42:1, needs 4.5:1 (rgb(1, 33, 105) → rgb(1, 33, 105) on rgb(0, 0, 0))
   span.showcase__eyebrow "@bofa/ui-core" — 3.61:1, needs 4.5:1 (rgb(93, 102, 115) → rgb(93, 102, 115) on rgb(0, 0, 0))
   h1.showcase__title "datepicker" — 1.16:1, needs 3:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))
   mat-label "Payment date" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.6) → rgb(0, 0, 0) on rgb(0, 0, 0))
-: expected [ Array(4) ] to have a length of 0 but got 4
+: expected [ Array(5) ] to have a length of 0 but got 5
       at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
 
   8) legibility sweep — every visible text node (light)
@@ -358,11 +367,12 @@ libva error: vaGetDriverNameByIndex() failed with unknown libva error, driver_na
 
   9) legibility sweep — every visible text node (light)
        /__showcase/dialog: all text clears WCAG AA:
-     AssertionError: 3 illegible text node(s) on /__showcase/dialog (light):
+     AssertionError: 4 illegible text node(s) on /__showcase/dialog (light):
   a.showcase__back "← all components" — 1.42:1, needs 4.5:1 (rgb(1, 33, 105) → rgb(1, 33, 105) on rgb(0, 0, 0))
   span.showcase__eyebrow "@bofa/ui-core" — 3.61:1, needs 4.5:1 (rgb(93, 102, 115) → rgb(93, 102, 115) on rgb(0, 0, 0))
   h1.showcase__title "dialog" — 1.16:1, needs 3:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))
-: expected [ Array(3) ] to have a length of 0 but got 3
+  span.mat-button-wrapper "Open the real dialog" — 1.00:1, needs 4.5:1 (rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0))
+: expected [ Array(4) ] to have a length of 0 but got 4
       at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
 
   10) legibility sweep — every visible text node (light)
@@ -410,7 +420,8 @@ libva error: vaGetDriverNameByIndex() failed with unknown libva error, driver_na
 
   14) legibility sweep — every visible text node (light)
        /__showcase/paginator: all text clears WCAG AA:
-     AssertionError: 8 illegible text node(s) on /__showcase/paginator (light):
+     AssertionError: 9 illegible text node(s) on /__showcase/paginator (light):
+  span.mat-button-wrapper > svg "Next page" — 1.00:1, needs 3:1 (fill rgba(0, 0, 0, 0.54) → rgb(0, 0, 0) on rgb(0, 0, 0))
   a.showcase__back "← all components" — 1.42:1, needs 4.5:1 (rgb(1, 33, 105) → rgb(1, 33, 105) on rgb(0, 0, 0))
   span.showcase__eyebrow "@bofa/ui-core" — 3.61:1, needs 4.5:1 (rgb(93, 102, 115) → rgb(93, 102, 115) on rgb(0, 0, 0))
   h1.showcase__title "paginator" — 1.16:1, needs 3:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))
@@ -419,7 +430,7 @@ libva error: vaGetDriverNameByIndex() failed with unknown libva error, driver_na
   div.mat-paginator-range-label "1 – 25 of 240" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.54) → rgb(0, 0, 0) on rgb(0, 0, 0))
   div.mat-paginator-page-size-label "Items per page:" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.54) → rgb(0, 0, 0) on rgb(0, 0, 0))
   div.mat-paginator-range-label "1 – 25 of 240" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.54) → rgb(0, 0, 0) on rgb(0, 0, 0))
-: expected [ Array(8) ] to have a length of 0 but got 8
+: expected [ Array(9) ] to have a length of 0 but got 9
       at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
 
   15) legibility sweep — every visible text node (light)
@@ -442,16 +453,68 @@ libva error: vaGetDriverNameByIndex() failed with unknown libva error, driver_na
 : expected [ Array(3) ] to have a length of 0 but got 3
       at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
 
+  17) legibility sweep — every visible text node (dark)
+       /accounts (customer dashboard): all text clears WCAG AA:
+     AssertionError: 3 illegible text node(s) on /accounts (customer dashboard) (dark):
+  span.mat-button-wrapper > svg "Next page" — 1.00:1, needs 3:1 (fill rgba(255, 255, 255, 0.7) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  span.mat-button-wrapper "Make a transfer" — 1.00:1, needs 4.5:1 (rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  span.mat-select-min-line "25" — 1.00:1, needs 4.5:1 (rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0))
+: expected [ Array(3) ] to have a length of 0 but got 3
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
+
+  18) legibility sweep — every visible text node (dark)
+       /sign-in: all text clears WCAG AA:
+     AssertionError: 1 illegible text node(s) on /sign-in (dark):
+  span.mat-button-wrapper "Continue to sign in" — 1.00:1, needs 4.5:1 (rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0))
+: expected [ Array(1) ] to have a length of 0 but got 1
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
+
+  19) legibility sweep — every visible text node (dark)
+       /__showcase/button: all text clears WCAG AA:
+     AssertionError: 3 illegible text node(s) on /__showcase/button (dark):
+  span.mat-button-wrapper "Make a transfer" — 1.00:1, needs 4.5:1 (rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  span.mat-button-wrapper "Download statement" — 1.00:1, needs 4.5:1 (rgb(158, 197, 255) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  span.mat-button-wrapper "Cancel" — 1.00:1, needs 4.5:1 (rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0))
+: expected [ Array(3) ] to have a length of 0 but got 3
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
+
+  20) legibility sweep — every visible text node (dark)
+       /__showcase/datepicker: all text clears WCAG AA:
+     AssertionError: 1 illegible text node(s) on /__showcase/datepicker (dark):
+  span.mat-button-wrapper > svg "Open calendar" — 1.00:1, needs 3:1 (fill rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0))
+: expected [ Array(1) ] to have a length of 0 but got 1
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
+
+  21) legibility sweep — every visible text node (dark)
+       /__showcase/dialog: all text clears WCAG AA:
+     AssertionError: 1 illegible text node(s) on /__showcase/dialog (dark):
+  span.mat-button-wrapper "Open the real dialog" — 1.00:1, needs 4.5:1 (rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0))
+: expected [ Array(1) ] to have a length of 0 but got 1
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
+
+  22) legibility sweep — every visible text node (dark)
+       /__showcase/paginator: all text clears WCAG AA:
+     AssertionError: 2 illegible text node(s) on /__showcase/paginator (dark):
+  span.mat-button-wrapper > svg "Next page" — 1.00:1, needs 3:1 (fill rgba(255, 255, 255, 0.7) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  span.mat-select-min-line "25" — 1.00:1, needs 4.5:1 (rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0))
+: expected [ Array(2) ] to have a length of 0 but got 2
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
+
+  23) legibility sweep — the sweep itself
+       fails text over artwork until the artwork is declared reviewed:
+     AssertionError: rgb(255, 255, 255) → rgb(255, 255, 255) on rgb(0, 0, 0): expected undefined to be a string
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:237:60)
+
   (Results)
   ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
-  │ Tests:        35                                                                               │
-  │ Passing:      19                                                                               │
-  │ Failing:      16                                                                               │
+  │ Tests:        39                                                                               │
+  │ Passing:      16                                                                               │
+  │ Failing:      23                                                                               │
   │ Pending:      0                                                                                │
   │ Skipped:      0                                                                                │
   │ Screenshots:  0                                                                                │
   │ Video:        false                                                                            │
-  │ Duration:     6 seconds                                                                        │
+  │ Duration:     7 seconds                                                                        │
   │ Spec Ran:     legibility-sweep.cy.ts                                                           │
   └────────────────────────────────────────────────────────────────────────────────────────────────┘
 ────────────────────────────────────────────────────────────────────────────────────────────────────
@@ -459,46 +522,46 @@ libva error: vaGetDriverNameByIndex() failed with unknown libva error, driver_na
   Running:  override-contract.cy.ts                                                         (3 of 3)
 
   design system — override contract (computed styles)
-    ✓ OV-01: Disabled field label stays legible (WCAG AA) against the slate palette (539ms)
-    ✓ OV-01b: Field underline uses the BoA slate rule, not the Material default (184ms)
-    ✓ OV-01c: Disabled field *value* stays legible, not just its label (213ms)
-    ✓ OV-01d: Validation copy uses the brand danger red, which clears AA (Material’s does not) (168ms)
-    ✓ OV-02: Error text sits on a 20px line box so field height never jumps on validation (118ms)
-    ✓ OV-03: Primary button is brand red with 8px optical icon/label spacing (129ms)
-    ✓ OV-04: Keyboard focus ring is visible on white and on slate-50 (214ms)
-    ✓ OV-05: Statement rows keep fixed heights so 50 rows paginate predictably in print (211ms)
-    ✓ OV-05b: Currency figures use tabular numerals and right-align on the decimal (182ms)
-    ✓ OV-05c: Header cells carry the slate-900 brand weight, not the Material grey (223ms)
-    ✓ OV-05d: Zebra striping on even rows for statement scanability (156ms)
-    ✓ OV-06: Sort arrow is dimmed until hover so it does not read as an active filter (110ms)
-    ✓ OV-07: Active option in the account picker is tinted brand red, not Material grey (273ms)
-    ✓ OV-08: Selected option is brand red, not accent navy (navy reads as a link here) (219ms)
-    ✓ OV-09: Consent toggle is unambiguous at arm’s length on a tablet (116ms)
-    ✓ OV-09b: A granted consent reads green, not brand red (104ms)
-    ✓ OV-10: Section ink bar is legible on a 4K branch display (255ms)
-    ✓ OV-10b: The active section label is the brand accent and stays readable in both palettes (108ms)
-    ✓ OV-11: Category chips keep a 28px rhythm inside the filter drawer (114ms)
-    ✓ OV-12: Step-up dialog matches the mobile MFA modal: tight padding, squared corners (185ms)
-    ✓ OV-12b: A short confirmation body never acquires an inner scrollbar (185ms)
-    ✓ OV-13: Selected day is brand red; today is outlined, not a second filled circle (207ms)
-    ✓ OV-14: Range label stays on screen on a 1280px branch terminal (130ms)
-    ✓ OV-15: Payee panel never covers the Confirmation of Payee copy (384ms)
-    ✓ OV-16: Amount entry right-aligns on tabular numerals (114ms)
-    ✓ OV-17: Compact density is materially shorter than the default field (117ms)
-    ✓ OV-18: Legacy shell embeds tabs without a second divider line (147ms)
+    ✓ OV-01: Disabled field label stays legible (WCAG AA) against the slate palette (764ms)
+    ✓ OV-01b: Field underline uses the BoA slate rule, not the Material default (264ms)
+    ✓ OV-01c: Disabled field *value* stays legible, not just its label (125ms)
+    ✓ OV-01d: Validation copy uses the brand danger red, which clears AA (Material’s does not) (122ms)
+    ✓ OV-02: Error text sits on a 20px line box so field height never jumps on validation (120ms)
+    ✓ OV-03: Primary button is brand red with 8px optical icon/label spacing (134ms)
+    ✓ OV-04: Keyboard focus ring is visible on white and on slate-50 (290ms)
+    ✓ OV-05: Statement rows keep fixed heights so 50 rows paginate predictably in print (237ms)
+    ✓ OV-05b: Currency figures use tabular numerals and right-align on the decimal (170ms)
+    ✓ OV-05c: Header cells carry the slate-900 brand weight, not the Material grey (128ms)
+    ✓ OV-05d: Zebra striping on even rows for statement scanability (119ms)
+    ✓ OV-06: Sort arrow is dimmed until hover so it does not read as an active filter (122ms)
+    ✓ OV-07: Active option in the account picker is tinted brand red, not Material grey (313ms)
+    ✓ OV-08: Selected option is brand red, not accent navy (navy reads as a link here) (199ms)
+    ✓ OV-09: Consent toggle is unambiguous at arm’s length on a tablet (250ms)
+    ✓ OV-09b: A granted consent reads green, not brand red (117ms)
+    ✓ OV-10: Section ink bar is legible on a 4K branch display (156ms)
+    ✓ OV-10b: The active section label is the brand accent and stays readable in both palettes (151ms)
+    ✓ OV-11: Category chips keep a 28px rhythm inside the filter drawer (135ms)
+    ✓ OV-12: Step-up dialog matches the mobile MFA modal: tight padding, squared corners (227ms)
+    ✓ OV-12b: A short confirmation body never acquires an inner scrollbar (227ms)
+    ✓ OV-13: Selected day is brand red; today is outlined, not a second filled circle (414ms)
+    ✓ OV-14: Range label stays on screen on a 1280px branch terminal (162ms)
+    ✓ OV-15: Payee panel never covers the Confirmation of Payee copy (288ms)
+    ✓ OV-16: Amount entry right-aligns on tabular numerals (132ms)
+    ✓ OV-17: Compact density is materially shorter than the default field (145ms)
+    ✓ OV-18: Legacy shell embeds tabs without a second divider line (145ms)
   design system — override contract (dark surface)
-    ✓ the dark surface is actually dark (else every probe below is vacuous) (288ms)
-    ✓ OV-01c [dark]: Disabled field *value* stays legible, not just its label (227ms)
-    ✓ OV-01d [dark]: Validation copy uses the brand danger red, which clears AA (Material’s does not) (266ms)
-    ✓ OV-05c [dark]: Header cells carry the slate-900 brand weight, not the Material grey (119ms)
-    ✓ OV-05d [dark]: Zebra striping on even rows for statement scanability (104ms)
-    ✓ OV-07 [dark]: Active option in the account picker is tinted brand red, not Material grey (248ms)
-    ✓ OV-10 [dark]: Section ink bar is legible on a 4K branch display (113ms)
-    ✓ OV-10b [dark]: The active section label is the brand accent and stays readable in both palettes (108ms)
-    ✓ OV-11 [dark]: Category chips keep a 28px rhythm inside the filter drawer (110ms)
-    ✓ OV-15 [dark]: Payee panel never covers the Confirmation of Payee copy (259ms)
-    ✓ OV-17 [dark]: Compact density is materially shorter than the default field (106ms)
-    ✓ OV-18 [dark]: Legacy shell embeds tabs without a second divider line (108ms)
+    ✓ the dark surface is actually dark (else every probe below is vacuous) (435ms)
+    ✓ OV-01c [dark]: Disabled field *value* stays legible, not just its label (216ms)
+    ✓ OV-01d [dark]: Validation copy uses the brand danger red, which clears AA (Material’s does not) (155ms)
+    ✓ OV-05c [dark]: Header cells carry the slate-900 brand weight, not the Material grey (135ms)
+    ✓ OV-05d [dark]: Zebra striping on even rows for statement scanability (120ms)
+    ✓ OV-07 [dark]: Active option in the account picker is tinted brand red, not Material grey (277ms)
+    ✓ OV-10 [dark]: Section ink bar is legible on a 4K branch display (148ms)
+    ✓ OV-10b [dark]: The active section label is the brand accent and stays readable in both palettes (158ms)
+    ✓ OV-11 [dark]: Category chips keep a 28px rhythm inside the filter drawer (151ms)
+    ✓ OV-15 [dark]: Payee panel never covers the Confirmation of Payee copy (301ms)
+    ✓ OV-17 [dark]: Compact density is materially shorter than the default field (149ms)
+    ✓ OV-18 [dark]: Legacy shell embeds tabs without a second divider line (123ms)
   design system — legibility (WCAG AA, light surface)
     1) statement table: even (striped) row clears 4.5:1
     2) statement table: odd row clears 4.5:1
@@ -511,37 +574,37 @@ libva error: vaGetDriverNameByIndex() failed with unknown libva error, driver_na
     9) tabs: inactive tab label clears 4.5:1
     10) tabs: active tab label clears 4.5:1
     11) select: trigger text clears 4.5:1
-    ✓ chips: chip label clears 4.5:1 (158ms)
+    ✓ chips: chip label clears 4.5:1 (166ms)
     12) paginator: range label clears 4.5:1
     13) currency input: amount clears 4.5:1
-    ✓ tabs: the active-section ink bar clears 3:1 (non-text contrast) (129ms)
+    ✓ tabs: the active-section ink bar clears 3:1 (non-text contrast) (196ms)
     14) datepicker: the toggle glyph clears 3:1 (non-text contrast)
   design system — legibility (WCAG AA, dark surface)
-    ✓ statement table: even (striped) row clears 4.5:1 (148ms)
-    ✓ statement table: odd row clears 4.5:1 (320ms)
-    ✓ statement table: header cell clears 4.5:1 (166ms)
-    ✓ form field: field label clears 4.5:1 (127ms)
-    ✓ form field: entered value clears 4.5:1 (136ms)
-    ✓ form field: hint clears 4.5:1 (215ms)
-    ✓ form field: disabled value clears 4.5:1 (139ms)
-    ✓ form field: error message clears 4.5:1 (144ms)
-    ✓ tabs: inactive tab label clears 4.5:1 (294ms)
-    ✓ tabs: active tab label clears 4.5:1 (134ms)
-    ✓ select: trigger text clears 4.5:1 (132ms)
-    ✓ chips: chip label clears 4.5:1 (121ms)
-    ✓ paginator: range label clears 4.5:1 (134ms)
-    ✓ currency input: amount clears 4.5:1 (119ms)
-    ✓ tabs: the active-section ink bar clears 3:1 (non-text contrast) (160ms)
-    ✓ datepicker: the toggle glyph clears 3:1 (non-text contrast) (171ms)
+    ✓ statement table: even (striped) row clears 4.5:1 (174ms)
+    ✓ statement table: odd row clears 4.5:1 (171ms)
+    ✓ statement table: header cell clears 4.5:1 (154ms)
+    ✓ form field: field label clears 4.5:1 (216ms)
+    15) form field: entered value clears 4.5:1
+    ✓ form field: hint clears 4.5:1 (404ms)
+    16) form field: disabled value clears 4.5:1
+    ✓ form field: error message clears 4.5:1 (182ms)
+    ✓ tabs: inactive tab label clears 4.5:1 (170ms)
+    ✓ tabs: active tab label clears 4.5:1 (174ms)
+    ✓ select: trigger text clears 4.5:1 (235ms)
+    ✓ chips: chip label clears 4.5:1 (203ms)
+    ✓ paginator: range label clears 4.5:1 (172ms)
+    17) currency input: amount clears 4.5:1
+    ✓ tabs: the active-section ink bar clears 3:1 (non-text contrast) (191ms)
+    18) datepicker: the toggle glyph clears 3:1 (non-text contrast)
   design system — the contrast oracle itself
-    15) a fully transparent chain resolves to the canvas, not to opaque black
-    16) composites a semi-transparent foreground instead of treating it as opaque
-    ✓ composites a semi-transparent background over the layer behind it (128ms)
-    ✓ agrees with the published figure on a known opaque pair (124ms)
-    17) folds an ancestor `opacity` into the layer instead of ignoring it
-    ✓ refuses to score text over a gradient rather than reporting the canvas (164ms)
-  60 passing (14s)
-  17 failing
+    19) a fully transparent chain resolves to the canvas, not to opaque black
+    20) composites a semi-transparent foreground instead of treating it as opaque
+    ✓ composites a semi-transparent background over the layer behind it (269ms)
+    ✓ agrees with the published figure on a known opaque pair (164ms)
+    21) folds an ancestor `opacity` into the layer instead of ignoring it
+    ✓ refuses to score text over a gradient rather than reporting the canvas (183ms)
+  56 passing (16s)
+  21 failing
   1) design system — legibility (WCAG AA, light surface)
        statement table: even (striped) row clears 4.5:1:
       AssertionError: statement table / even (striped) row[0]: rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0): expected 1 to be at least 4.5
@@ -580,9 +643,9 @@ libva error: vaGetDriverNameByIndex() failed with unknown libva error, driver_na
 
   5) design system — legibility (WCAG AA, light surface)
        form field: entered value clears 4.5:1:
-      AssertionError: form field / entered value[0]: rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0): expected 1.1582250796635216 to be at least 4.5
+      AssertionError: form field / entered value[0]: rgb(18, 22, 29) → rgb(0, 0, 0) on rgb(0, 0, 0): expected 1 to be at least 4.5
       + expected - actual
-      -1.1582250796635216
+      -1
       +4.5
       
       at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:168:79)
@@ -598,9 +661,9 @@ libva error: vaGetDriverNameByIndex() failed with unknown libva error, driver_na
 
   7) design system — legibility (WCAG AA, light surface)
        form field: disabled value clears 4.5:1:
-      AssertionError: form field / disabled value[0]: rgb(93, 102, 115) → rgb(93, 102, 115) on rgb(0, 0, 0): expected 3.6135406151933367 to be at least 4.5
+      AssertionError: form field / disabled value[0]: rgb(93, 102, 115) → rgb(0, 0, 0) on rgb(0, 0, 0): expected 1 to be at least 4.5
       + expected - actual
-      -3.6135406151933367
+      -1
       +4.5
       
       at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:168:79)
@@ -652,9 +715,9 @@ libva error: vaGetDriverNameByIndex() failed with unknown libva error, driver_na
 
   13) design system — legibility (WCAG AA, light surface)
        currency input: amount clears 4.5:1:
-      AssertionError: currency input / amount[0]: rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0): expected 1.1582250796635216 to be at least 4.5
+      AssertionError: currency input / amount[0]: rgb(18, 22, 29) → rgb(0, 0, 0) on rgb(0, 0, 0): expected 1 to be at least 4.5
       + expected - actual
-      -1.1582250796635216
+      -1
       +4.5
       
       at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:168:79)
@@ -668,19 +731,55 @@ libva error: vaGetDriverNameByIndex() failed with unknown libva error, driver_na
       
       at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:201:79)
 
-  15) design system — the contrast oracle itself
+  15) design system — legibility (WCAG AA, dark surface)
+       form field: entered value clears 4.5:1:
+      AssertionError: form field / entered value[0]: rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0): expected 1 to be at least 4.5
+      + expected - actual
+      -1
+      +4.5
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:168:79)
+
+  16) design system — legibility (WCAG AA, dark surface)
+       form field: disabled value clears 4.5:1:
+      AssertionError: form field / disabled value[0]: rgb(199, 204, 214) → rgb(0, 0, 0) on rgb(0, 0, 0): expected 1 to be at least 4.5
+      + expected - actual
+      -1
+      +4.5
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:168:79)
+
+  17) design system — legibility (WCAG AA, dark surface)
+       currency input: amount clears 4.5:1:
+      AssertionError: currency input / amount[0]: rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0): expected 1 to be at least 4.5
+      + expected - actual
+      -1
+      +4.5
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:168:79)
+
+  18) design system — legibility (WCAG AA, dark surface)
+       datepicker: the toggle glyph clears 3:1 (non-text contrast):
+      AssertionError: datepicker toggle glyph[0]: fill rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0): expected 1 to be at least 3
+      + expected - actual
+      -1
+      +3
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:201:79)
+
+  19) design system — the contrast oracle itself
        a fully transparent chain resolves to the canvas, not to opaque black:
      AssertionError: expected 21 to be close to 1 +/- 0.01
       at eval (webpack:///./src/e2e/override-contract.cy.ts:252:26)
       at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:244:6)
 
-  16) design system — the contrast oracle itself
+  20) design system — the contrast oracle itself
        composites a semi-transparent foreground instead of treating it as opaque:
      AssertionError: expected 10.049743700462349 to be close to 3.87 +/- 0.02
       at eval (webpack:///./src/e2e/override-contract.cy.ts:260:26)
       at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:244:6)
 
-  17) design system — the contrast oracle itself
+  21) design system — the contrast oracle itself
        folds an ancestor `opacity` into the layer instead of ignoring it:
      AssertionError: expected 21 to be close to 1.33 +/- 0.02
       at eval (webpack:///./src/e2e/override-contract.cy.ts:294:28)
@@ -689,26 +788,26 @@ libva error: vaGetDriverNameByIndex() failed with unknown libva error, driver_na
   (Results)
   ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
   │ Tests:        77                                                                               │
-  │ Passing:      60                                                                               │
-  │ Failing:      17                                                                               │
+  │ Passing:      56                                                                               │
+  │ Failing:      21                                                                               │
   │ Pending:      0                                                                                │
   │ Skipped:      0                                                                                │
   │ Screenshots:  0                                                                                │
   │ Video:        false                                                                            │
-  │ Duration:     13 seconds                                                                       │
+  │ Duration:     16 seconds                                                                       │
   │ Spec Ran:     override-contract.cy.ts                                                          │
   └────────────────────────────────────────────────────────────────────────────────────────────────┘
 ====================================================================================================
   (Run Finished)
        Spec                                              Tests  Passing  Failing  Pending  Skipped  
   ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
-  │ ✔  design-system.cy.ts                      00:08       23       23        -        -        - │
+  │ ✔  design-system.cy.ts                      00:09       23       23        -        -        - │
   ├────────────────────────────────────────────────────────────────────────────────────────────────┤
-  │ ✖  legibility-sweep.cy.ts                   00:06       35       19       16        -        - │
+  │ ✖  legibility-sweep.cy.ts                   00:07       39       16       23        -        - │
   ├────────────────────────────────────────────────────────────────────────────────────────────────┤
-  │ ✖  override-contract.cy.ts                  00:13       77       60       17        -        - │
+  │ ✖  override-contract.cy.ts                  00:16       77       56       21        -        - │
   └────────────────────────────────────────────────────────────────────────────────────────────────┘
-    ✖  2 of 3 failed (67%)                      00:29      135      102       33        -        -  
+    ✖  2 of 3 failed (67%)                      00:33      139       95       44        -        -  
 
  
 
