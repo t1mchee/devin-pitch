@@ -28,6 +28,32 @@
     color: bofa.$boa-slate-600;
   }
 
+  // OV-01c — the same intent, applied to the *value* rather than the label.
+  // The original rule covered the label only, so a read-only account field
+  // showed its label at 5.57:1 and the account name it existed to display at
+  // 2.66:1 (Material's `rgba(0, 0, 0, 0.38)` on the fill surface). Found by the
+  // contrast gate the day it was pointed at anything other than the table —
+  // and it was wrong in the *light* theme, which is the shipping one.
+  &.mat-form-field-disabled .mat-input-element {
+    color: bofa.$boa-slate-600;
+  }
+
+  .bofa-theme-dark &.mat-form-field-disabled .mat-input-element,
+  .bofa-theme-dark &.mat-form-field-disabled .mat-form-field-label {
+    color: bofa.$boa-slate-300;
+  }
+
+  // OV-01d — Material's error red (#f44336) is 3.68:1 on white: it fails AA at
+  // the one moment the customer must read the text. The brand danger red is
+  // 7.33:1. Same intent as OV-01, same defect class, opposite end of the form.
+  .mat-error {
+    color: bofa.$boa-danger-600;
+  }
+
+  .bofa-theme-dark & .mat-error {
+    color: bofa.$boa-red-100;
+  }
+
   // OV-02 — Error text must sit on a 20px line box so field heights do not jump
   // when validation fires. Layout shift on the transfer form was a 2022 incident.
   .mat-form-field-subscript-wrapper {
@@ -199,9 +225,27 @@
     color: bofa.$boa-red-600;
   }
 
+  // OV-10b — brand red is 5.88:1 on white but 2.24:1 on the dark surface, so the
+  // *active* section label — the one piece of text on the strip that tells the
+  // customer where they are — failed AA in the dark palette, and the ink bar
+  // under it failed 1.4.11's 3:1 for a non-text state indicator. Brand tints
+  // carry the same signal: 8.65:1 for the label, 4.10:1 for the bar. Red-600
+  // stays in the light theme, where it is the locked brand value.
+  .bofa-theme-dark & .mat-tab-label-active {
+    color: bofa.$boa-red-100;
+  }
+
   .mat-ink-bar {
     height: 3px;
     background-color: bofa.$boa-red-600;
+  }
+
+  // `&.mat-primary`, not a bare descendant: the dark theme block emits
+  // `.bofa-theme-dark .mat-tab-group.mat-primary .mat-ink-bar` (four classes),
+  // so a three-class rule of ours loses the cascade and the tint never lands.
+  // Measured — the probe reported red-600 in the dark theme until this matched.
+  .bofa-theme-dark &.mat-primary .mat-ink-bar {
+    background-color: bofa.$boa-red-300;
   }
 }
 
