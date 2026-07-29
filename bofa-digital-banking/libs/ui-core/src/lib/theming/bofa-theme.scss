@@ -1,0 +1,93 @@
+@use 'sass:map';
+@use '@angular/material' as mat;
+@use './palette' as bofa;
+@use './typography' as type;
+
+@include mat.core();
+
+// Positional hue arguments: default, lighter, darker.
+$boa-primary: mat.define-palette(bofa.$boa-red-palette, 600, 100, 800);
+$boa-accent: mat.define-palette(bofa.$boa-blue-palette, 500, 50, 700);
+$boa-warn: mat.define-palette(mat.$red-palette);
+
+// Angular Material v14 positional signature for define-light-theme.
+// v15 replaces this with a map, v18 introduces define-theme for M3, and v20
+// replaces the whole entry point with mat.theme(). Every one of those is a
+// breaking change for this file.
+$boa-theme: mat.define-light-theme($boa-primary, $boa-accent, $boa-warn);
+
+@include mat.all-component-themes($boa-theme);
+@include mat.all-component-typographies(type.$boa-typography);
+
+// Dark surface. Not a product feature yet — it exists because the external
+// control run's worst finding (an override rewritten onto a dead selector,
+// where the library default happened to match the brand value) was invisible
+// in the light theme and wrong in the dark one. A single-theme oracle cannot
+// see that class of defect at all. Colours only: geometry, density and
+// typography are shared with the light theme by construction.
+$boa-dark-theme: mat.define-dark-theme($boa-primary, $boa-accent, $boa-warn);
+
+.bofa-theme-dark {
+  @include mat.all-component-colors($boa-dark-theme);
+
+  // `all-component-colors` recolours component *foregrounds* and nothing else —
+  // it never touches the page. A hostile review of the first version of this
+  // block found the consequence: every control that does not paint its own
+  // surface (form-field labels and hints, inactive tab labels, the select
+  // trigger, the datepicker toggle icon, which is `fill: currentColor`) became
+  // white text on a white page — 1.0:1, invisible, and in the datepicker's case
+  // a button you cannot see to click. The suite was green throughout, because
+  // contrast was asserted on the statement table only.
+  //
+  // So the surface has to come with the palette. These two declarations are
+  // what `all-component-themes` would have emitted for a dark theme at the
+  // document root, scoped to the class instead.
+  background: map.get(map.get($boa-dark-theme, background), background);
+  color: map.get(map.get($boa-dark-theme, foreground), text);
+}
+
+// -----------------------------------------------------------------------------
+// Application surface tokens.
+//
+// The round after the fix above, a hostile review found the same defect one
+// layer higher: `.bofa-theme-dark` darkened <body>, and then `bofa-root` painted
+// `background: #fff` straight back over it, so `/accounts`, the showcase index
+// and `/sign-in` rendered white-on-white while the components on them — which
+// paint their own surfaces — looked correct. That is a worse version of the bug,
+// because the components looking right is what hides it.
+//
+// The root cause was not the missing rule; it was that application chrome
+// hard-coded hexes that only existed in one palette. So the surface, the text
+// and the chrome colours are tokens, declared once here and consumed by every
+// application stylesheet. A route cannot forget to follow the palette if it
+// never states a colour of its own. Custom properties inherit through Angular's
+// emulated encapsulation, so this works from a component `styles` block.
+//
+// The light values are the hexes the application stylesheets already carried, so
+// this refactor moves zero light pixels — deliberately, because the light theme
+// is the shipping one and a token migration is not a licence to re-baseline it.
+// The dark values are measured: muted copy 9.41:1, links 7.47:1 on the dark page,
+// against 4.5:1 required. Text colour is deliberately NOT a token: it inherits
+// from <body>, which the block above already sets per palette, and hard-coding it
+// here would change light-theme text from Material's rgba(0,0,0,0.87).
+:root {
+  --bofa-surface: #fff;
+  --bofa-surface-raised: #{bofa.$boa-slate-50};
+  --bofa-surface-sunken: #{bofa.$boa-slate-100};
+  --bofa-text-muted: #{bofa.$boa-slate-600};
+  --bofa-text-success: #1b7f4d;
+  --bofa-link: #{bofa.$boa-blue-500};
+  --bofa-border: #{bofa.$boa-slate-100};
+}
+
+.bofa-theme-dark {
+  --bofa-surface: #{map.get(map.get($boa-dark-theme, background), background)};
+  --bofa-surface-raised: #3f4550;
+  --bofa-surface-sunken: #{bofa.$boa-slate-750};
+  --bofa-text-muted: #{bofa.$boa-slate-200};
+  --bofa-text-success: #{bofa.$boa-success-200};
+  --bofa-link: #{bofa.$boa-blue-100};
+  --bofa-border: #{bofa.$boa-slate-600};
+}
+
+@import './overrides';

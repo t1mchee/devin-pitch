@@ -1,0 +1,350 @@
+=== regress-oracle-modal-textonly :: 2026-07-29T22:54:58Z ===
+
+> bofa-digital-banking@0.0.0 visual
+> docker run --rm -u $(id -u):$(id -g) -e HOME=/tmp -e CYPRESS_CACHE_FOLDER=/root/.cache/Cypress -v "$PWD/..":/w -w /w/bofa-digital-banking --entrypoint bash cypress/included@sha256:058d1834239bf09b381325b8369d05e9e0516a46b65b32e6dc0c991801dc517a -c 'npx nx e2e retail-banking-e2e --skip-nx-cache'
+
+
+> nx run retail-banking-e2e:e2e
+
+- Generating browser application bundles (phase: setup)...
+✔ Browser application bundle generation complete.
+
+Initial Chunk Files                                        | Names                    |  Raw Size
+vendor.js                                                  | vendor                   |   4.97 MB | 
+styles.css, styles.js                                      | styles                   | 315.42 kB | 
+polyfills.js                                               | polyfills                | 239.94 kB | 
+main.js                                                    | main                     | 148.25 kB | 
+runtime.js                                                 | runtime                  |  12.61 kB | 
+
+                                                           | Initial Total            |   5.67 MB
+
+Lazy Chunk Files                                           | Names                    |  Raw Size
+apps_retail-banking_src_app_showcase_showcase_module_ts.js | showcase-showcase-module |  47.78 kB | 
+
+Build at: 2026-07-29T22:55:14.320Z - Hash: 99077f3ec8ad061a - Time: 12254ms
+
+** Angular Live Development Server is listening on localhost:4200, open your browser on http://localhost:4200/ **
+
+
+✔ Compiled successfully.
+libva error: vaGetDriverNameByIndex() failed with unknown libva error, driver_name = (null)
+[220:0729/225515.137467:ERROR:gpu_memory_buffer_support_x11.cc(44)] dri3 extension not supported.
+====================================================================================================
+  (Run Starting)
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Cypress:        10.11.0                                                                        │
+  │ Browser:        Electron 106 (headless)                                                        │
+  │ Node Version:   v16.16.0 (/usr/local/bin/node)                                                 │
+  │ Specs:          3 found (design-system.cy.ts, legibility-sweep.cy.ts, override-contract.cy.ts) │
+  │ Searched:       src/**/*.cy.{js,jsx,ts,tsx}                                                    │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+────────────────────────────────────────────────────────────────────────────────────────────────────
+                                                                                                    
+  Running:  design-system.cy.ts                                                             (1 of 3)
+
+  design system — visual baseline
+[visual] button-default: 0 px (budget 40)
+    ✓ button renders to spec (938ms)
+[visual] form-field-default: 0 px (budget 40)
+    ✓ form-field renders to spec (403ms)
+[visual] select-default: 0 px (budget 40)
+    ✓ select renders to spec (350ms)
+[visual] datepicker-default: 0 px (budget 40)
+    ✓ datepicker renders to spec (323ms)
+[visual] table-default: 0 px (budget 40)
+    ✓ table renders to spec (356ms)
+[visual] dialog-default: 0 px (budget 40)
+    ✓ dialog renders to spec (499ms)
+[visual] tabs-default: 0 px (budget 40)
+    ✓ tabs renders to spec (384ms)
+[visual] chips-default: 0 px (budget 40)
+    ✓ chips renders to spec (364ms)
+[visual] slide-toggle-default: 0 px (budget 40)
+    ✓ slide-toggle renders to spec (374ms)
+[visual] autocomplete-default: 0 px (budget 40)
+    ✓ autocomplete renders to spec (387ms)
+[visual] paginator-default: 0 px (budget 40)
+    ✓ paginator renders to spec (330ms)
+[visual] currency-input-default: 0 px (budget 40)
+    ✓ currency-input renders to spec (349ms)
+[visual] responsive-grid-default: 0 px (budget 40)
+    ✓ responsive-grid renders to spec (337ms)
+    ✓ form field renders its disabled and error states (136ms)
+    ✓ button exposes a disabled state (106ms)
+[visual] responsive-grid-md: 0 px (budget 40)
+    ✓ responsive grid collapses below the md breakpoint (312ms)
+[visual] responsive-grid-sm: 0 px (budget 40)
+    ✓ responsive grid hides the detail pane below the sm breakpoint (409ms)
+  design system — overlay and interaction states
+[visual] dialog-open: 0 px (budget 40)
+    ✓ opens the real dialog overlay (444ms)
+[visual] select-panel-open: 0 px (budget 40)
+    ✓ opens the select panel (425ms)
+[visual] autocomplete-panel-open: 0 px (budget 40)
+    ✓ opens the autocomplete panel (483ms)
+[visual] datepicker-calendar-open: 0 px (budget 40)
+    ✓ opens the datepicker calendar (429ms)
+[visual] button-focus-ring: 0 px (budget 40)
+    ✓ shows the keyboard focus ring on the primary button (391ms)
+  retail banking — customer surface
+[visual] accounts-dashboard: 0 px (budget 40)
+    ✓ renders the accounts dashboard (472ms)
+  23 passing (9s)
+  (Results)
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Tests:        23                                                                               │
+  │ Passing:      23                                                                               │
+  │ Failing:      0                                                                                │
+  │ Pending:      0                                                                                │
+  │ Skipped:      0                                                                                │
+  │ Screenshots:  21                                                                               │
+  │ Video:        false                                                                            │
+  │ Duration:     9 seconds                                                                        │
+  │ Spec Ran:     design-system.cy.ts                                                              │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+  (Screenshots)
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__button-default.png                                                            
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__form-field-default.png                                                        
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__select-default.png                                                            
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__datepicker-default.png                                                        
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__table-default.png                                                             
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__dialog-default.png                                                            
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__tabs-default.png                                                              
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__chips-default.png                                                             
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__slide-toggle-default.png                                                      
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__autocomplete-default.png                                                      
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__paginator-default.png                                                         
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__currency-input-default.png                                                    
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__responsive-grid-default.png                                                   
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-      (768x720)
+     system.cy.ts/vr__responsive-grid-md.png                                                        
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-      (560x720)
+     system.cy.ts/vr__responsive-grid-sm.png                                                        
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__dialog-open.png                                                               
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__select-panel-open.png                                                         
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__autocomplete-panel-open.png                                                   
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__datepicker-calendar-open.png                                                  
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__button-focus-ring.png                                                         
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__accounts-dashboard.png                                                        
+────────────────────────────────────────────────────────────────────────────────────────────────────
+                                                                                                    
+  Running:  legibility-sweep.cy.ts                                                          (2 of 3)
+
+  legibility sweep — every visible text node (light)
+    ✓ /accounts (customer dashboard): all text clears WCAG AA (780ms)
+    ✓ /__showcase (index): all text clears WCAG AA (213ms)
+    ✓ /sign-in: all text clears WCAG AA (119ms)
+    ✓ /__showcase/button: all text clears WCAG AA (120ms)
+    ✓ /__showcase/form-field: all text clears WCAG AA (126ms)
+    ✓ /__showcase/select: all text clears WCAG AA (149ms)
+    ✓ /__showcase/datepicker: all text clears WCAG AA (196ms)
+    ✓ /__showcase/table: all text clears WCAG AA (247ms)
+    ✓ /__showcase/dialog: all text clears WCAG AA (148ms)
+    ✓ /__showcase/tabs: all text clears WCAG AA (108ms)
+    ✓ /__showcase/chips: all text clears WCAG AA (107ms)
+    ✓ /__showcase/slide-toggle: all text clears WCAG AA (112ms)
+    ✓ /__showcase/autocomplete: all text clears WCAG AA (153ms)
+    ✓ /__showcase/paginator: all text clears WCAG AA (109ms)
+    ✓ /__showcase/currency-input: all text clears WCAG AA (115ms)
+    ✓ /__showcase/responsive-grid: all text clears WCAG AA (108ms)
+  legibility sweep — every visible text node (dark)
+    ✓ /accounts (customer dashboard): all text clears WCAG AA (300ms)
+    ✓ /__showcase (index): all text clears WCAG AA (106ms)
+    ✓ /sign-in: all text clears WCAG AA (113ms)
+    ✓ /__showcase/button: all text clears WCAG AA (120ms)
+    ✓ /__showcase/form-field: all text clears WCAG AA (145ms)
+    ✓ /__showcase/select: all text clears WCAG AA (112ms)
+    ✓ /__showcase/datepicker: all text clears WCAG AA (106ms)
+    ✓ /__showcase/table: all text clears WCAG AA (212ms)
+    ✓ /__showcase/dialog: all text clears WCAG AA (129ms)
+    ✓ /__showcase/tabs: all text clears WCAG AA (147ms)
+    ✓ /__showcase/chips: all text clears WCAG AA (113ms)
+    ✓ /__showcase/slide-toggle: all text clears WCAG AA (133ms)
+    ✓ /__showcase/autocomplete: all text clears WCAG AA (108ms)
+    ✓ /__showcase/paginator: all text clears WCAG AA (120ms)
+    ✓ /__showcase/currency-input: all text clears WCAG AA (117ms)
+    ✓ /__showcase/responsive-grid: all text clears WCAG AA (184ms)
+  legibility sweep — the sweep itself
+    ✓ measures a substantial number of nodes on a real route (151ms)
+    ✓ catches illegible text planted on a swept route (177ms)
+    ✓ catches an icon-only control whose glyph is invisible (118ms)
+    ✓ composites a semi-transparent sibling painted over the text (113ms)
+    ✓ does not report off-screen screen-reader-only text (235ms)
+    ✓ fails text over artwork until the artwork is declared reviewed (235ms)
+    ✓ ignores text that is hidden rather than reporting it as a defect (353ms)
+    ✓ composites a covering layer that is raised with z-index but written first (119ms)
+    ✓ measures text below the fold, because coverage cannot depend on page height (137ms)
+    ✓ measures an icon-only control that is labelled with visually hidden text (123ms)
+    ✓ does not composite a veil that paints nothing (113ms)
+    ✓ requires the review declaration on the artwork itself, citing a ratio (179ms)
+    ✓ measures a CSS-painted indicator, which no SVG sweep can see (109ms)
+    ✓ does not report the dimmed page behind an open modal (280ms)
+    ✓ composites a scrim raised inside a transform, and only when it truly paints above (131ms)
+    ✓ is not disarmed by a stray overlay backdrop left in the DOM (171ms)
+    ✓ measures painted marks of any shape, and not a tail of the surface it matches (121ms)
+    ✓ recognises the current sr-only recipe, not one spelling of it (150ms)
+    ✓ evaluates clipping instead of matching it, in both directions (230ms)
+    ✓ composites a layer that covers most of the text, not only one that contains it (121ms)
+    1) is silenced by a real modal and by nothing that merely resembles one
+    ✓ composites an unpositioned cover, without putting text under every background (155ms)
+    ✓ leaves bordered chrome alone and still measures a mark that means something (126ms)
+    ✓ measures a mark drawn with four sides, at 32px, or in a pseudo-element (120ms)
+  55 passing (9s)
+  1 failing
+  1) legibility sweep — the sweep itself
+       is silenced by a real modal and by nothing that merely resembles one:
+     AssertionError: a 2x2 pane is not a modal: expected '' to include 'Zelle daily limit'
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:700:65)
+
+  (Results)
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Tests:        56                                                                               │
+  │ Passing:      55                                                                               │
+  │ Failing:      1                                                                                │
+  │ Pending:      0                                                                                │
+  │ Skipped:      0                                                                                │
+  │ Screenshots:  0                                                                                │
+  │ Video:        false                                                                            │
+  │ Duration:     9 seconds                                                                        │
+  │ Spec Ran:     legibility-sweep.cy.ts                                                           │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+────────────────────────────────────────────────────────────────────────────────────────────────────
+                                                                                                    
+  Running:  override-contract.cy.ts                                                         (3 of 3)
+
+  design system — override contract (computed styles)
+    ✓ OV-01: Disabled field label stays legible (WCAG AA) against the slate palette (533ms)
+    ✓ OV-01b: Field underline uses the BoA slate rule, not the Material default (163ms)
+    ✓ OV-01c: Disabled field *value* stays legible, not just its label (140ms)
+    ✓ OV-01d: Validation copy uses the brand danger red, which clears AA (Material’s does not) (230ms)
+    ✓ OV-02: Error text sits on a 20px line box so field height never jumps on validation (148ms)
+    ✓ OV-03: Primary button is brand red with 8px optical icon/label spacing (127ms)
+    ✓ OV-04: Keyboard focus ring is visible on white and on slate-50 (240ms)
+    ✓ OV-05: Statement rows keep fixed heights so 50 rows paginate predictably in print (185ms)
+    ✓ OV-05b: Currency figures use tabular numerals and right-align on the decimal (144ms)
+    ✓ OV-05c: Header cells carry the slate-900 brand weight, not the Material grey (129ms)
+    ✓ OV-05d: Zebra striping on even rows for statement scanability (215ms)
+    ✓ OV-06: Sort arrow is dimmed until hover so it does not read as an active filter (147ms)
+    ✓ OV-07: Active option in the account picker is tinted brand red, not Material grey (272ms)
+    ✓ OV-08: Selected option is brand red, not accent navy (navy reads as a link here) (227ms)
+    ✓ OV-09: Consent toggle is unambiguous at arm’s length on a tablet (108ms)
+    ✓ OV-09b: A granted consent reads green, not brand red (112ms)
+    ✓ OV-10: Section ink bar is legible on a 4K branch display (133ms)
+    ✓ OV-10b: The active section label is the brand accent and stays readable in both palettes (117ms)
+    ✓ OV-11: Category chips keep a 28px rhythm inside the filter drawer (120ms)
+    ✓ OV-12: Step-up dialog matches the mobile MFA modal: tight padding, squared corners (203ms)
+    ✓ OV-12b: A short confirmation body never acquires an inner scrollbar (187ms)
+    ✓ OV-13: Selected day is brand red; today is outlined, not a second filled circle (244ms)
+    ✓ OV-14: Range label stays on screen on a 1280px branch terminal (197ms)
+    ✓ OV-15: Payee panel never covers the Confirmation of Payee copy (287ms)
+    ✓ OV-16: Amount entry right-aligns on tabular numerals (124ms)
+    ✓ OV-17: Compact density is materially shorter than the default field (111ms)
+    ✓ OV-18: Legacy shell embeds tabs without a second divider line (215ms)
+  design system — override contract (dark surface)
+    ✓ the dark surface is actually dark (else every probe below is vacuous) (287ms)
+    ✓ OV-01c [dark]: Disabled field *value* stays legible, not just its label (115ms)
+    ✓ OV-01d [dark]: Validation copy uses the brand danger red, which clears AA (Material’s does not) (104ms)
+    ✓ OV-05c [dark]: Header cells carry the slate-900 brand weight, not the Material grey (139ms)
+    ✓ OV-05d [dark]: Zebra striping on even rows for statement scanability (107ms)
+    ✓ OV-07 [dark]: Active option in the account picker is tinted brand red, not Material grey (247ms)
+    ✓ OV-10 [dark]: Section ink bar is legible on a 4K branch display (122ms)
+    ✓ OV-10b [dark]: The active section label is the brand accent and stays readable in both palettes (110ms)
+    ✓ OV-11 [dark]: Category chips keep a 28px rhythm inside the filter drawer (121ms)
+    ✓ OV-15 [dark]: Payee panel never covers the Confirmation of Payee copy (255ms)
+    ✓ OV-17 [dark]: Compact density is materially shorter than the default field (117ms)
+    ✓ OV-18 [dark]: Legacy shell embeds tabs without a second divider line (361ms)
+  design system — legibility (WCAG AA, light surface)
+    ✓ statement table: even (striped) row clears 4.5:1 (131ms)
+    ✓ statement table: odd row clears 4.5:1 (145ms)
+    ✓ statement table: header cell clears 4.5:1 (120ms)
+    ✓ form field: field label clears 4.5:1 (144ms)
+    ✓ form field: entered value clears 4.5:1 (115ms)
+    ✓ form field: hint clears 4.5:1 (146ms)
+    ✓ form field: disabled value clears 4.5:1 (214ms)
+    ✓ form field: error message clears 4.5:1 (140ms)
+    ✓ tabs: inactive tab label clears 4.5:1 (132ms)
+    ✓ tabs: active tab label clears 4.5:1 (140ms)
+    ✓ select: trigger text clears 4.5:1 (112ms)
+    ✓ chips: chip label clears 4.5:1 (100ms)
+    ✓ paginator: range label clears 4.5:1 (145ms)
+    ✓ currency input: amount clears 4.5:1 (107ms)
+    ✓ tabs: the active-section ink bar clears 3:1 (non-text contrast) (131ms)
+    ✓ datepicker: the toggle glyph clears 3:1 (non-text contrast) (262ms)
+  design system — legibility (WCAG AA, dark surface)
+    ✓ statement table: even (striped) row clears 4.5:1 (132ms)
+    ✓ statement table: odd row clears 4.5:1 (135ms)
+    ✓ statement table: header cell clears 4.5:1 (125ms)
+    ✓ form field: field label clears 4.5:1 (120ms)
+    ✓ form field: entered value clears 4.5:1 (120ms)
+    ✓ form field: hint clears 4.5:1 (104ms)
+    ✓ form field: disabled value clears 4.5:1 (247ms)
+    ✓ form field: error message clears 4.5:1 (121ms)
+    ✓ tabs: inactive tab label clears 4.5:1 (114ms)
+    ✓ tabs: active tab label clears 4.5:1 (118ms)
+    ✓ select: trigger text clears 4.5:1 (99ms)
+    ✓ chips: chip label clears 4.5:1 (101ms)
+    ✓ paginator: range label clears 4.5:1 (116ms)
+    ✓ currency input: amount clears 4.5:1 (104ms)
+    ✓ tabs: the active-section ink bar clears 3:1 (non-text contrast) (152ms)
+    ✓ datepicker: the toggle glyph clears 3:1 (non-text contrast) (107ms)
+  design system — the contrast oracle itself
+    ✓ a fully transparent chain resolves to the canvas, not to opaque black (118ms)
+    ✓ composites a semi-transparent foreground instead of treating it as opaque (116ms)
+    ✓ composites a semi-transparent background over the layer behind it (116ms)
+    ✓ agrees with the published figure on a known opaque pair (113ms)
+    ✓ folds an ancestor `opacity` into the layer instead of ignoring it (117ms)
+    ✓ refuses to score text over a gradient rather than reporting the canvas (120ms)
+  77 passing (12s)
+  (Results)
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Tests:        77                                                                               │
+  │ Passing:      77                                                                               │
+  │ Failing:      0                                                                                │
+  │ Pending:      0                                                                                │
+  │ Skipped:      0                                                                                │
+  │ Screenshots:  0                                                                                │
+  │ Video:        false                                                                            │
+  │ Duration:     12 seconds                                                                       │
+  │ Spec Ran:     override-contract.cy.ts                                                          │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+====================================================================================================
+  (Run Finished)
+       Spec                                              Tests  Passing  Failing  Pending  Skipped  
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ ✔  design-system.cy.ts                      00:09       23       23        -        -        - │
+  ├────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ ✖  legibility-sweep.cy.ts                   00:09       56       55        1        -        - │
+  ├────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ ✔  override-contract.cy.ts                  00:12       77       77        -        -        - │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+    ✖  1 of 3 failed (33%)                      00:31      156      155        1        -        -  
+
+ 
+
+ >  NX   Running target "retail-banking-e2e:e2e" failed
+
+   Failed tasks:
+   
+   - retail-banking-e2e:e2e
+   
+   Hint: run the command with --verbose for more details.
+

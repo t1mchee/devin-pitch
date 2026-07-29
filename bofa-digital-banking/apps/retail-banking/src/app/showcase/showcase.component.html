@@ -1,0 +1,132 @@
+<div class="showcase" [attr.data-component]="component">
+  <header class="showcase__header">
+    <a class="showcase__back" routerLink="/__showcase">← all components</a>
+    <span class="showcase__eyebrow">@bofa/ui-core</span>
+    <h1 class="showcase__title">{{ component }}</h1>
+  </header>
+
+  <ng-container [ngSwitch]="component">
+    <section *ngSwitchCase="'button'" class="showcase__grid">
+      <div class="showcase__cell" data-variant="default">
+        <bofa-button variant="primary">Make a transfer</bofa-button>
+      </div>
+      <div class="showcase__cell" data-variant="secondary">
+        <bofa-button variant="secondary">Download statement</bofa-button>
+      </div>
+      <div class="showcase__cell" data-variant="ghost">
+        <bofa-button variant="ghost">Cancel</bofa-button>
+      </div>
+      <div class="showcase__cell" data-variant="disabled">
+        <bofa-button variant="primary" [disabled]="true">Make a transfer</bofa-button>
+      </div>
+    </section>
+
+    <section *ngSwitchCase="'form-field'" class="showcase__grid">
+      <div class="showcase__cell" data-variant="default">
+        <bofa-form-field label="Account nickname" [control]="nickname" hint="Shown on your statements"></bofa-form-field>
+      </div>
+      <div class="showcase__cell" data-variant="disabled">
+        <bofa-form-field label="Account nickname" [control]="nicknameDisabled"></bofa-form-field>
+      </div>
+      <div class="showcase__cell" data-variant="error">
+        <bofa-form-field label="Account nickname" [control]="errored" errorText="Enter a nickname"></bofa-form-field>
+      </div>
+      <div class="showcase__cell" data-variant="compact">
+        <bofa-form-field label="Account nickname" [control]="nickname" [compact]="true"></bofa-form-field>
+      </div>
+    </section>
+
+    <section *ngSwitchCase="'select'" class="showcase__grid">
+      <div class="showcase__cell" data-variant="default">
+        <bofa-select label="From account" [options]="accounts" [control]="account"></bofa-select>
+      </div>
+      <div class="showcase__cell" data-variant="disabled">
+        <bofa-select label="From account" [options]="accounts" [control]="accountDisabled"></bofa-select>
+      </div>
+    </section>
+
+    <section *ngSwitchCase="'datepicker'" class="showcase__grid">
+      <div class="showcase__cell" data-variant="default">
+        <bofa-datepicker label="Payment date" [control]="fixedDate"></bofa-datepicker>
+      </div>
+      <div class="showcase__cell" data-variant="disabled">
+        <bofa-datepicker label="Payment date" [control]="fixedDateDisabled"></bofa-datepicker>
+      </div>
+    </section>
+
+    <section *ngSwitchCase="'table'" class="showcase__stack">
+      <bofa-table [rows]="rows"></bofa-table>
+    </section>
+
+    <section *ngSwitchCase="'dialog'" class="showcase__stack">
+      <div class="showcase__cell showcase__cell--wide">
+        <bofa-button variant="primary" (click)="openDialog()">Open the real dialog</bofa-button>
+        <span class="showcase__result" *ngIf="dialogResult">{{ dialogResult }}</span>
+      </div>
+      <!--
+        The dialog is captured by opening the real overlay (see the `dialog-open`
+        snapshot), not by rendering static markup here. A hand-authored copy of
+        Material's DOM would keep matching after MDC changed the real one, which
+        makes the snapshot a decoration rather than an oracle — and this is the
+        step-up-auth surface.
+      -->
+    </section>
+
+    <section *ngSwitchCase="'tabs'" class="showcase__stack">
+      <bofa-tabs [tabs]="['Transactions', 'Scheduled', 'Statements']"></bofa-tabs>
+      <bofa-tabs [tabs]="['Overview', 'Detail']" [legacyShell]="true"></bofa-tabs>
+    </section>
+
+    <section *ngSwitchCase="'chips'" class="showcase__grid">
+      <div class="showcase__cell" data-variant="default">
+        <bofa-chips [chips]="['Groceries', 'Utilities', 'Transfers']"></bofa-chips>
+      </div>
+      <div class="showcase__cell" data-variant="disabled">
+        <bofa-chips [chips]="['Groceries', 'Utilities']" [disabled]="true"></bofa-chips>
+      </div>
+    </section>
+
+    <section *ngSwitchCase="'slide-toggle'" class="showcase__grid">
+      <div class="showcase__cell" data-variant="default">
+        <bofa-slide-toggle label="Paperless statements" [control]="toggleOn"></bofa-slide-toggle>
+      </div>
+      <div class="showcase__cell" data-variant="disabled">
+        <bofa-slide-toggle label="Paperless statements" [control]="toggleOff"></bofa-slide-toggle>
+      </div>
+    </section>
+
+    <section *ngSwitchCase="'autocomplete'" class="showcase__grid">
+      <div class="showcase__cell" data-variant="default">
+        <bofa-autocomplete label="Payee" [control]="payee"></bofa-autocomplete>
+      </div>
+      <div class="showcase__cell" data-variant="disabled">
+        <bofa-autocomplete label="Payee" [control]="payeeDisabled"></bofa-autocomplete>
+      </div>
+    </section>
+
+    <section *ngSwitchCase="'paginator'" class="showcase__stack">
+      <bofa-paginator [length]="240"></bofa-paginator>
+      <bofa-paginator [length]="240" [disabled]="true"></bofa-paginator>
+    </section>
+
+    <section *ngSwitchCase="'currency-input'" class="showcase__grid">
+      <div class="showcase__cell" data-variant="default">
+        <bofa-currency-input label="Amount" [control]="amount"></bofa-currency-input>
+      </div>
+      <div class="showcase__cell" data-variant="disabled">
+        <bofa-currency-input label="Amount" [control]="amountDisabled"></bofa-currency-input>
+      </div>
+    </section>
+
+    <section *ngSwitchCase="'responsive-grid'" class="showcase__stack">
+      <bofa-responsive-grid>
+        <div slot="summary" class="showcase__panel">Summary panel</div>
+        <div slot="detail" class="showcase__panel showcase__panel--detail">Detail panel</div>
+      </bofa-responsive-grid>
+    </section>
+
+    <section *ngSwitchDefault class="showcase__stack">
+      <p>Unknown component: {{ component }}</p>
+    </section>
+  </ng-container>
+</div>

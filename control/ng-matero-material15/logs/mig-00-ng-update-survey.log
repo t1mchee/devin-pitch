@@ -1,0 +1,15 @@
+Using package manager: npm
+Collecting installed dependencies...
+Found 76 dependencies.
+    We analyzed your package.json, there are some packages to update:
+    
+      Name                                    Version                  Command to update
+     -------------------------------------------------------------------------------------
+      @angular-eslint/schematics              14.1.2 -> 22.1.0         ng update @angular-eslint/schematics
+      @angular/cdk                            14.2.5 -> 15.2.9         ng update @angular/cdk@15
+      @angular/cli                            14.2.6 -> 15.2.9         ng update @angular/cli@15
+      @angular/core                           14.2.7 -> 15.2.9         ng update @angular/core@15
+      @angular/material                       14.2.5 -> 15.2.9         ng update @angular/material@15
+    
+    There might be additional packages which don't provide 'ng update' capabilities that are outdated.
+    You can update the additional packages by running the update command of your package manager.

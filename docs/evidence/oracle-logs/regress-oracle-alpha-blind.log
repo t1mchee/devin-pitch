@@ -1,0 +1,888 @@
+=== regress-oracle-alpha-blind :: 2026-07-29T22:00:02Z ===
+
+> bofa-digital-banking@0.0.0 visual
+> docker run --rm -u $(id -u):$(id -g) -e HOME=/tmp -e CYPRESS_CACHE_FOLDER=/root/.cache/Cypress -v "$PWD/..":/w -w /w/bofa-digital-banking --entrypoint bash cypress/included@sha256:058d1834239bf09b381325b8369d05e9e0516a46b65b32e6dc0c991801dc517a -c 'npx nx e2e retail-banking-e2e --skip-nx-cache'
+
+
+> nx run retail-banking-e2e:e2e
+
+- Generating browser application bundles (phase: setup)...
+✔ Browser application bundle generation complete.
+
+Initial Chunk Files                                        | Names                    |  Raw Size
+vendor.js                                                  | vendor                   |   4.97 MB | 
+styles.css, styles.js                                      | styles                   | 315.42 kB | 
+polyfills.js                                               | polyfills                | 239.94 kB | 
+main.js                                                    | main                     | 148.25 kB | 
+runtime.js                                                 | runtime                  |  12.61 kB | 
+
+                                                           | Initial Total            |   5.67 MB
+
+Lazy Chunk Files                                           | Names                    |  Raw Size
+apps_retail-banking_src_app_showcase_showcase_module_ts.js | showcase-showcase-module |  47.78 kB | 
+
+Build at: 2026-07-29T22:00:21.443Z - Hash: 99077f3ec8ad061a - Time: 14549ms
+
+** Angular Live Development Server is listening on localhost:4200, open your browser on http://localhost:4200/ **
+
+
+✔ Compiled successfully.
+libva error: vaGetDriverNameByIndex() failed with unknown libva error, driver_name = (null)
+[220:0729/220022.467082:ERROR:gpu_memory_buffer_support_x11.cc(44)] dri3 extension not supported.
+====================================================================================================
+  (Run Starting)
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Cypress:        10.11.0                                                                        │
+  │ Browser:        Electron 106 (headless)                                                        │
+  │ Node Version:   v16.16.0 (/usr/local/bin/node)                                                 │
+  │ Specs:          3 found (design-system.cy.ts, legibility-sweep.cy.ts, override-contract.cy.ts) │
+  │ Searched:       src/**/*.cy.{js,jsx,ts,tsx}                                                    │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+────────────────────────────────────────────────────────────────────────────────────────────────────
+                                                                                                    
+  Running:  design-system.cy.ts                                                             (1 of 3)
+
+  design system — visual baseline
+[visual] button-default: 0 px (budget 40)
+    ✓ button renders to spec (938ms)
+[visual] form-field-default: 0 px (budget 40)
+    ✓ form-field renders to spec (477ms)
+[visual] select-default: 0 px (budget 40)
+    ✓ select renders to spec (405ms)
+[visual] datepicker-default: 0 px (budget 40)
+    ✓ datepicker renders to spec (373ms)
+[visual] table-default: 0 px (budget 40)
+    ✓ table renders to spec (399ms)
+[visual] dialog-default: 0 px (budget 40)
+    ✓ dialog renders to spec (419ms)
+[visual] tabs-default: 0 px (budget 40)
+    ✓ tabs renders to spec (553ms)
+[visual] chips-default: 0 px (budget 40)
+    ✓ chips renders to spec (517ms)
+[visual] slide-toggle-default: 0 px (budget 40)
+    ✓ slide-toggle renders to spec (444ms)
+[visual] autocomplete-default: 0 px (budget 40)
+    ✓ autocomplete renders to spec (473ms)
+[visual] paginator-default: 0 px (budget 40)
+    ✓ paginator renders to spec (435ms)
+[visual] currency-input-default: 0 px (budget 40)
+    ✓ currency-input renders to spec (471ms)
+[visual] responsive-grid-default: 0 px (budget 40)
+    ✓ responsive-grid renders to spec (385ms)
+    ✓ form field renders its disabled and error states (272ms)
+    ✓ button exposes a disabled state (152ms)
+[visual] responsive-grid-md: 0 px (budget 40)
+    ✓ responsive grid collapses below the md breakpoint (409ms)
+[visual] responsive-grid-sm: 0 px (budget 40)
+    ✓ responsive grid hides the detail pane below the sm breakpoint (338ms)
+  design system — overlay and interaction states
+[visual] dialog-open: 0 px (budget 40)
+    ✓ opens the real dialog overlay (459ms)
+[visual] select-panel-open: 0 px (budget 40)
+    ✓ opens the select panel (496ms)
+[visual] autocomplete-panel-open: 0 px (budget 40)
+    ✓ opens the autocomplete panel (572ms)
+[visual] datepicker-calendar-open: 0 px (budget 40)
+    ✓ opens the datepicker calendar (749ms)
+[visual] button-focus-ring: 0 px (budget 40)
+    ✓ shows the keyboard focus ring on the primary button (495ms)
+  retail banking — customer surface
+[visual] accounts-dashboard: 0 px (budget 40)
+    ✓ renders the accounts dashboard (464ms)
+  23 passing (11s)
+  (Results)
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Tests:        23                                                                               │
+  │ Passing:      23                                                                               │
+  │ Failing:      0                                                                                │
+  │ Pending:      0                                                                                │
+  │ Skipped:      0                                                                                │
+  │ Screenshots:  21                                                                               │
+  │ Video:        false                                                                            │
+  │ Duration:     10 seconds                                                                       │
+  │ Spec Ran:     design-system.cy.ts                                                              │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+  (Screenshots)
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__button-default.png                                                            
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__form-field-default.png                                                        
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__select-default.png                                                            
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__datepicker-default.png                                                        
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__table-default.png                                                             
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__dialog-default.png                                                            
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__tabs-default.png                                                              
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__chips-default.png                                                             
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__slide-toggle-default.png                                                      
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__autocomplete-default.png                                                      
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__paginator-default.png                                                         
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__currency-input-default.png                                                    
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__responsive-grid-default.png                                                   
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-      (768x720)
+     system.cy.ts/vr__responsive-grid-md.png                                                        
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-      (560x720)
+     system.cy.ts/vr__responsive-grid-sm.png                                                        
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__dialog-open.png                                                               
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__select-panel-open.png                                                         
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__autocomplete-panel-open.png                                                   
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__datepicker-calendar-open.png                                                  
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__button-focus-ring.png                                                         
+  -  /w/bofa-digital-banking/dist/cypress/apps/retail-banking-e2e/screenshots/design-     (1280x720)
+     system.cy.ts/vr__accounts-dashboard.png                                                        
+────────────────────────────────────────────────────────────────────────────────────────────────────
+                                                                                                    
+  Running:  legibility-sweep.cy.ts                                                          (2 of 3)
+
+  legibility sweep — every visible text node (light)
+    1) /accounts (customer dashboard): all text clears WCAG AA
+    2) /__showcase (index): all text clears WCAG AA
+    3) /sign-in: all text clears WCAG AA
+    4) /__showcase/button: all text clears WCAG AA
+    5) /__showcase/form-field: all text clears WCAG AA
+    6) /__showcase/select: all text clears WCAG AA
+    7) /__showcase/datepicker: all text clears WCAG AA
+    8) /__showcase/table: all text clears WCAG AA
+    9) /__showcase/dialog: all text clears WCAG AA
+    10) /__showcase/tabs: all text clears WCAG AA
+    11) /__showcase/chips: all text clears WCAG AA
+    12) /__showcase/slide-toggle: all text clears WCAG AA
+    13) /__showcase/autocomplete: all text clears WCAG AA
+    14) /__showcase/paginator: all text clears WCAG AA
+    15) /__showcase/currency-input: all text clears WCAG AA
+    16) /__showcase/responsive-grid: all text clears WCAG AA
+  legibility sweep — every visible text node (dark)
+    17) /accounts (customer dashboard): all text clears WCAG AA
+    ✓ /__showcase (index): all text clears WCAG AA (159ms)
+    18) /sign-in: all text clears WCAG AA
+    19) /__showcase/button: all text clears WCAG AA
+    ✓ /__showcase/form-field: all text clears WCAG AA (157ms)
+    20) /__showcase/select: all text clears WCAG AA
+    21) /__showcase/datepicker: all text clears WCAG AA
+    ✓ /__showcase/table: all text clears WCAG AA (287ms)
+    22) /__showcase/dialog: all text clears WCAG AA
+    ✓ /__showcase/tabs: all text clears WCAG AA (314ms)
+    ✓ /__showcase/chips: all text clears WCAG AA (370ms)
+    ✓ /__showcase/slide-toggle: all text clears WCAG AA (222ms)
+    ✓ /__showcase/autocomplete: all text clears WCAG AA (149ms)
+    23) /__showcase/paginator: all text clears WCAG AA
+    ✓ /__showcase/currency-input: all text clears WCAG AA (253ms)
+    ✓ /__showcase/responsive-grid: all text clears WCAG AA (224ms)
+  legibility sweep — the sweep itself
+    ✓ measures a substantial number of nodes on a real route (406ms)
+    ✓ catches illegible text planted on a swept route (440ms)
+    ✓ catches an icon-only control whose glyph is invisible (267ms)
+    ✓ composites a semi-transparent sibling painted over the text (179ms)
+    ✓ does not report off-screen screen-reader-only text (287ms)
+    24) fails text over artwork until the artwork is declared reviewed
+    ✓ ignores text that is hidden rather than reporting it as a defect (332ms)
+    ✓ composites a covering layer that is raised with z-index but written first (348ms)
+    ✓ measures text below the fold, because coverage cannot depend on page height (292ms)
+    ✓ measures an icon-only control that is labelled with visually hidden text (252ms)
+    ✓ does not composite a veil that paints nothing (192ms)
+    25) requires the review declaration on the artwork itself, citing a ratio
+    26) measures a CSS-painted indicator, which no SVG sweep can see
+    27) does not report the dimmed page behind an open modal
+    ✓ composites a scrim raised inside a transform, and only when it truly paints above (367ms)
+    ✓ is not disarmed by a stray overlay backdrop left in the DOM (290ms)
+    28) measures painted marks of any shape, and not a tail of the surface it matches
+    ✓ recognises the current sr-only recipe, not one spelling of it (283ms)
+    ✓ evaluates clipping instead of matching it, in both directions (377ms)
+    ✓ composites a layer that covers most of the text, not only one that contains it (244ms)
+    ✓ is silenced by a real modal and by nothing that merely resembles one (314ms)
+    ✓ composites an unpositioned cover, without putting text under every background (388ms)
+    29) leaves bordered chrome alone and still measures a mark that means something
+    30) measures a mark drawn with four sides, at 32px, or in a pseudo-element
+  26 passing (16s)
+  30 failing
+  1) legibility sweep — every visible text node (light)
+       /accounts (customer dashboard): all text clears WCAG AA:
+     AssertionError: 45 illegible text node(s) on /accounts (customer dashboard) (light):
+  span.mat-button-wrapper > svg "Next page" — 1.00:1, needs 3:1 (fill rgba(0, 0, 0, 0.54) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  h1 "Accounts" — 1.16:1, needs 3:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))
+  span.mat-button-wrapper "Make a transfer" — 1.00:1, needs 4.5:1 (rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  span.mat-select-min-line "Advantage Plus Banking ••4410" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  mat-label "Account" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.6) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  span "$" — 3.61:1, needs 4.5:1 (rgb(93, 102, 115) → rgb(93, 102, 115) on rgb(0, 0, 0))
+  mat-label "Amount" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.6) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  mat-label "Payee" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.6) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  span.mat-slide-toggle-content "Paperless statements" — 1.16:1, needs 4.5:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))
+  div.mat-tab-label-content "Transactions" — 3.57:1, needs 4.5:1 (rgb(200, 16, 46) → rgb(200, 16, 46) on rgb(0, 0, 0))
+  div.mat-tab-label-content "Scheduled" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  div.mat-tab-label-content "Statements" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  div.mat-sort-header-content "Date" — 1.16:1, needs 4.5:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))
+  div.mat-sort-header-content "Description" — 1.16:1, needs 4.5:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))
+  th.mat-header-cell.mat-column-reference "Reference" — 1.16:1, needs 4.5:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))
+  div.mat-sort-header-content "Amount" — 1.16:1, needs 4.5:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))
+  th.mat-header-cell.bofa-cell--numeric.mat-column-balance "Balance" — 1.16:1, needs 4.5:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))
+  td.mat-cell.mat-column-date "2024-01-12" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.mat-column-description "Duke Energy" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.mat-column-reference "ACH 8821" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.bofa-cell--numeric.mat-column-amount "-$142.18" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.bofa-cell--numeric.mat-column-balance "$4,821.44" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.mat-column-date "2024-01-11" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.mat-column-description "Payroll ACME Corp" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.mat-column-reference "DEP 1190" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.bofa-cell--numeric.mat-column-amount "$3,210.00" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.bofa-cell--numeric.mat-column-balance "$4,963.62" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.mat-column-date "2024-01-09" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.mat-column-description "Transfer to Savings" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.mat-column-reference "INT 4410" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.bofa-cell--numeric.mat-column-amount "-$500.00" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.bofa-cell--numeric.mat-column-balance "$1,753.62" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.mat-column-date "2024-01-08" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.mat-column-description "Verizon Wireless" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.mat-column-reference "ACH 7731" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.bofa-cell--numeric.mat-column-amount "-$88.40" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.bofa-cell--numeric.mat-column-balance "$2,253.62" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.mat-column-date "2024-01-05" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.mat-column-description "Card purchase — Harris Teeter" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.mat-column-reference "POS 5522" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.bofa-cell--numeric.mat-column-amount "-$76.31" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.bofa-cell--numeric.mat-column-balance "$2,342.02" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  div.mat-paginator-page-size-label "Items per page:" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.54) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  span.mat-select-min-line "25" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  div.mat-paginator-range-label "1 – 25 of 240" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.54) → rgb(0, 0, 0) on rgb(0, 0, 0))
+: expected [ Array(45) ] to have a length of 0 but got 45
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
+
+  2) legibility sweep — every visible text node (light)
+       /__showcase (index): all text clears WCAG AA:
+     AssertionError: 16 illegible text node(s) on /__showcase (index) (light):
+  span.index__eyebrow "@bofa/ui-core" — 3.61:1, needs 4.5:1 (rgb(93, 102, 115) → rgb(93, 102, 115) on rgb(0, 0, 0))
+  h1.index__title "Design system" — 1.16:1, needs 3:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))
+  p.index__body "13 wrapped Material components, 18 custo" — 3.61:1, needs 4.5:1 (rgb(93, 102, 115) → rgb(93, 102, 115) on rgb(0, 0, 0))
+  a.index__tile "button" — 1.42:1, needs 4.5:1 (rgb(1, 33, 105) → rgb(1, 33, 105) on rgb(0, 0, 0))
+  a.index__tile "form-field" — 1.42:1, needs 4.5:1 (rgb(1, 33, 105) → rgb(1, 33, 105) on rgb(0, 0, 0))
+  a.index__tile "select" — 1.42:1, needs 4.5:1 (rgb(1, 33, 105) → rgb(1, 33, 105) on rgb(0, 0, 0))
+  a.index__tile "datepicker" — 1.42:1, needs 4.5:1 (rgb(1, 33, 105) → rgb(1, 33, 105) on rgb(0, 0, 0))
+  a.index__tile "table" — 1.42:1, needs 4.5:1 (rgb(1, 33, 105) → rgb(1, 33, 105) on rgb(0, 0, 0))
+  a.index__tile "dialog" — 1.42:1, needs 4.5:1 (rgb(1, 33, 105) → rgb(1, 33, 105) on rgb(0, 0, 0))
+  a.index__tile "tabs" — 1.42:1, needs 4.5:1 (rgb(1, 33, 105) → rgb(1, 33, 105) on rgb(0, 0, 0))
+  a.index__tile "chips" — 1.42:1, needs 4.5:1 (rgb(1, 33, 105) → rgb(1, 33, 105) on rgb(0, 0, 0))
+  a.index__tile "slide-toggle" — 1.42:1, needs 4.5:1 (rgb(1, 33, 105) → rgb(1, 33, 105) on rgb(0, 0, 0))
+  a.index__tile "autocomplete" — 1.42:1, needs 4.5:1 (rgb(1, 33, 105) → rgb(1, 33, 105) on rgb(0, 0, 0))
+  a.index__tile "paginator" — 1.42:1, needs 4.5:1 (rgb(1, 33, 105) → rgb(1, 33, 105) on rgb(0, 0, 0))
+  a.index__tile "currency-input" — 1.42:1, needs 4.5:1 (rgb(1, 33, 105) → rgb(1, 33, 105) on rgb(0, 0, 0))
+  a.index__tile "responsive-grid" — 1.42:1, needs 4.5:1 (rgb(1, 33, 105) → rgb(1, 33, 105) on rgb(0, 0, 0))
+: expected [ Array(16) ] to have a length of 0 but got 16
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
+
+  3) legibility sweep — every visible text node (light)
+       /sign-in: all text clears WCAG AA:
+     AssertionError: 5 illegible text node(s) on /sign-in (light):
+  span.sign-in__eyebrow "Bank of America" — 3.61:1, needs 4.5:1 (rgb(93, 102, 115) → rgb(93, 102, 115) on rgb(0, 0, 0))
+  h1.sign-in__title "Sign in to continue" — 1.16:1, needs 3:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))
+  p.sign-in__body "Your session does not carry the entitlem" — 3.61:1, needs 4.5:1 (rgb(93, 102, 115) → rgb(93, 102, 115) on rgb(0, 0, 0))
+  code "/accounts" — 3.61:1, needs 4.5:1 (rgb(93, 102, 115) → rgb(93, 102, 115) on rgb(0, 0, 0))
+  span.mat-button-wrapper "Continue to sign in" — 1.00:1, needs 4.5:1 (rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0))
+: expected [ Array(5) ] to have a length of 0 but got 5
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
+
+  4) legibility sweep — every visible text node (light)
+       /__showcase/button: all text clears WCAG AA:
+     AssertionError: 6 illegible text node(s) on /__showcase/button (light):
+  a.showcase__back "← all components" — 1.42:1, needs 4.5:1 (rgb(1, 33, 105) → rgb(1, 33, 105) on rgb(0, 0, 0))
+  span.showcase__eyebrow "@bofa/ui-core" — 3.61:1, needs 4.5:1 (rgb(93, 102, 115) → rgb(93, 102, 115) on rgb(0, 0, 0))
+  h1.showcase__title "button" — 1.16:1, needs 3:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))
+  span.mat-button-wrapper "Make a transfer" — 1.00:1, needs 4.5:1 (rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  span.mat-button-wrapper "Download statement" — 1.00:1, needs 4.5:1 (rgb(1, 33, 105) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  span.mat-button-wrapper "Cancel" — 1.00:1, needs 4.5:1 (rgb(18, 22, 29) → rgb(0, 0, 0) on rgb(0, 0, 0))
+: expected [ Array(6) ] to have a length of 0 but got 6
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
+
+  5) legibility sweep — every visible text node (light)
+       /__showcase/form-field: all text clears WCAG AA:
+     AssertionError: 9 illegible text node(s) on /__showcase/form-field (light):
+  a.showcase__back "← all components" — 1.42:1, needs 4.5:1 (rgb(1, 33, 105) → rgb(1, 33, 105) on rgb(0, 0, 0))
+  span.showcase__eyebrow "@bofa/ui-core" — 3.61:1, needs 4.5:1 (rgb(93, 102, 115) → rgb(93, 102, 115) on rgb(0, 0, 0))
+  h1.showcase__title "form-field" — 1.16:1, needs 3:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))
+  mat-label "Account nickname" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.6) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  mat-hint.mat-hint "Shown on your statements" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.6) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  mat-label "Account nickname" — 2.87:1, needs 4.5:1 (rgb(176, 0, 32) → rgb(176, 0, 32) on rgb(0, 0, 0))
+  span.mat-placeholder-required.mat-form-field-required-marker "*" — 2.87:1, needs 4.5:1 (rgb(176, 0, 32) → rgb(176, 0, 32) on rgb(0, 0, 0))
+  mat-error.mat-error "Enter a nickname" — 2.87:1, needs 4.5:1 (rgb(176, 0, 32) → rgb(176, 0, 32) on rgb(0, 0, 0))
+  mat-label "Account nickname" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.6) → rgb(0, 0, 0) on rgb(0, 0, 0))
+: expected [ Array(9) ] to have a length of 0 but got 9
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
+
+  6) legibility sweep — every visible text node (light)
+       /__showcase/select: all text clears WCAG AA:
+     AssertionError: 5 illegible text node(s) on /__showcase/select (light):
+  a.showcase__back "← all components" — 1.42:1, needs 4.5:1 (rgb(1, 33, 105) → rgb(1, 33, 105) on rgb(0, 0, 0))
+  span.showcase__eyebrow "@bofa/ui-core" — 3.61:1, needs 4.5:1 (rgb(93, 102, 115) → rgb(93, 102, 115) on rgb(0, 0, 0))
+  h1.showcase__title "select" — 1.16:1, needs 3:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))
+  span.mat-select-min-line "Advantage Plus Banking ••4410" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  mat-label "From account" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.6) → rgb(0, 0, 0) on rgb(0, 0, 0))
+: expected [ Array(5) ] to have a length of 0 but got 5
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
+
+  7) legibility sweep — every visible text node (light)
+       /__showcase/datepicker: all text clears WCAG AA:
+     AssertionError: 5 illegible text node(s) on /__showcase/datepicker (light):
+  span.mat-button-wrapper > svg "Open calendar" — 1.00:1, needs 3:1 (fill rgba(0, 0, 0, 0.54) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  a.showcase__back "← all components" — 1.42:1, needs 4.5:1 (rgb(1, 33, 105) → rgb(1, 33, 105) on rgb(0, 0, 0))
+  span.showcase__eyebrow "@bofa/ui-core" — 3.61:1, needs 4.5:1 (rgb(93, 102, 115) → rgb(93, 102, 115) on rgb(0, 0, 0))
+  h1.showcase__title "datepicker" — 1.16:1, needs 3:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))
+  mat-label "Payment date" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.6) → rgb(0, 0, 0) on rgb(0, 0, 0))
+: expected [ Array(5) ] to have a length of 0 but got 5
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
+
+  8) legibility sweep — every visible text node (light)
+       /__showcase/table: all text clears WCAG AA:
+     AssertionError: 33 illegible text node(s) on /__showcase/table (light):
+  a.showcase__back "← all components" — 1.42:1, needs 4.5:1 (rgb(1, 33, 105) → rgb(1, 33, 105) on rgb(0, 0, 0))
+  span.showcase__eyebrow "@bofa/ui-core" — 3.61:1, needs 4.5:1 (rgb(93, 102, 115) → rgb(93, 102, 115) on rgb(0, 0, 0))
+  h1.showcase__title "table" — 1.16:1, needs 3:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))
+  div.mat-sort-header-content "Date" — 1.16:1, needs 4.5:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))
+  div.mat-sort-header-content "Description" — 1.16:1, needs 4.5:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))
+  th.mat-header-cell.mat-column-reference "Reference" — 1.16:1, needs 4.5:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))
+  div.mat-sort-header-content "Amount" — 1.16:1, needs 4.5:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))
+  th.mat-header-cell.bofa-cell--numeric.mat-column-balance "Balance" — 1.16:1, needs 4.5:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))
+  td.mat-cell.mat-column-date "2024-01-12" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.mat-column-description "Duke Energy" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.mat-column-reference "ACH 8821" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.bofa-cell--numeric.mat-column-amount "-$142.18" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.bofa-cell--numeric.mat-column-balance "$4,821.44" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.mat-column-date "2024-01-11" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.mat-column-description "Payroll ACME Corp" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.mat-column-reference "DEP 1190" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.bofa-cell--numeric.mat-column-amount "$3,210.00" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.bofa-cell--numeric.mat-column-balance "$4,963.62" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.mat-column-date "2024-01-09" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.mat-column-description "Transfer to Savings" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.mat-column-reference "INT 4410" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.bofa-cell--numeric.mat-column-amount "-$500.00" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.bofa-cell--numeric.mat-column-balance "$1,753.62" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.mat-column-date "2024-01-08" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.mat-column-description "Verizon Wireless" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.mat-column-reference "ACH 7731" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.bofa-cell--numeric.mat-column-amount "-$88.40" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.bofa-cell--numeric.mat-column-balance "$2,253.62" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.mat-column-date "2024-01-05" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.mat-column-description "Card purchase — Harris Teeter" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.mat-column-reference "POS 5522" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.bofa-cell--numeric.mat-column-amount "-$76.31" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  td.mat-cell.bofa-cell--numeric.mat-column-balance "$2,342.02" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+: expected [ Array(33) ] to have a length of 0 but got 33
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
+
+  9) legibility sweep — every visible text node (light)
+       /__showcase/dialog: all text clears WCAG AA:
+     AssertionError: 4 illegible text node(s) on /__showcase/dialog (light):
+  a.showcase__back "← all components" — 1.42:1, needs 4.5:1 (rgb(1, 33, 105) → rgb(1, 33, 105) on rgb(0, 0, 0))
+  span.showcase__eyebrow "@bofa/ui-core" — 3.61:1, needs 4.5:1 (rgb(93, 102, 115) → rgb(93, 102, 115) on rgb(0, 0, 0))
+  h1.showcase__title "dialog" — 1.16:1, needs 3:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))
+  span.mat-button-wrapper "Open the real dialog" — 1.00:1, needs 4.5:1 (rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0))
+: expected [ Array(4) ] to have a length of 0 but got 4
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
+
+  10) legibility sweep — every visible text node (light)
+       /__showcase/tabs: all text clears WCAG AA:
+     AssertionError: 8 illegible text node(s) on /__showcase/tabs (light):
+  a.showcase__back "← all components" — 1.42:1, needs 4.5:1 (rgb(1, 33, 105) → rgb(1, 33, 105) on rgb(0, 0, 0))
+  span.showcase__eyebrow "@bofa/ui-core" — 3.61:1, needs 4.5:1 (rgb(93, 102, 115) → rgb(93, 102, 115) on rgb(0, 0, 0))
+  h1.showcase__title "tabs" — 1.16:1, needs 3:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))
+  div.mat-tab-label-content "Transactions" — 3.57:1, needs 4.5:1 (rgb(200, 16, 46) → rgb(200, 16, 46) on rgb(0, 0, 0))
+  div.mat-tab-label-content "Scheduled" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  div.mat-tab-label-content "Statements" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  div.mat-tab-label-content "Overview" — 3.57:1, needs 4.5:1 (rgb(200, 16, 46) → rgb(200, 16, 46) on rgb(0, 0, 0))
+  div.mat-tab-label-content "Detail" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+: expected [ Array(8) ] to have a length of 0 but got 8
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
+
+  11) legibility sweep — every visible text node (light)
+       /__showcase/chips: all text clears WCAG AA:
+     AssertionError: 3 illegible text node(s) on /__showcase/chips (light):
+  a.showcase__back "← all components" — 1.42:1, needs 4.5:1 (rgb(1, 33, 105) → rgb(1, 33, 105) on rgb(0, 0, 0))
+  span.showcase__eyebrow "@bofa/ui-core" — 3.61:1, needs 4.5:1 (rgb(93, 102, 115) → rgb(93, 102, 115) on rgb(0, 0, 0))
+  h1.showcase__title "chips" — 1.16:1, needs 3:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))
+: expected [ Array(3) ] to have a length of 0 but got 3
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
+
+  12) legibility sweep — every visible text node (light)
+       /__showcase/slide-toggle: all text clears WCAG AA:
+     AssertionError: 4 illegible text node(s) on /__showcase/slide-toggle (light):
+  a.showcase__back "← all components" — 1.42:1, needs 4.5:1 (rgb(1, 33, 105) → rgb(1, 33, 105) on rgb(0, 0, 0))
+  span.showcase__eyebrow "@bofa/ui-core" — 3.61:1, needs 4.5:1 (rgb(93, 102, 115) → rgb(93, 102, 115) on rgb(0, 0, 0))
+  h1.showcase__title "slide-toggle" — 1.16:1, needs 3:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))
+  span.mat-slide-toggle-content "Paperless statements" — 1.16:1, needs 4.5:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))
+: expected [ Array(4) ] to have a length of 0 but got 4
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
+
+  13) legibility sweep — every visible text node (light)
+       /__showcase/autocomplete: all text clears WCAG AA:
+     AssertionError: 4 illegible text node(s) on /__showcase/autocomplete (light):
+  a.showcase__back "← all components" — 1.42:1, needs 4.5:1 (rgb(1, 33, 105) → rgb(1, 33, 105) on rgb(0, 0, 0))
+  span.showcase__eyebrow "@bofa/ui-core" — 3.61:1, needs 4.5:1 (rgb(93, 102, 115) → rgb(93, 102, 115) on rgb(0, 0, 0))
+  h1.showcase__title "autocomplete" — 1.16:1, needs 3:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))
+  mat-label "Payee" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.6) → rgb(0, 0, 0) on rgb(0, 0, 0))
+: expected [ Array(4) ] to have a length of 0 but got 4
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
+
+  14) legibility sweep — every visible text node (light)
+       /__showcase/paginator: all text clears WCAG AA:
+     AssertionError: 9 illegible text node(s) on /__showcase/paginator (light):
+  span.mat-button-wrapper > svg "Next page" — 1.00:1, needs 3:1 (fill rgba(0, 0, 0, 0.54) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  a.showcase__back "← all components" — 1.42:1, needs 4.5:1 (rgb(1, 33, 105) → rgb(1, 33, 105) on rgb(0, 0, 0))
+  span.showcase__eyebrow "@bofa/ui-core" — 3.61:1, needs 4.5:1 (rgb(93, 102, 115) → rgb(93, 102, 115) on rgb(0, 0, 0))
+  h1.showcase__title "paginator" — 1.16:1, needs 3:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))
+  div.mat-paginator-page-size-label "Items per page:" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.54) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  span.mat-select-min-line "25" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  div.mat-paginator-range-label "1 – 25 of 240" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.54) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  div.mat-paginator-page-size-label "Items per page:" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.54) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  div.mat-paginator-range-label "1 – 25 of 240" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.54) → rgb(0, 0, 0) on rgb(0, 0, 0))
+: expected [ Array(9) ] to have a length of 0 but got 9
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
+
+  15) legibility sweep — every visible text node (light)
+       /__showcase/currency-input: all text clears WCAG AA:
+     AssertionError: 5 illegible text node(s) on /__showcase/currency-input (light):
+  a.showcase__back "← all components" — 1.42:1, needs 4.5:1 (rgb(1, 33, 105) → rgb(1, 33, 105) on rgb(0, 0, 0))
+  span.showcase__eyebrow "@bofa/ui-core" — 3.61:1, needs 4.5:1 (rgb(93, 102, 115) → rgb(93, 102, 115) on rgb(0, 0, 0))
+  h1.showcase__title "currency-input" — 1.16:1, needs 3:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))
+  span "$" — 3.61:1, needs 4.5:1 (rgb(93, 102, 115) → rgb(93, 102, 115) on rgb(0, 0, 0))
+  mat-label "Amount" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.6) → rgb(0, 0, 0) on rgb(0, 0, 0))
+: expected [ Array(5) ] to have a length of 0 but got 5
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
+
+  16) legibility sweep — every visible text node (light)
+       /__showcase/responsive-grid: all text clears WCAG AA:
+     AssertionError: 3 illegible text node(s) on /__showcase/responsive-grid (light):
+  a.showcase__back "← all components" — 1.42:1, needs 4.5:1 (rgb(1, 33, 105) → rgb(1, 33, 105) on rgb(0, 0, 0))
+  span.showcase__eyebrow "@bofa/ui-core" — 3.61:1, needs 4.5:1 (rgb(93, 102, 115) → rgb(93, 102, 115) on rgb(0, 0, 0))
+  h1.showcase__title "responsive-grid" — 1.16:1, needs 3:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))
+: expected [ Array(3) ] to have a length of 0 but got 3
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
+
+  17) legibility sweep — every visible text node (dark)
+       /accounts (customer dashboard): all text clears WCAG AA:
+     AssertionError: 4 illegible text node(s) on /accounts (customer dashboard) (dark):
+  span.mat-button-wrapper > svg "Next page" — 1.00:1, needs 3:1 (fill rgba(255, 255, 255, 0.7) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  span.mat-button-wrapper "Make a transfer" — 1.00:1, needs 4.5:1 (rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  span.mat-select-min-line "Advantage Plus Banking ••4410" — 1.00:1, needs 4.5:1 (rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  span.mat-select-min-line "25" — 1.00:1, needs 4.5:1 (rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0))
+: expected [ Array(4) ] to have a length of 0 but got 4
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
+
+  18) legibility sweep — every visible text node (dark)
+       /sign-in: all text clears WCAG AA:
+     AssertionError: 1 illegible text node(s) on /sign-in (dark):
+  span.mat-button-wrapper "Continue to sign in" — 1.00:1, needs 4.5:1 (rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0))
+: expected [ Array(1) ] to have a length of 0 but got 1
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
+
+  19) legibility sweep — every visible text node (dark)
+       /__showcase/button: all text clears WCAG AA:
+     AssertionError: 3 illegible text node(s) on /__showcase/button (dark):
+  span.mat-button-wrapper "Make a transfer" — 1.00:1, needs 4.5:1 (rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  span.mat-button-wrapper "Download statement" — 1.00:1, needs 4.5:1 (rgb(158, 197, 255) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  span.mat-button-wrapper "Cancel" — 1.00:1, needs 4.5:1 (rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0))
+: expected [ Array(3) ] to have a length of 0 but got 3
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
+
+  20) legibility sweep — every visible text node (dark)
+       /__showcase/select: all text clears WCAG AA:
+     AssertionError: 1 illegible text node(s) on /__showcase/select (dark):
+  span.mat-select-min-line "Advantage Plus Banking ••4410" — 1.00:1, needs 4.5:1 (rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0))
+: expected [ Array(1) ] to have a length of 0 but got 1
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
+
+  21) legibility sweep — every visible text node (dark)
+       /__showcase/datepicker: all text clears WCAG AA:
+     AssertionError: 1 illegible text node(s) on /__showcase/datepicker (dark):
+  span.mat-button-wrapper > svg "Open calendar" — 1.00:1, needs 3:1 (fill rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0))
+: expected [ Array(1) ] to have a length of 0 but got 1
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
+
+  22) legibility sweep — every visible text node (dark)
+       /__showcase/dialog: all text clears WCAG AA:
+     AssertionError: 1 illegible text node(s) on /__showcase/dialog (dark):
+  span.mat-button-wrapper "Open the real dialog" — 1.00:1, needs 4.5:1 (rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0))
+: expected [ Array(1) ] to have a length of 0 but got 1
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
+
+  23) legibility sweep — every visible text node (dark)
+       /__showcase/paginator: all text clears WCAG AA:
+     AssertionError: 2 illegible text node(s) on /__showcase/paginator (dark):
+  span.mat-button-wrapper > svg "Next page" — 1.00:1, needs 3:1 (fill rgba(255, 255, 255, 0.7) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  span.mat-select-min-line "25" — 1.00:1, needs 4.5:1 (rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0))
+: expected [ Array(2) ] to have a length of 0 but got 2
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:80:20)
+
+  24) legibility sweep — the sweep itself
+       fails text over artwork until the artwork is declared reviewed:
+     AssertionError: rgb(255, 255, 255) → rgb(255, 255, 255) on rgb(0, 0, 0): expected undefined to be a string
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:237:60)
+
+  25) legibility sweep — the sweep itself
+       requires the review declaration on the artwork itself, citing a ratio:
+     AssertionError: an ancestor must not exempt the artwork: expected '  span.mat-button-wrapper > svg "Next page" — 1.00:1, needs 3:1 (fill rgba(0, 0, 0, 0.54) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  h1 "Accounts" — 1.16:1, needs 3:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))\n  span.mat-button-wrapper "Make a transfer" — 1.00:1, needs 4.5:1 (rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  span.mat-select-min-line "Advantage Plus Banking ••4410" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  mat-label "Account" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.6) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  span "$" — 3.61:1, needs 4.5:1 (rgb(93, 102, 115) → rgb(93, 102, 115) on rgb(0, 0, 0))\n  mat-label "Amount" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.6) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  mat-label "Payee" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.6) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  span.mat-slide-toggle-content "Paperless statements" — 1.16:1, needs 4.5:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))\n  div.mat-tab-label-content "Transactions" — 3.57:1, needs 4.5:1 (rgb(200, 16, 46) → rgb(200, 16, 46) on rgb(0, 0, 0))\n  div.mat-tab-label-content "Scheduled" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  div.mat-tab-label-content "Statements" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  div.mat-sort-header-content "Date" — 1.16:1, needs 4.5:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))\n  div.mat-sort-header-content "Description" — 1.16:1, needs 4.5:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))\n  th.mat-header-cell.mat-column-reference "Reference" — 1.16:1, needs 4.5:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))\n  div.mat-sort-header-content "Amount" — 1.16:1, needs 4.5:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))\n  th.mat-header-cell.bofa-cell--numeric.mat-column-balance "Balance" — 1.16:1, needs 4.5:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))\n  td.mat-cell.mat-column-date "2024-01-12" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.mat-column-description "Duke Energy" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.mat-column-reference "ACH 8821" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.bofa-cell--numeric.mat-column-amount "-$142.18" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.bofa-cell--numeric.mat-column-balance "$4,821.44" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.mat-column-date "2024-01-11" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.mat-column-description "Payroll ACME Corp" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.mat-column-reference "DEP 1190" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.bofa-cell--numeric.mat-column-amount "$3,210.00" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.bofa-cell--numeric.mat-column-balance "$4,963.62" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.mat-column-date "2024-01-09" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.mat-column-description "Transfer to Savings" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.mat-column-reference "INT 4410" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.bofa-cell--numeric.mat-column-amount "-$500.00" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.bofa-cell--numeric.mat-column-balance "$1,753.62" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.mat-column-date "2024-01-08" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.mat-column-description "Verizon Wireless" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.mat-column-reference "ACH 7731" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.bofa-cell--numeric.mat-column-amount "-$88.40" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.bofa-cell--numeric.mat-column-balance "$2,253.62" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.mat-column-date "2024-01-05" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.mat-column-description "Card purchase — Harris Teeter" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.mat-column-reference "POS 5522" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.bofa-cell--numeric.mat-column-amount "-$76.31" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.bofa-cell--numeric.mat-column-balance "$2,342.02" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  div.mat-paginator-page-size-label "Items per page:" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.54) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  span.mat-select-min-line "25" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  div.mat-paginator-range-label "1 – 25 of 240" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.54) → rgb(0, 0, 0) on rgb(0, 0, 0))' to include 'Erica can now'
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:378:79)
+
+  26) legibility sweep — the sweep itself
+       measures a CSS-painted indicator, which no SVG sweep can see:
+     AssertionError: expected '  span.mat-select-min-line "Advantage Plus Banking ••4410" — 1.00:1, needs 4.5:1 (rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0))' to include 'css-painted indicator'
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:410:36)
+
+  27) legibility sweep — the sweep itself
+       does not report the dimmed page behind an open modal:
+     AssertionError:   h2.mat-dialog-title "Confirm this transfer" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  mat-dialog-content.mat-dialog-content "You are sending $1,250.00 to Duke Energy" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  span.mat-button-wrapper "Cancel" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))
+  span.mat-button-wrapper "Confirm transfer" — 1.00:1, needs 4.5:1 (rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0)): expected [ Array(4) ] to have a length of 0 but got 4
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:422:53)
+
+  28) legibility sweep — the sweep itself
+       measures painted marks of any shape, and not a tail of the surface it matches:
+     AssertionError: a rotated chevron is a caret too: expected '  span.mat-select-min-line "Advantage Plus Banking ••4410" — 1.00:1, needs 4.5:1 (rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0))' to include 'css-painted indicator'
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:518:72)
+
+  29) legibility sweep — the sweep itself
+       leaves bordered chrome alone and still measures a mark that means something:
+     AssertionError: an invisible caret is still a defect: expected '  a.showcase__back "← all components" — 1.42:1, needs 4.5:1 (rgb(1, 33, 105) → rgb(1, 33, 105) on rgb(0, 0, 0))\n  span.showcase__eyebrow "@bofa/ui-core" — 3.61:1, needs 4.5:1 (rgb(93, 102, 115) → rgb(93, 102, 115) on rgb(0, 0, 0))\n  h1.showcase__title "table" — 1.16:1, needs 3:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))\n  div.mat-sort-header-content "Date" — 1.16:1, needs 4.5:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))\n  div.mat-sort-header-content "Description" — 1.16:1, needs 4.5:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))\n  th.mat-header-cell.mat-column-reference "Reference" — 1.16:1, needs 4.5:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))\n  div.mat-sort-header-content "Amount" — 1.16:1, needs 4.5:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))\n  th.mat-header-cell.bofa-cell--numeric.mat-column-balance "Balance" — 1.16:1, needs 4.5:1 (rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0))\n  td.mat-cell.mat-column-date "2024-01-12" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.mat-column-description "Duke Energy" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.mat-column-reference "ACH 8821" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.bofa-cell--numeric.mat-column-amount "-$142.18" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.bofa-cell--numeric.mat-column-balance "$4,821.44" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.mat-column-date "2024-01-11" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.mat-column-description "Payroll ACME Corp" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.mat-column-reference "DEP 1190" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.bofa-cell--numeric.mat-column-amount "$3,210.00" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.bofa-cell--numeric.mat-column-balance "$4,963.62" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.mat-column-date "2024-01-09" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.mat-column-description "Transfer to Savings" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.mat-column-reference "INT 4410" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.bofa-cell--numeric.mat-column-amount "-$500.00" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.bofa-cell--numeric.mat-column-balance "$1,753.62" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.mat-column-date "2024-01-08" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.mat-column-description "Verizon Wireless" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.mat-column-reference "ACH 7731" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.bofa-cell--numeric.mat-column-amount "-$88.40" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.bofa-cell--numeric.mat-column-balance "$2,253.62" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.mat-column-date "2024-01-05" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.mat-column-description "Card purchase — Harris Teeter" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.mat-column-reference "POS 5522" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.bofa-cell--numeric.mat-column-amount "-$76.31" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))\n  td.mat-cell.bofa-cell--numeric.mat-column-balance "$2,342.02" — 1.00:1, needs 4.5:1 (rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0))' to include 'css-painted indicator'
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:797:76)
+
+  30) legibility sweep — the sweep itself
+       measures a mark drawn with four sides, at 32px, or in a pseudo-element:
+     AssertionError: four sides is a shape: expected '  span.mat-select-min-line "Advantage Plus Banking ••4410" — 1.00:1, needs 4.5:1 (rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0))' to include 'css-painted indicator'
+      at Context.eval (webpack:///./src/e2e/legibility-sweep.cy.ts:821:61)
+
+  (Results)
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Tests:        56                                                                               │
+  │ Passing:      26                                                                               │
+  │ Failing:      30                                                                               │
+  │ Pending:      0                                                                                │
+  │ Skipped:      0                                                                                │
+  │ Screenshots:  0                                                                                │
+  │ Video:        false                                                                            │
+  │ Duration:     15 seconds                                                                       │
+  │ Spec Ran:     legibility-sweep.cy.ts                                                           │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+────────────────────────────────────────────────────────────────────────────────────────────────────
+                                                                                                    
+  Running:  override-contract.cy.ts                                                         (3 of 3)
+
+  design system — override contract (computed styles)
+    ✓ OV-01: Disabled field label stays legible (WCAG AA) against the slate palette (621ms)
+    ✓ OV-01b: Field underline uses the BoA slate rule, not the Material default (180ms)
+    ✓ OV-01c: Disabled field *value* stays legible, not just its label (164ms)
+    ✓ OV-01d: Validation copy uses the brand danger red, which clears AA (Material’s does not) (161ms)
+    ✓ OV-02: Error text sits on a 20px line box so field height never jumps on validation (256ms)
+    ✓ OV-03: Primary button is brand red with 8px optical icon/label spacing (256ms)
+    ✓ OV-04: Keyboard focus ring is visible on white and on slate-50 (261ms)
+    ✓ OV-05: Statement rows keep fixed heights so 50 rows paginate predictably in print (183ms)
+    ✓ OV-05b: Currency figures use tabular numerals and right-align on the decimal (163ms)
+    ✓ OV-05c: Header cells carry the slate-900 brand weight, not the Material grey (194ms)
+    ✓ OV-05d: Zebra striping on even rows for statement scanability (121ms)
+    ✓ OV-06: Sort arrow is dimmed until hover so it does not read as an active filter (237ms)
+    ✓ OV-07: Active option in the account picker is tinted brand red, not Material grey (372ms)
+    ✓ OV-08: Selected option is brand red, not accent navy (navy reads as a link here) (233ms)
+    ✓ OV-09: Consent toggle is unambiguous at arm’s length on a tablet (125ms)
+    ✓ OV-09b: A granted consent reads green, not brand red (136ms)
+    ✓ OV-10: Section ink bar is legible on a 4K branch display (165ms)
+    ✓ OV-10b: The active section label is the brand accent and stays readable in both palettes (133ms)
+    ✓ OV-11: Category chips keep a 28px rhythm inside the filter drawer (264ms)
+    ✓ OV-12: Step-up dialog matches the mobile MFA modal: tight padding, squared corners (313ms)
+    ✓ OV-12b: A short confirmation body never acquires an inner scrollbar (222ms)
+    ✓ OV-13: Selected day is brand red; today is outlined, not a second filled circle (272ms)
+    ✓ OV-14: Range label stays on screen on a 1280px branch terminal (153ms)
+    ✓ OV-15: Payee panel never covers the Confirmation of Payee copy (286ms)
+    ✓ OV-16: Amount entry right-aligns on tabular numerals (133ms)
+    ✓ OV-17: Compact density is materially shorter than the default field (281ms)
+    ✓ OV-18: Legacy shell embeds tabs without a second divider line (163ms)
+  design system — override contract (dark surface)
+    ✓ the dark surface is actually dark (else every probe below is vacuous) (474ms)
+    ✓ OV-01c [dark]: Disabled field *value* stays legible, not just its label (123ms)
+    ✓ OV-01d [dark]: Validation copy uses the brand danger red, which clears AA (Material’s does not) (151ms)
+    ✓ OV-05c [dark]: Header cells carry the slate-900 brand weight, not the Material grey (142ms)
+    ✓ OV-05d [dark]: Zebra striping on even rows for statement scanability (113ms)
+    ✓ OV-07 [dark]: Active option in the account picker is tinted brand red, not Material grey (272ms)
+    ✓ OV-10 [dark]: Section ink bar is legible on a 4K branch display (123ms)
+    ✓ OV-10b [dark]: The active section label is the brand accent and stays readable in both palettes (125ms)
+    ✓ OV-11 [dark]: Category chips keep a 28px rhythm inside the filter drawer (141ms)
+    ✓ OV-15 [dark]: Payee panel never covers the Confirmation of Payee copy (277ms)
+    ✓ OV-17 [dark]: Compact density is materially shorter than the default field (224ms)
+    ✓ OV-18 [dark]: Legacy shell embeds tabs without a second divider line (209ms)
+  design system — legibility (WCAG AA, light surface)
+    1) statement table: even (striped) row clears 4.5:1
+    2) statement table: odd row clears 4.5:1
+    3) statement table: header cell clears 4.5:1
+    4) form field: field label clears 4.5:1
+    5) form field: entered value clears 4.5:1
+    6) form field: hint clears 4.5:1
+    7) form field: disabled value clears 4.5:1
+    8) form field: error message clears 4.5:1
+    9) tabs: inactive tab label clears 4.5:1
+    10) tabs: active tab label clears 4.5:1
+    11) select: trigger text clears 4.5:1
+    ✓ chips: chip label clears 4.5:1 (183ms)
+    12) paginator: range label clears 4.5:1
+    13) currency input: amount clears 4.5:1
+    ✓ tabs: the active-section ink bar clears 3:1 (non-text contrast) (257ms)
+    14) datepicker: the toggle glyph clears 3:1 (non-text contrast)
+  design system — legibility (WCAG AA, dark surface)
+    ✓ statement table: even (striped) row clears 4.5:1 (257ms)
+    ✓ statement table: odd row clears 4.5:1 (182ms)
+    ✓ statement table: header cell clears 4.5:1 (178ms)
+    ✓ form field: field label clears 4.5:1 (182ms)
+    15) form field: entered value clears 4.5:1
+    ✓ form field: hint clears 4.5:1 (219ms)
+    16) form field: disabled value clears 4.5:1
+    ✓ form field: error message clears 4.5:1 (260ms)
+    ✓ tabs: inactive tab label clears 4.5:1 (185ms)
+    ✓ tabs: active tab label clears 4.5:1 (170ms)
+    17) select: trigger text clears 4.5:1
+    ✓ chips: chip label clears 4.5:1 (162ms)
+    ✓ paginator: range label clears 4.5:1 (129ms)
+    18) currency input: amount clears 4.5:1
+    ✓ tabs: the active-section ink bar clears 3:1 (non-text contrast) (540ms)
+    19) datepicker: the toggle glyph clears 3:1 (non-text contrast)
+  design system — the contrast oracle itself
+    20) a fully transparent chain resolves to the canvas, not to opaque black
+    21) composites a semi-transparent foreground instead of treating it as opaque
+    ✓ composites a semi-transparent background over the layer behind it (153ms)
+    ✓ agrees with the published figure on a known opaque pair (153ms)
+    22) folds an ancestor `opacity` into the layer instead of ignoring it
+    ✓ refuses to score text over a gradient rather than reporting the canvas (164ms)
+  55 passing (17s)
+  22 failing
+  1) design system — legibility (WCAG AA, light surface)
+       statement table: even (striped) row clears 4.5:1:
+      AssertionError: statement table / even (striped) row[0]: rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0): expected 1 to be at least 4.5
+      + expected - actual
+      -1
+      +4.5
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:168:79)
+
+  2) design system — legibility (WCAG AA, light surface)
+       statement table: odd row clears 4.5:1:
+      AssertionError: statement table / odd row[0]: rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0): expected 1 to be at least 4.5
+      + expected - actual
+      -1
+      +4.5
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:168:79)
+
+  3) design system — legibility (WCAG AA, light surface)
+       statement table: header cell clears 4.5:1:
+      AssertionError: statement table / header cell[0]: rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0): expected 1.1582250796635216 to be at least 4.5
+      + expected - actual
+      -1.1582250796635216
+      +4.5
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:168:79)
+
+  4) design system — legibility (WCAG AA, light surface)
+       form field: field label clears 4.5:1:
+      AssertionError: form field / field label[0]: rgba(0, 0, 0, 0.6) → rgb(0, 0, 0) on rgb(0, 0, 0): expected 1 to be at least 4.5
+      + expected - actual
+      -1
+      +4.5
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:168:79)
+
+  5) design system — legibility (WCAG AA, light surface)
+       form field: entered value clears 4.5:1:
+      AssertionError: form field / entered value[0]: rgb(18, 22, 29) → rgb(0, 0, 0) on rgb(0, 0, 0): expected 1 to be at least 4.5
+      + expected - actual
+      -1
+      +4.5
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:168:79)
+
+  6) design system — legibility (WCAG AA, light surface)
+       form field: hint clears 4.5:1:
+      AssertionError: form field / hint[0]: rgba(0, 0, 0, 0.6) → rgb(0, 0, 0) on rgb(0, 0, 0): expected 1 to be at least 4.5
+      + expected - actual
+      -1
+      +4.5
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:168:79)
+
+  7) design system — legibility (WCAG AA, light surface)
+       form field: disabled value clears 4.5:1:
+      AssertionError: form field / disabled value[0]: rgb(93, 102, 115) → rgb(0, 0, 0) on rgb(0, 0, 0): expected 1 to be at least 4.5
+      + expected - actual
+      -1
+      +4.5
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:168:79)
+
+  8) design system — legibility (WCAG AA, light surface)
+       form field: error message clears 4.5:1:
+      AssertionError: form field / error message[0]: rgb(176, 0, 32) → rgb(176, 0, 32) on rgb(0, 0, 0): expected 2.8668781711677895 to be at least 4.5
+      + expected - actual
+      -2.8668781711677895
+      +4.5
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:168:79)
+
+  9) design system — legibility (WCAG AA, light surface)
+       tabs: inactive tab label clears 4.5:1:
+      AssertionError: tabs / inactive tab label[0]: rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0): expected 1 to be at least 4.5
+      + expected - actual
+      -1
+      +4.5
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:168:79)
+
+  10) design system — legibility (WCAG AA, light surface)
+       tabs: active tab label clears 4.5:1:
+      AssertionError: tabs / active tab label[0]: rgb(200, 16, 46) → rgb(200, 16, 46) on rgb(0, 0, 0): expected 3.5694398151439466 to be at least 4.5
+      + expected - actual
+      -3.5694398151439466
+      +4.5
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:168:79)
+
+  11) design system — legibility (WCAG AA, light surface)
+       select: trigger text clears 4.5:1:
+      AssertionError: select / trigger text[0]: rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0): expected 1 to be at least 4.5
+      + expected - actual
+      -1
+      +4.5
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:168:79)
+
+  12) design system — legibility (WCAG AA, light surface)
+       paginator: range label clears 4.5:1:
+      AssertionError: paginator / range label[0]: rgba(0, 0, 0, 0.54) → rgb(0, 0, 0) on rgb(0, 0, 0): expected 1 to be at least 4.5
+      + expected - actual
+      -1
+      +4.5
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:168:79)
+
+  13) design system — legibility (WCAG AA, light surface)
+       currency input: amount clears 4.5:1:
+      AssertionError: currency input / amount[0]: rgb(18, 22, 29) → rgb(0, 0, 0) on rgb(0, 0, 0): expected 1 to be at least 4.5
+      + expected - actual
+      -1
+      +4.5
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:168:79)
+
+  14) design system — legibility (WCAG AA, light surface)
+       datepicker: the toggle glyph clears 3:1 (non-text contrast):
+      AssertionError: datepicker toggle glyph[0]: fill rgba(0, 0, 0, 0.54) → rgb(0, 0, 0) on rgb(0, 0, 0): expected 1 to be at least 3
+      + expected - actual
+      -1
+      +3
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:201:79)
+
+  15) design system — legibility (WCAG AA, dark surface)
+       form field: entered value clears 4.5:1:
+      AssertionError: form field / entered value[0]: rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0): expected 1 to be at least 4.5
+      + expected - actual
+      -1
+      +4.5
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:168:79)
+
+  16) design system — legibility (WCAG AA, dark surface)
+       form field: disabled value clears 4.5:1:
+      AssertionError: form field / disabled value[0]: rgb(199, 204, 214) → rgb(0, 0, 0) on rgb(0, 0, 0): expected 1 to be at least 4.5
+      + expected - actual
+      -1
+      +4.5
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:168:79)
+
+  17) design system — legibility (WCAG AA, dark surface)
+       select: trigger text clears 4.5:1:
+      AssertionError: select / trigger text[0]: rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0): expected 1 to be at least 4.5
+      + expected - actual
+      -1
+      +4.5
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:168:79)
+
+  18) design system — legibility (WCAG AA, dark surface)
+       currency input: amount clears 4.5:1:
+      AssertionError: currency input / amount[0]: rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0): expected 1 to be at least 4.5
+      + expected - actual
+      -1
+      +4.5
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:168:79)
+
+  19) design system — legibility (WCAG AA, dark surface)
+       datepicker: the toggle glyph clears 3:1 (non-text contrast):
+      AssertionError: datepicker toggle glyph[0]: fill rgb(255, 255, 255) → rgb(0, 0, 0) on rgb(0, 0, 0): expected 1 to be at least 3
+      + expected - actual
+      -1
+      +3
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:201:79)
+
+  20) design system — the contrast oracle itself
+       a fully transparent chain resolves to the canvas, not to opaque black:
+     AssertionError: expected 21 to be close to 1 +/- 0.01
+      at eval (webpack:///./src/e2e/override-contract.cy.ts:252:26)
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:244:6)
+
+  21) design system — the contrast oracle itself
+       composites a semi-transparent foreground instead of treating it as opaque:
+     AssertionError: expected 10.049743700462349 to be close to 3.87 +/- 0.02
+      at eval (webpack:///./src/e2e/override-contract.cy.ts:260:26)
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:244:6)
+
+  22) design system — the contrast oracle itself
+       folds an ancestor `opacity` into the layer instead of ignoring it:
+     AssertionError: expected 21 to be close to 1.33 +/- 0.02
+      at eval (webpack:///./src/e2e/override-contract.cy.ts:294:28)
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:244:6)
+
+  (Results)
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Tests:        77                                                                               │
+  │ Passing:      55                                                                               │
+  │ Failing:      22                                                                               │
+  │ Pending:      0                                                                                │
+  │ Skipped:      0                                                                                │
+  │ Screenshots:  0                                                                                │
+  │ Video:        false                                                                            │
+  │ Duration:     16 seconds                                                                       │
+  │ Spec Ran:     override-contract.cy.ts                                                          │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+====================================================================================================
+  (Run Finished)
+       Spec                                              Tests  Passing  Failing  Pending  Skipped  
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ ✔  design-system.cy.ts                      00:10       23       23        -        -        - │
+  ├────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ ✖  legibility-sweep.cy.ts                   00:15       56       26       30        -        - │
+  ├────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ ✖  override-contract.cy.ts                  00:16       77       55       22        -        - │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+    ✖  2 of 3 failed (67%)                      00:43      156      104       52        -        -  
+
+ 
+
+ >  NX   Running target "retail-banking-e2e:e2e" failed
+
+   Failed tasks:
+   
+   - retail-banking-e2e:e2e
+   
+   Hint: run the command with --verbose for more details.
+

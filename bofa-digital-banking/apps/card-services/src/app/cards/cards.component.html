@@ -1,0 +1,15 @@
+<main class="cards" [bofaTrackView]="'card-services'">
+  <h1>Card services</h1>
+
+  <!-- Second flex-layout usage, different directive combination from ui-core -->
+  <div fxLayout="row wrap" fxLayout.lt-sm="column" fxLayoutGap="24px grid" fxLayoutAlign="start start">
+    <div fxFlex="50" fxFlex.lt-md="100">
+      <bofa-select label="Card" [options]="cards" [control]="cardControl"></bofa-select>
+      <bofa-currency-input label="Spending limit" [control]="limitControl"></bofa-currency-input>
+      <bofa-button variant="secondary">Update limit</bofa-button>
+    </div>
+    <div fxFlex fxHide.lt-md>
+      <bofa-table [rows]="rows"></bofa-table>
+    </div>
+  </div>
+</main>

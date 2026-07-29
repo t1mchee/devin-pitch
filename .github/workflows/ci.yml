@@ -1,0 +1,136 @@
+name: bofa-digital-banking CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    # `edited` matters: the oracle guard below reads the PR *description*, so a
+    # description that satisfies it can be emptied after the check went green.
+    # Without this event type that edit re-runs nothing and the branch stays
+    # green on a declaration that no longer exists.
+    types: [opened, synchronize, reopened, edited, ready_for_review]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: bofa-digital-banking
+
+env:
+  # Digest pin, not a tag. `cypress/included:10.11.0` is mutable; the baselines
+  # are only a contract if the renderer that produced them cannot be replaced
+  # underneath the check.
+  CYPRESS_IMAGE: cypress/included@sha256:058d1834239bf09b381325b8369d05e9e0516a46b65b32e6dc0c991801dc517a
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      # Angular 14 requires Node 14–16. The runtime moves during the upgrade,
+      # so this line is part of the migration, not part of the scaffolding.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '16.20.2'
+          cache: npm
+          cache-dependency-path: bofa-digital-banking/package-lock.json
+
+      # `--ignore-scripts`: an agent (or an injected instruction, or a
+      # compromised transitive package) that adds a dependency gets arbitrary
+      # code execution via preinstall/postinstall *before* any human reads the
+      # diff. This tree does not need lifecycle scripts — verified: build, unit
+      # tests and the visual suite all pass without them, because the Cypress
+      # binary comes from the pinned image's cache rather than a postinstall
+      # download. Anything that later genuinely needs one gets an explicit
+      # allowlist entry, reviewed like any other control change.
+      - name: Install
+        run: npm ci --legacy-peer-deps --ignore-scripts
+
+      - name: Build all
+        run: npx nx run-many --target=build --all
+
+      - name: Unit tests
+        run: npx nx run-many --target=test --all
+
+      - name: Lint all
+        run: npx nx run-many --target=lint --all
+
+      # Pixel baselines are only meaningful against a pinned renderer: font
+      # hinting differs between this runner and a developer laptop by enough
+      # pixels to trip the 40px budget. The image is the contract, so it is
+      # pinned by digest rather than by a mutable tag, and --skip-nx-cache keeps
+      # a cached result from standing in for a real run.
+      - name: Visual regression
+        run: |
+          docker run --rm -u $(id -u):$(id -g) \
+            -e HOME=/tmp -e CYPRESS_CACHE_FOLDER=/root/.cache/Cypress \
+            -v "$GITHUB_WORKSPACE":/w -w /w/bofa-digital-banking \
+            --entrypoint bash "$CYPRESS_IMAGE" \
+            -c "npx nx e2e retail-banking-e2e --skip-nx-cache"
+
+      # Every rule in AGENTS.md that protects the oracle is behavioural until
+      # something enforces it. These files decide whether a visual regression is
+      # visible at all, so a PR that touches them must say so out loud.
+      - name: Guard the oracle
+        # `always()`: this guard used to be skipped whenever the visual job
+        # failed — i.e. exactly when someone is most tempted to re-baseline.
+        # A control that only runs on the happy path is not a control.
+        if: always() && github.event_name == 'pull_request'
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          git fetch --no-tags --depth=1 origin "$BASE" "$HEAD" 2>/dev/null || git fetch --no-tags origin
+          CHANGED=$(git diff --name-only "$BASE" "$HEAD" -- \
+            'bofa-digital-banking/apps/retail-banking-e2e/visual-baselines/**' \
+            'bofa-digital-banking/apps/retail-banking-e2e/src/support/visual-regression.plugin.ts' \
+            'bofa-digital-banking/apps/retail-banking-e2e/src/support/override-probes.ts' \
+            'bofa-digital-banking/apps/*/project.json' || true)
+          if [ -z "$CHANGED" ]; then
+            echo "No baseline, oracle or budget change in this PR."
+            exit 0
+          fi
+          echo "::warning::This PR changes the visual oracle or a budget:"
+          echo "$CHANGED"
+          BODY=$(jq -r '.pull_request.body // ""' "$GITHUB_EVENT_PATH")
+          if echo "$BODY" | grep -qi 'BASELINE-CHANGE:'; then
+            echo "Declared in the PR description. Requires design-system owner review (CODEOWNERS)."
+            exit 0
+          fi
+          echo "::error::Baseline/oracle/budget changed without a 'BASELINE-CHANGE: <reason>' line in the PR description."
+          exit 1
+
+      # Report-only on purpose: this repository pins an Angular 14 dependency
+      # set that is end-of-life by design, so a blocking gate here would be
+      # permanently red and therefore ignored. What matters is that the number
+      # is printed on every migration PR and moves in the right direction.
+      - name: Dependency audit (report only)
+        if: always()
+        run: |
+          npm audit --audit-level=critical || true
+          # The committed baseline is the point: a trend needs two readings, and
+          # "the audit got worse during the migration" must be visible without
+          # trusting anyone's memory of last week's log.
+          echo '--- diff vs committed baseline (docs/evidence/sca-baseline.json) ---'
+          npm audit --json > /tmp/audit-now.json 2>/dev/null || true
+          node -e "
+            const now = JSON.parse(require('fs').readFileSync('/tmp/audit-now.json','utf8')).metadata.vulnerabilities;
+            const base = JSON.parse(require('fs').readFileSync('../docs/evidence/sca-baseline.json','utf8')).vulnerabilities;
+            const rows = Object.keys(now).map(k => [k, base[k], now[k], now[k]-(base[k]||0)]);
+            console.table(rows.map(([k,b,n,d]) => ({severity:k, baseline:b, now:n, delta:d})));
+            const worse = rows.filter(([,,,d]) => d > 0);
+            if (worse.length) console.log('::warning::dependency audit worsened: ' + worse.map(r=>r[0]+' +'+r[3]).join(', '));
+          " || true
+
+      - name: Upload visual diffs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: visual-diffs
+          path: bofa-digital-banking/apps/retail-banking-e2e/visual-diffs
+          if-no-files-found: ignore

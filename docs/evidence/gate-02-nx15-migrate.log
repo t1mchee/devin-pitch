@@ -1,0 +1,47 @@
+Fetching meta data about packages.
+It may take a few minutes.
+Fetching nx@15.9.7
+
+ NX   The migrate command failed.
+
+
+ NX   An error occurred while checking the provenance of nx@15.9.7. This could indicate a security risk. Please double check https://www.npmjs.com/package/nx to see if the package is published correctly or file an issue at https://github.com/nrwl/nx/issues. To disable this check at your own risk, you can set the NX_SKIP_PROVENANCE_CHECK environment variable to true. 
+
+ Error: No attestation URL found
+Pass --verbose to see the stacktrace.
+
+Command failed: /tmp/tmp-20592-uRWasekVzcI5/node_modules/.bin/nx _migrate nx@15.9.7
+Fetching meta data about packages.
+It may take a few minutes.
+Fetching nx@15.9.7
+Fetching @nrwl/jest@15.9.7
+Fetching @nrwl/angular@15.9.7
+Fetching @nrwl/cypress@15.9.7
+Fetching @nrwl/linter@15.9.7
+Fetching @nrwl/workspace@15.9.7
+Fetching @ngrx/store@15.3.0
+Fetching @ngrx/entity@15.3.0
+Fetching @ngrx/effects@15.3.0
+Fetching @angular/cdk@15.2.9
+Fetching @angular/core@15.2.9
+Fetching @angular/material@15.2.9
+
+ NX   The migrate command has run successfully.
+
+- package.json has been updated.
+- migrations.json has been generated.
+
+
+ NX   Connect to Nx Cloud
+
+Nx Cloud is a first-party CI companion for Nx projects. It improves critical aspects of CI:
+- Speed: 30% - 70% faster CI
+- Cost: 40% - 75% reduction in CI costs
+- Reliability: by automatically identifying flaky tasks and re-running them
+
+[?25l[?25h[36m?[39m [1mSpeed up GitHub Actions, GitLab CI, and more with Nx Cloud?[22m [2m…[22m 
+[36m[4mYes[24m[39m
+Skip for now
+No, don't ask again
+
+Free for small teams. Remote caching and task distribution. 2-minute setup: https://nx.dev/nx-cloud[5A[65G[?25h

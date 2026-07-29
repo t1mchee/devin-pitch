@@ -1,0 +1,403 @@
+One or more browsers which are configured in the project's Browserslist configuration will be ignored as ES5 output is not supported by the Angular CLI.
+Ignored browsers: kaios 2.5, op_mini all
+- Generating browser application bundles (phase: setup)...
+✔ Browser application bundle generation complete.
+✔ Browser application bundle generation complete.
+
+./src/styles.scss - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Angular Material themes should be created from a map containing the keys "color", "typography", and "density". The color value should be a map containing the palette values for "primary", "accent", and "warn". See https://material.angular.io/guide/theming for more information.
+
+node_modules/@angular/material/core/theming/_theming.scss 186:5  define-light-theme()
+src/styles/_themes.scss 13:9                                     @use
+src/styles.scss 3:1                                              root stylesheet
+
+
+./src/styles.scss - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Angular Material themes should be created from a map containing the keys "color", "typography", and "density". The color value should be a map containing the palette values for "primary", "accent", and "warn". See https://material.angular.io/guide/theming for more information.
+
+node_modules/@angular/material/core/theming/_theming.scss 227:5  define-dark-theme()
+src/styles/_themes.scss 37:11                                    @use
+src/styles.scss 3:1                                              root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (5) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (10) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (15) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (20) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (25) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (30) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (35) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (40) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (45) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (50) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (55) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (60) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (65) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (70) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (75) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (80) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (85) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (90) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (95) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (100) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+
+
+Error: src/app/formly-templates.ts:3:10 - error TS2305: Module '"@ng-matero/extensions/select"' has no exported member 'MtxSelectComponent'.
+
+3 import { MtxSelectComponent } from '@ng-matero/extensions/select';
+           ~~~~~~~~~~~~~~~~~~
+
+
+Error: src/app/routes/forms/datetime/datetime.component.html:15:7 - error NG8001: 'mat-placeholder' is not a known element:
+1. If 'mat-placeholder' is an Angular component, then verify that it is part of this module.
+2. If 'mat-placeholder' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.
+
+15       <mat-placeholder>DateTime</mat-placeholder>
+         ~~~~~~~~~~~~~~~~~
+
+  src/app/routes/forms/datetime/datetime.component.ts:13:16
+    13   templateUrl: './datetime.component.html',
+                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Error occurs in the template of component FormsDatetimeComponent.
+
+
+Error: src/app/routes/forms/datetime/datetime.component.html:27:7 - error NG8001: 'mat-placeholder' is not a known element:
+1. If 'mat-placeholder' is an Angular component, then verify that it is part of this module.
+2. If 'mat-placeholder' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.
+
+27       <mat-placeholder>DateTime Year selector</mat-placeholder>
+         ~~~~~~~~~~~~~~~~~
+
+  src/app/routes/forms/datetime/datetime.component.ts:13:16
+    13   templateUrl: './datetime.component.html',
+                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Error occurs in the template of component FormsDatetimeComponent.
+
+
+Error: src/app/routes/forms/datetime/datetime.component.html:39:7 - error NG8001: 'mat-placeholder' is not a known element:
+1. If 'mat-placeholder' is an Angular component, then verify that it is part of this module.
+2. If 'mat-placeholder' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.
+
+39       <mat-placeholder>Time</mat-placeholder>
+         ~~~~~~~~~~~~~~~~~
+
+  src/app/routes/forms/datetime/datetime.component.ts:13:16
+    13   templateUrl: './datetime.component.html',
+                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Error occurs in the template of component FormsDatetimeComponent.
+
+
+Error: src/app/routes/forms/datetime/datetime.component.html:48:7 - error NG8001: 'mat-placeholder' is not a known element:
+1. If 'mat-placeholder' is an Angular component, then verify that it is part of this module.
+2. If 'mat-placeholder' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.
+
+48       <mat-placeholder>Time AM/PM</mat-placeholder>
+         ~~~~~~~~~~~~~~~~~
+
+  src/app/routes/forms/datetime/datetime.component.ts:13:16
+    13   templateUrl: './datetime.component.html',
+                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Error occurs in the template of component FormsDatetimeComponent.
+
+
+Error: src/app/routes/forms/datetime/datetime.component.html:57:7 - error NG8001: 'mat-placeholder' is not a known element:
+1. If 'mat-placeholder' is an Angular component, then verify that it is part of this module.
+2. If 'mat-placeholder' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.
+
+57       <mat-placeholder>Date</mat-placeholder>
+         ~~~~~~~~~~~~~~~~~
+
+  src/app/routes/forms/datetime/datetime.component.ts:13:16
+    13   templateUrl: './datetime.component.html',
+                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Error occurs in the template of component FormsDatetimeComponent.
+
+
+Error: src/app/routes/forms/datetime/datetime.component.html:65:7 - error NG8001: 'mat-placeholder' is not a known element:
+1. If 'mat-placeholder' is an Angular component, then verify that it is part of this module.
+2. If 'mat-placeholder' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.
+
+65       <mat-placeholder>Month</mat-placeholder>
+         ~~~~~~~~~~~~~~~~~
+
+  src/app/routes/forms/datetime/datetime.component.ts:13:16
+    13   templateUrl: './datetime.component.html',
+                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Error occurs in the template of component FormsDatetimeComponent.
+
+
+Error: src/app/routes/forms/datetime/datetime.component.html:74:7 - error NG8001: 'mat-placeholder' is not a known element:
+1. If 'mat-placeholder' is an Angular component, then verify that it is part of this module.
+2. If 'mat-placeholder' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.
+
+74       <mat-placeholder>Year</mat-placeholder>
+         ~~~~~~~~~~~~~~~~~
+
+  src/app/routes/forms/datetime/datetime.component.ts:13:16
+    13   templateUrl: './datetime.component.html',
+                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Error occurs in the template of component FormsDatetimeComponent.
+
+
+Error: src/app/routes/forms/datetime/datetime.component.html:82:7 - error NG8001: 'mat-placeholder' is not a known element:
+1. If 'mat-placeholder' is an Angular component, then verify that it is part of this module.
+2. If 'mat-placeholder' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.
+
+82       <mat-placeholder>Min/Max Test</mat-placeholder>
+         ~~~~~~~~~~~~~~~~~
+
+  src/app/routes/forms/datetime/datetime.component.ts:13:16
+    13   templateUrl: './datetime.component.html',
+                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Error occurs in the template of component FormsDatetimeComponent.
+
+
+Error: src/app/routes/forms/datetime/datetime.component.html:94:7 - error NG8001: 'mat-placeholder' is not a known element:
+1. If 'mat-placeholder' is an Angular component, then verify that it is part of this module.
+2. If 'mat-placeholder' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.
+
+94       <mat-placeholder>Filter Test</mat-placeholder>
+         ~~~~~~~~~~~~~~~~~
+
+  src/app/routes/forms/datetime/datetime.component.ts:13:16
+    13   templateUrl: './datetime.component.html',
+                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Error occurs in the template of component FormsDatetimeComponent.
+
+
+Error: src/app/routes/forms/datetime/datetime.component.html:105:7 - error NG8001: 'mat-placeholder' is not a known element:
+1. If 'mat-placeholder' is an Angular component, then verify that it is part of this module.
+2. If 'mat-placeholder' is a Web Component then add 'CUSTOM_ELEMENTS_SCHEMA' to the '@NgModule.schemas' of this component to suppress this message.
+
+105       <mat-placeholder>TouchUi</mat-placeholder>
+          ~~~~~~~~~~~~~~~~~
+
+  src/app/routes/forms/datetime/datetime.component.ts:13:16
+    13   templateUrl: './datetime.component.html',
+                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    Error occurs in the template of component FormsDatetimeComponent.
+
+
+Error: src/app/routes/material/input/input.component.html:6:21 - error TS2322: Type '"never"' is not assignable to type 'FloatLabelType'.
+
+6     <mat-form-field floatLabel="never">
+                      ~~~~~~~~~~
+
+  src/app/routes/material/input/input.component.ts:7:16
+    7   templateUrl: './input.component.html',
+                     ~~~~~~~~~~~~~~~~~~~~~~~~
+    Error occurs in the template of component InputComponent.
+
+
+Error: src/app/routes/material/input/input.component.html:10:21 - error TS2322: Type '"never"' is not assignable to type 'FloatLabelType'.
+
+10     <mat-form-field floatLabel="never">
+                       ~~~~~~~~~~
+
+  src/app/routes/material/input/input.component.ts:7:16
+    7   templateUrl: './input.component.html',
+                     ~~~~~~~~~~~~~~~~~~~~~~~~
+    Error occurs in the template of component InputComponent.
+
+
+

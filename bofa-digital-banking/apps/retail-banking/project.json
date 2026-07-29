@@ -1,0 +1,99 @@
+{
+  "name": "retail-banking",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/retail-banking/src",
+  "prefix": "bofa",
+  "targets": {
+    "build": {
+      "executor": "@angular-devkit/build-angular:browser",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/apps/retail-banking",
+        "index": "apps/retail-banking/src/index.html",
+        "main": "apps/retail-banking/src/main.ts",
+        "polyfills": "apps/retail-banking/src/polyfills.ts",
+        "tsConfig": "apps/retail-banking/tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "assets": [
+          "apps/retail-banking/src/favicon.ico",
+          "apps/retail-banking/src/assets"
+        ],
+        "styles": ["apps/retail-banking/src/styles.scss"],
+        "scripts": []
+      },
+      "configurations": {
+        "production": {
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kb",
+              "maximumError": "1mb"
+            },
+            {
+              "type": "anyComponentStyle",
+              "maximumWarning": "2kb",
+              "maximumError": "4kb"
+            }
+          ],
+          "fileReplacements": [
+            {
+              "replace": "apps/retail-banking/src/environments/environment.ts",
+              "with": "apps/retail-banking/src/environments/environment.prod.ts"
+            },
+            {
+              "replace": "apps/retail-banking/src/app/app.routes.ts",
+              "with": "apps/retail-banking/src/app/app.routes.prod.ts"
+            }
+          ],
+          "outputHashing": "all"
+        },
+        "development": {
+          "buildOptimizer": false,
+          "optimization": false,
+          "vendorChunk": true,
+          "extractLicenses": false,
+          "sourceMap": true,
+          "namedChunks": true
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "serve": {
+      "executor": "@angular-devkit/build-angular:dev-server",
+      "configurations": {
+        "production": {
+          "browserTarget": "retail-banking:build:production"
+        },
+        "development": {
+          "browserTarget": "retail-banking:build:development"
+        }
+      },
+      "defaultConfiguration": "development"
+    },
+    "extract-i18n": {
+      "executor": "@angular-devkit/build-angular:extract-i18n",
+      "options": {
+        "browserTarget": "retail-banking:build"
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "apps/retail-banking/**/*.ts",
+          "apps/retail-banking/**/*.html"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/apps/retail-banking"],
+      "options": {
+        "jestConfig": "apps/retail-banking/jest.config.ts",
+        "passWithNoTests": false
+      }
+    }
+  },
+  "tags": []
+}

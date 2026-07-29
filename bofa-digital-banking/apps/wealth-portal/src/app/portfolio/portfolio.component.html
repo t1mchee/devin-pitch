@@ -1,0 +1,13 @@
+<main class="portfolio">
+  <h1>Portfolio</h1>
+
+  <bofa-responsive-grid>
+    <div slot="summary">
+      <bofa-select label="Portfolio" [options]="portfolios" [control]="portfolioControl"></bofa-select>
+      <bofa-button variant="primary">Rebalance</bofa-button>
+    </div>
+    <div slot="detail">
+      <bofa-table [rows]="rows"></bofa-table>
+    </div>
+  </bofa-responsive-grid>
+</main>

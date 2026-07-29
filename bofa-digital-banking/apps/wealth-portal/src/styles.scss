@@ -1,0 +1,25 @@
+@use '../../../libs/ui-core/src/lib/theming/bofa-theme.scss';
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: 'BoA Sans', Arial, Helvetica, sans-serif;
+}
+
+// Page shell. Consumers of @bofa/ui-core own their own page chrome; the library
+// deliberately ships no page-level layout.
+.cards,
+.portfolio {
+  box-sizing: border-box;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px 32px;
+  overflow-x: hidden;
+
+  h1 {
+    margin: 0 0 24px;
+    font-size: 24px;
+    font-weight: 600;
+  }
+}

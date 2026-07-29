@@ -1,0 +1,10 @@
+@use '../../../libs/ui-core/src/lib/theming/bofa-theme.scss';
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  font-family: 'BoA Sans', Arial, Helvetica, sans-serif;
+  background: var(--bofa-surface);
+  color: #12161d;
+}

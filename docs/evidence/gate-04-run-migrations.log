@@ -1,0 +1,325 @@
+
+ NX   Running 'npm install --ignore-scripts' to make sure necessary packages are installed
+
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'less@4.8.1',
+npm WARN EBADENGINE   required: { node: '>=18' },
+npm WARN EBADENGINE   current: { node: 'v16.20.2', npm: '8.19.4' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'node-releases@2.0.51',
+npm WARN EBADENGINE   required: { node: '>=18' },
+npm WARN EBADENGINE   current: { node: 'v16.20.2', npm: '8.19.4' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'sass@1.102.0',
+npm WARN EBADENGINE   required: { node: '>=20.19.0' },
+npm WARN EBADENGINE   current: { node: 'v16.20.2', npm: '8.19.4' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'chokidar@5.0.0',
+npm WARN EBADENGINE   required: { node: '>= 20.19.0' },
+npm WARN EBADENGINE   current: { node: 'v16.20.2', npm: '8.19.4' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'readdirp@5.0.0',
+npm WARN EBADENGINE   required: { node: '>= 20.19.0' },
+npm WARN EBADENGINE   current: { node: 'v16.20.2', npm: '8.19.4' }
+npm WARN EBADENGINE }
+
+removed 1 package, and audited 1596 packages in 3s
+
+260 packages are looking for funding
+  run `npm fund` for details
+
+87 vulnerabilities (4 low, 15 moderate, 65 high, 3 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+
+ >  NX   Running migrations from 'migrations.json'
+
+
+ >  NX   Failed to run 15-7-0-split-configuration-into-project-json-files from @nrwl/workspace. This workspace is NOT up to date!
+
+
+ >  NX   Schematic "15-7-0-split-configuration-into-project-json-files" is missing a factory.
+
+   Pass --verbose to see the stacktrace.
+
+Command failed: npx nx _migrate --run-migrations --if-exists
+Command failed: /tmp/tmp-23818-LbU4zpSX671f/node_modules/.bin/nx _migrate --run-migrations --if-exists
+
+ NX   Running 'npm install --ignore-scripts' to make sure necessary packages are installed
+
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'less@4.8.1',
+npm WARN EBADENGINE   required: { node: '>=18' },
+npm WARN EBADENGINE   current: { node: 'v16.20.2', npm: '8.19.4' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'node-releases@2.0.51',
+npm WARN EBADENGINE   required: { node: '>=18' },
+npm WARN EBADENGINE   current: { node: 'v16.20.2', npm: '8.19.4' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'sass@1.102.0',
+npm WARN EBADENGINE   required: { node: '>=20.19.0' },
+npm WARN EBADENGINE   current: { node: 'v16.20.2', npm: '8.19.4' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'chokidar@5.0.0',
+npm WARN EBADENGINE   required: { node: '>= 20.19.0' },
+npm WARN EBADENGINE   current: { node: 'v16.20.2', npm: '8.19.4' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'readdirp@5.0.0',
+npm WARN EBADENGINE   required: { node: '>= 20.19.0' },
+npm WARN EBADENGINE   current: { node: 'v16.20.2', npm: '8.19.4' }
+npm WARN EBADENGINE }
+
+up to date, audited 1596 packages in 3s
+
+260 packages are looking for funding
+  run `npm fund` for details
+
+87 vulnerabilities (4 low, 15 moderate, 65 high, 3 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+
+ >  NX   Running migrations from 'migrations.json'
+
+Ran 15.0.0-prefix-outputs from nx
+  Prefix outputs with {workspaceRoot}/{projectRoot} if needed
+
+  UPDATE apps/card-services/project.json
+  UPDATE apps/retail-banking/project.json
+  UPDATE apps/wealth-portal/project.json
+  UPDATE libs/analytics-sdk-shim/project.json
+  UPDATE libs/auth-sdk-wrapper/project.json
+  UPDATE libs/ui-core/project.json
+---------------------------------------------------------
+
+>  NX  Jest Snapshot format changed in v29.
+By default Nx kept the older style to prevent breaking of existing tests with snapshots.
+It's recommend you update to the latest format.
+You can do this in your project's jest config file.
+Remove the snapshotFormat property and re-run tests with the --update-snapshot flag.
+More info: https://jestjs.io/docs/upgrading-to-jest29#snapshot-format
+
+Ran update-configs-jest-29 from @nrwl/jest
+  Update jest configs to support jest 29 changes (https://jestjs.io/docs/upgrading-to-jest29)
+
+  UPDATE libs/analytics-sdk-shim/jest.config.ts
+  UPDATE libs/auth-sdk-wrapper/jest.config.ts
+  UPDATE apps/retail-banking/jest.config.ts
+  UPDATE apps/card-services/jest.config.ts
+  UPDATE apps/wealth-portal/jest.config.ts
+  UPDATE libs/ui-core/jest.config.ts
+  UPDATE jest.preset.js
+---------------------------------------------------------
+Ran update-to-cypress-11 from @nrwl/cypress
+  Update to Cypress v11. This migration will only update if the workspace is already on v10. https://www.cypress.io/blog/2022/11/04/upcoming-changes-to-component-testing/
+
+  UPDATE package.json
+---------------------------------------------------------
+Ran add-eslint-ignore from @nrwl/linter
+  Add node_modules to root eslint ignore
+
+  CREATE .eslintignore
+---------------------------------------------------------
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'less@4.8.1',
+npm WARN EBADENGINE   required: { node: '>=18' },
+npm WARN EBADENGINE   current: { node: 'v16.20.2', npm: '8.19.4' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'node-releases@2.0.51',
+npm WARN EBADENGINE   required: { node: '>=18' },
+npm WARN EBADENGINE   current: { node: 'v16.20.2', npm: '8.19.4' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'sass@1.102.0',
+npm WARN EBADENGINE   required: { node: '>=20.19.0' },
+npm WARN EBADENGINE   current: { node: 'v16.20.2', npm: '8.19.4' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'chokidar@5.0.0',
+npm WARN EBADENGINE   required: { node: '>= 20.19.0' },
+npm WARN EBADENGINE   current: { node: 'v16.20.2', npm: '8.19.4' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'readdirp@5.0.0',
+npm WARN EBADENGINE   required: { node: '>= 20.19.0' },
+npm WARN EBADENGINE   current: { node: 'v16.20.2', npm: '8.19.4' }
+npm WARN EBADENGINE }
+
+> bofa-digital-banking@0.0.0 postinstall
+> node ./decorate-angular-cli.js && ngcc --properties es2020 browser module main
+
+
+ >  NX   Decoration of the Angular CLI is deprecated and will be removed in a future version
+
+   Please replace usage of "ng <command>" in any scripts, particularly for CI, with "nx <command>"
+
+
+ >  NX   Angular CLI has been decorated to enable computation caching.
+
+
+added 12 packages, removed 6 packages, changed 6 packages, and audited 1602 packages in 11s
+
+260 packages are looking for funding
+  run `npm fund` for details
+
+87 vulnerabilities (4 low, 15 moderate, 65 high, 3 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+Ran install-required-packages from @nrwl/angular
+  Install the required angular-devkit packages as we do not directly depend on them anymore
+
+  UPDATE package.json
+---------------------------------------------------------
+Ran update-angular-cli-version-15-0-0 from @nrwl/angular
+  Update the @angular/cli package version to ~15.0.0.
+
+  UPDATE package.json
+---------------------------------------------------------
+Ran remove-browserlist-config from @nrwl/angular
+  Remove browserslist config as it's handled by build-angular
+
+  DELETE apps/card-services/.browserslistrc
+  DELETE apps/retail-banking/.browserslistrc
+  DELETE apps/wealth-portal/.browserslistrc
+---------------------------------------------------------
+Ran update-typescript-target from @nrwl/angular
+  Update typescript target to ES2022
+
+  UPDATE apps/card-services/tsconfig.app.json
+  UPDATE apps/retail-banking/tsconfig.app.json
+  UPDATE apps/wealth-portal/tsconfig.app.json
+  UPDATE libs/analytics-sdk-shim/tsconfig.lib.prod.json
+  UPDATE libs/analytics-sdk-shim/tsconfig.lib.json
+  UPDATE libs/auth-sdk-wrapper/tsconfig.lib.prod.json
+  UPDATE libs/auth-sdk-wrapper/tsconfig.lib.json
+  UPDATE libs/ui-core/tsconfig.lib.prod.json
+  UPDATE libs/ui-core/tsconfig.lib.json
+---------------------------------------------------------
+Ran update-angular-cli-version-15-1-0 from @nrwl/angular
+  Update the @angular/cli package version to ~15.1.0.
+
+  UPDATE package.json
+---------------------------------------------------------
+Ran update-angular-cli-version-15-2-0 from @nrwl/angular
+  Update the @angular/cli package version to ~15.2.0.
+
+  UPDATE package.json
+---------------------------------------------------------
+Ran update-tsconfig-spec-jest from @nrwl/angular
+  Update the tsconfig.spec.json to use target es2016 for jest-preset-angular v13
+
+  UPDATE libs/analytics-sdk-shim/tsconfig.spec.json
+  UPDATE libs/auth-sdk-wrapper/tsconfig.spec.json
+  UPDATE apps/retail-banking/tsconfig.spec.json
+  UPDATE apps/card-services/tsconfig.spec.json
+  UPDATE apps/wealth-portal/tsconfig.spec.json
+  UPDATE libs/ui-core/tsconfig.spec.json
+---------------------------------------------------------
+    Skipping migration for project retail-banking-e2e. Unable to determine 'tsconfig.json' file in workspace config.
+    Skipping migration for project analytics-sdk-shim. Unable to determine 'tsconfig.json' file in workspace config.
+    Skipping migration for project auth-sdk-wrapper. Unable to determine 'tsconfig.json' file in workspace config.
+    Skipping migration for project ui-core. Unable to determine 'tsconfig.json' file in workspace config.
+    
+      ✓  Updated Angular Material to version 15
+    
+Ran migration-v15 from @angular/material
+  Updates the Angular Material to v15
+
+  UPDATE libs/ui-core/src/lib/ui-core.module.ts
+  UPDATE libs/ui-core/src/lib/components/bofa-dialog/bofa-dialog.component.ts
+---------------------------------------------------------
+    Skipping migration for project retail-banking-e2e. Unable to determine 'tsconfig.json' file in workspace config.
+    Skipping migration for project analytics-sdk-shim. Unable to determine 'tsconfig.json' file in workspace config.
+    Skipping migration for project auth-sdk-wrapper. Unable to determine 'tsconfig.json' file in workspace config.
+    Skipping migration for project ui-core. Unable to determine 'tsconfig.json' file in workspace config.
+    
+      ✓  Updated Angular CDK to version 15
+    
+
+ >  NX   Running 'npm install' to make sure necessary packages are installed
+
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'less@4.8.1',
+npm WARN EBADENGINE   required: { node: '>=18' },
+npm WARN EBADENGINE   current: { node: 'v16.20.2', npm: '8.19.4' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'node-releases@2.0.51',
+npm WARN EBADENGINE   required: { node: '>=18' },
+npm WARN EBADENGINE   current: { node: 'v16.20.2', npm: '8.19.4' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'sass@1.102.0',
+npm WARN EBADENGINE   required: { node: '>=20.19.0' },
+npm WARN EBADENGINE   current: { node: 'v16.20.2', npm: '8.19.4' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'chokidar@5.0.0',
+npm WARN EBADENGINE   required: { node: '>= 20.19.0' },
+npm WARN EBADENGINE   current: { node: 'v16.20.2', npm: '8.19.4' }
+npm WARN EBADENGINE }
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'readdirp@5.0.0',
+npm WARN EBADENGINE   required: { node: '>= 20.19.0' },
+npm WARN EBADENGINE   current: { node: 'v16.20.2', npm: '8.19.4' }
+npm WARN EBADENGINE }
+npm WARN deprecated glob@8.1.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+npm WARN deprecated read-package-json@6.0.4: This package is no longer supported. Please use @npmcli/package-json instead.
+npm WARN deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+npm WARN deprecated glob@10.5.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+
+> bofa-digital-banking@0.0.0 postinstall
+> node ./decorate-angular-cli.js && ngcc --properties es2020 browser module main
+
+
+ >  NX   Decoration of the Angular CLI is deprecated and will be removed in a future version
+
+   Please replace usage of "ng <command>" in any scripts, particularly for CI, with "nx <command>"
+
+
+ >  NX   Angular CLI has been decorated to enable computation caching.
+
+
+added 52 packages, removed 30 packages, changed 41 packages, and audited 1625 packages in 6s
+
+258 packages are looking for funding
+  run `npm fund` for details
+
+92 vulnerabilities (4 low, 15 moderate, 70 high, 3 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+
+ >  NX   Successfully finished running migrations from 'migrations.json'. This workspace is up to date!
+

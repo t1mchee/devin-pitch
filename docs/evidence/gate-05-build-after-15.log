@@ -1,0 +1,114 @@
+
+ >  NX   Running target build for project retail-banking and 3 tasks it depends on:
+
+ 
+
+> nx run analytics-sdk-shim:build:production
+
+Building Angular Package
+
+------------------------------------------------------------------------------
+Building entry point '@bofa/analytics-sdk-shim'
+------------------------------------------------------------------------------
+Copying assets
+Writing package manifest
+Built @bofa/analytics-sdk-shim
+
+------------------------------------------------------------------------------
+Built Angular Package
+ - from: /home/ubuntu/gate-scratch/libs/analytics-sdk-shim
+ - to:   /home/ubuntu/gate-scratch/dist/libs/analytics-sdk-shim
+------------------------------------------------------------------------------
+
+Build at: 2026-07-29T00:21:29.052Z - Time: 1696ms
+
+
+> nx run auth-sdk-wrapper:build:production
+
+Building Angular Package
+
+------------------------------------------------------------------------------
+Building entry point '@bofa/auth-sdk-wrapper'
+------------------------------------------------------------------------------
+Copying assets
+Writing package manifest
+Built @bofa/auth-sdk-wrapper
+
+------------------------------------------------------------------------------
+Built Angular Package
+ - from: /home/ubuntu/gate-scratch/libs/auth-sdk-wrapper
+ - to:   /home/ubuntu/gate-scratch/dist/libs/auth-sdk-wrapper
+------------------------------------------------------------------------------
+
+Build at: 2026-07-29T00:21:29.221Z - Time: 2036ms
+
+
+> nx run ui-core:build:production
+
+Building Angular Package
+
+------------------------------------------------------------------------------
+Building entry point '@bofa/ui-core'
+------------------------------------------------------------------------------
+Copying assets
+Writing package manifest
+Built @bofa/ui-core
+
+------------------------------------------------------------------------------
+Built Angular Package
+ - from: /home/ubuntu/gate-scratch/libs/ui-core
+ - to:   /home/ubuntu/gate-scratch/dist/libs/ui-core
+------------------------------------------------------------------------------
+
+Build at: 2026-07-29T00:21:30.005Z - Time: 2995ms
+
+
+> nx run retail-banking:build:production
+
+- Generating browser application bundles (phase: setup)...
+✔ Browser application bundle generation complete.
+✔ Browser application bundle generation complete.
+
+./apps/retail-banking/src/styles.scss - Error: Module build failed (from ./node_modules/sass-loader/dist/cjs.js):
+SassError: No arguments named $headline, $title or $subheading-2.
+    ┌──> libs/ui-core/src/lib/theming/_typography.scss
+7   │   $boa-typography: mat.define-typography-config(
+    │ ┌──────────────────^
+8   │ │   $font-family: $boa-font-stack,
+9   │ │   $headline: mat.define-typography-level(28px, 34px, 600),
+10  │ │   $title: mat.define-typography-level(20px, 26px, 600),
+11  │ │   $subheading-2: mat.define-typography-level(16px, 22px, 600),
+12  │ │   $body-1: mat.define-typography-level(14px, 20px, 400),
+13  │ │   $body-2: mat.define-typography-level(14px, 20px, 600),
+14  │ │   $caption: mat.define-typography-level(12px, 16px, 400),
+15  │ │   // Accessibility: button letter-spacing is widened because all-caps labels at
+16  │ │   // 14px fail internal legibility review
+
+./apps/retail-banking/src/styles.scss?ngGlobalStyle - Error: Module build failed (from ./node_modules/mini-css-extract-plugin/dist/loader.js):
+HookWebpackError: Module build failed (from ./node_modules/sass-loader/dist/cjs.js):
+SassError: No arguments named $headline, $title or $subheading-2.
+    ┌──> libs/ui-core/src/lib/theming/_typography.scss
+7   │   $boa-typography: mat.define-typography-config(
+    │ ┌──────────────────^
+8   │ │   $font-family: $boa-font-stack,
+9   │ │   $headline: mat.define-typography-level(28px, 34px, 600),
+10  │ │   $title: mat.define-typography-level(20px, 26px, 600),
+11  │ │   $subheading-2: mat.define-typography-level(16px, 22px, 600),
+12  │ │   $body-1: mat.define-typography-level(14px, 20px, 400),
+13  │ │   $body-2: mat.define-typography-level(14px, 20px, 600),
+14  │ │   $caption: mat.define-typography-level(12px, 16px, 400),
+15  │ │   // Accessibility: button letter-spacing is widened because all-caps labels at
+16  │ │   // 14px fail internal legibility review
+
+
+
+ 
+
+ >  NX   Running target build for project retail-banking and 3 tasks it depends on failed
+
+   Failed tasks:
+   
+   - retail-banking:build:production
+   
+   Hint: run the command with --verbose for more details.
+

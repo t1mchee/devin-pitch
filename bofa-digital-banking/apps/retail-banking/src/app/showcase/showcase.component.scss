@@ -1,0 +1,93 @@
+.showcase {
+  padding: 32px;
+  max-width: 960px;
+  margin: 0 auto;
+  background: var(--bofa-surface);
+}
+
+.showcase__header {
+  margin-bottom: 24px;
+}
+
+.showcase__back {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 13px;
+  color: var(--bofa-link);
+  text-decoration: none;
+}
+
+.showcase__back:hover {
+  text-decoration: underline;
+}
+
+.showcase__eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--bofa-text-muted);
+}
+
+.showcase__title {
+  margin: 4px 0 0;
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.showcase__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(260px, 1fr));
+  gap: 24px;
+}
+
+.showcase__stack {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.showcase__cell--wide {
+  grid-column: 1 / -1;
+  gap: 16px;
+}
+
+.showcase__result {
+  font-size: 13px;
+  color: var(--bofa-text-success);
+  font-weight: 600;
+}
+
+.showcase__cell {
+  padding: 16px;
+  border: 1px solid var(--bofa-border);
+  border-radius: 4px;
+  min-height: 96px;
+  display: flex;
+  align-items: center;
+}
+
+.showcase__dialog {
+  width: 420px;
+  border: 1px solid var(--bofa-border);
+}
+
+.showcase__dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+// Surface tokens, not hexes: the whole reason this file needed a dark override
+// in the first place was that it stated colours the dark palette had never heard
+// of. `_theme.scss` owns both values; this file states intent (raised panel,
+// sunken detail pane) and nothing else.
+.showcase__panel {
+  padding: 24px;
+  background: var(--bofa-surface-raised);
+  border-radius: 4px;
+}
+
+.showcase__panel--detail {
+  background: var(--bofa-surface-sunken);
+}
