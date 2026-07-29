@@ -29,6 +29,13 @@ Read this before changing anything in this repository.
 - **Overrides in `libs/ui-core/src/lib/theming/_overrides.scss` exist for stated reasons.**
   Each carries an `OV-nn` comment explaining its intent. Preserve the intent, not the
   selector. Deleting an override to make a build or a test pass is never acceptable.
+- **The override contract is the intent, expressed as an assertion.**
+  `apps/retail-banking-e2e/src/support/override-probes.ts` holds one probe per `OV-nn`
+  intent, asserting a computed style on the running app. A migration is *expected* to
+  change a probe's `target` when Material moves an internal — that edit is the work, and
+  it is reviewable. Changing a probe's `expect` value is changing what the customer sees:
+  it needs the design-system owner, and it is declared like a baseline change. Deleting a
+  probe to get to green is never acceptable.
 - **Never widen a dependency constraint you have not verified.** If a peer range blocks,
   read the package's actual API usage against the target version first and write what you
   checked into the PR.

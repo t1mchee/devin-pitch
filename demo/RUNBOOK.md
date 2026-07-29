@@ -32,7 +32,7 @@ recorded reason is the actual migration risk, not the version number.**
 ## 3:00–4:30 — The oracle, and one deliberate failure
 
 ```bash
-npm run visual        # 23 tests, 21 snapshots, pinned container, cache skipped
+npm run visual        # 45 tests: 21 snapshots + 22 computed-style probes, pinned container
 ```
 
 While it runs, say what is in it: the components, **the four real overlays** — dialog, select
@@ -40,12 +40,29 @@ panel, autocomplete panel, calendar — the keyboard focus ring, two breakpoints
 itself. *The dialog is opened, not drawn: a hand-written copy of Material's DOM would keep matching
 after MDC replaced the real one.*
 
+Then point at the second suite, because it is the better story: **22 computed-style probes**, one
+per `OV-nn` intent, asserting the value on the running app. Say why it exists — the control run on
+somebody else's design system found three theming regressions a screenshot diff cannot see — and
+then say what it did here: **it found three dead overrides in our own library on its first run**,
+including one that was passing only because the library default happened to match the brand
+colour. `docs/evidence/OVERRIDE-CONTRACT-dead-rules.md`. That is the sentence the Chief Architect
+remembers: *the gate we built to check the migration found bugs in the thing we were migrating.*
+
 Then change `.bofa-table .mat-header-cell` colour to brand red and re-run:
 
 ```
 Visual regression on table-default: <n> pixels differ (0.0xx%).
 Visual regression on accounts-dashboard: <n> pixels differ (0.0xx%).
 ```
+
+…and, in the second suite, a sentence instead of a pixel count:
+
+```
+OV-05c: Header cells carry the slate-900 brand weight, not the Material grey
+  expected rgb(18, 22, 29)  actual rgb(200, 16, 46)
+```
+
+*One gate tells you something moved. The other tells you which promise you broke.*
 
 Read the numbers off the screen — they are renderer- and baseline-dependent and have moved every
 time the baselines were regenerated (785 → 875 → 753). On the current baselines: **two** failures,
@@ -89,6 +106,29 @@ Open PR #2 and PR #3 — two independent runs of the same playbook, `TARGET_VERS
 `docs/evidence/VARIANCE-phase1-material15.md`. Chips: 6,635 px in one run, 707 px in the other.
 Say: *the diffs vary; the refusals don't. That is what makes 20 of these reviewable.* Then say
 Run C died on a usage limit — **2 of 3 completed** — before anyone asks.
+
+## 11:00 — If the Chief Architect says "you only proved this on a repo you wrote"
+
+Have `docs/evidence/CONTROL-external-design-system.md` open. Same playbook,
+**ng-matero v14.3.0** — MIT, third-party, ~2,300 lines of custom SCSS, zero intent comments,
+`@angular/flex-layout`, and a real upstream v15 to check the answers against. Report the result
+the way it happened, because it is not flattering:
+
+- It **stopped** on 3 genuinely ambiguous overrides and raised 1 stop that was really a scope
+  call, not ambiguity. Honest count: **3 true, 1 false positive**. It deleted nothing, disabled
+  nothing, and left CI red with a reason.
+- It also **guessed wrong three times and no gate caught it** — a rewrite onto class names the
+  Material schematic does not own, one selector left behind in a comma list, and a correct rename
+  that then lost a specificity battle to MDC's own rule. Two were invisible to a screenshot diff;
+  one was invisible in the light theme entirely.
+- **Then say what we did about it.** That control run's recommendation was a computed-style gate.
+  We built it, and it immediately failed on *our* library — three dead overrides
+  (`docs/evidence/OVERRIDE-CONTRACT-dead-rules.md`), one of which was only "passing" because the
+  Material default happened to equal the brand colour.
+
+The claim to make is the narrow one the evidence supports: *it does not guess when it knows it
+does not know — and it does not yet know when a confident rewrite has quietly stopped applying,
+which is why the contract gate is part of the pilot scope, not a nice-to-have.*
 
 ## 11:00–12:00 — The ask
 

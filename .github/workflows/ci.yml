@@ -73,6 +73,7 @@ jobs:
           CHANGED=$(git diff --name-only "$BASE" "$HEAD" -- \
             'bofa-digital-banking/apps/retail-banking-e2e/visual-baselines/**' \
             'bofa-digital-banking/apps/retail-banking-e2e/src/support/visual-regression.plugin.ts' \
+            'bofa-digital-banking/apps/retail-banking-e2e/src/support/override-probes.ts' \
             'bofa-digital-banking/apps/*/project.json' || true)
           if [ -z "$CHANGED" ]; then
             echo "No baseline, oracle or budget change in this PR."

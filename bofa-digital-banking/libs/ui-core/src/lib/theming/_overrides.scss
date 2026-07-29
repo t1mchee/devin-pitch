@@ -107,18 +107,28 @@
 
   // OV-06 — Sort arrows are dimmed until hover; a permanently visible arrow tested
   // badly with older customers who read it as an active filter.
+  //
+  // `!important` is load-bearing, not laziness: Material drives the arrow's
+  // opacity from an Angular animation (`@arrowOpacity`), which writes an inline
+  // style, and an inline style outranks any selector. Without this the rule is
+  // dead CSS — which is how it shipped until the computed-style contract
+  // (override-contract.cy.ts) measured it at 0 instead of 0.35.
   .mat-sort-header-arrow {
-    opacity: 0.35;
+    opacity: 0.35 !important;
   }
 
   .mat-sort-header:hover .mat-sort-header-arrow {
-    opacity: 1;
+    opacity: 1 !important;
   }
 }
 
 // OV-07 — MDC restructures the select overlay entirely. Values are numeric
 // (account and sort codes), so they use tabular numerals for scanability.
-::ng-deep .bofa-select-panel {
+//
+// No `::ng-deep`: this file is compiled into the global stylesheet, where
+// `::ng-deep` is not a real selector and the browser drops the whole rule. The
+// overlay lives outside the app root, so a global rule is the correct tool.
+.bofa-select-panel {
   .mat-select-value-text {
     font-variant-numeric: tabular-nums;
   }
@@ -175,8 +185,12 @@
 // OV-11 — Chips represent transaction categories. Height is fixed at 28px so a
 // wrapping chip list keeps a predictable rhythm inside the filter drawer.
 .bofa-chips {
+  // `min-height` as well as `height`: Material sets `min-height: 32px` on the
+  // standard chip, so a bare `height` is silently floored and the 28px rhythm
+  // never happens. Measured, not assumed — see OV-11 in the override contract.
   .mat-chip.mat-standard-chip {
     height: 28px;
+    min-height: 28px;
     border-radius: 14px;
     background: bofa.$boa-slate-100;
     color: bofa.$boa-slate-900;
@@ -246,7 +260,8 @@
 
 // OV-15 — Autocomplete backs payee search. The panel is capped so it never
 // covers the "confirm payee" copy, which is a Confirmation of Payee requirement.
-::ng-deep .bofa-autocomplete-panel {
+// Global, not `::ng-deep`, for the same reason as OV-07.
+.bofa-autocomplete-panel {
   &.mat-autocomplete-panel {
     max-height: 224px;
   }
