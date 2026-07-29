@@ -1,0 +1,152 @@
+{
+ "table_classes": "mat-mdc-table mdc-data-table__table cdk-table mat-sort ng-tns-c107-5 ng-star-inserted mat-table-hover mat-table-striped",
+ "odd_row_bg": [
+  {
+   "cls": "mat-mdc-row mdc-data-table__row cdk-row ng-tns-c107-5 ng-star-inserted",
+   "bg": "rgb(255, 255, 255)"
+  },
+  {
+   "cls": "mat-mdc-row mdc-data-table__row cdk-row ng-tns-c107-5 mat-row-odd ng-star-inserted",
+   "bg": "rgb(245, 245, 245)"
+  },
+  {
+   "cls": "mat-mdc-row mdc-data-table__row cdk-row ng-tns-c107-5 ng-star-inserted",
+   "bg": "rgb(255, 255, 255)"
+  },
+  {
+   "cls": "mat-mdc-row mdc-data-table__row cdk-row ng-tns-c107-5 mat-row-odd ng-star-inserted",
+   "bg": "rgb(245, 245, 245)"
+  }
+ ],
+ "hover_row_bg": "rgb(229, 229, 229)",
+ "nav_list": [
+  {
+   "cls": "mat-mdc-nav-list mat-mdc-list-base mdc-list",
+   "w": 1166,
+   "maxw": "none"
+  }
+ ],
+ "plain_list": [
+  {
+   "cls": "mat-mdc-list mat-mdc-list-base mdc-list",
+   "w": 350,
+   "maxw": "350px"
+  },
+  {
+   "cls": "mat-mdc-list mat-mdc-list-base mdc-list",
+   "w": 350,
+   "maxw": "350px"
+  },
+  {
+   "cls": "mat-mdc-list mat-mdc-list-base mdc-list",
+   "w": 350,
+   "maxw": "350px"
+  },
+  {
+   "cls": "mat-mdc-list mat-mdc-list-base mdc-list",
+   "w": 350,
+   "maxw": "350px"
+  }
+ ],
+ "toolbar_buttons": [
+  {
+   "cls": "matero-toolbar-button mdc-icon-button mat-mdc-icon-button mat-unthemed mat-mdc-button-base ng-star-inserted",
+   "w": 48,
+   "h": 48,
+   "margin": "0px 4px",
+   "br": "50%",
+   "minw": "auto",
+   "lh": "32px"
+  },
+  {
+   "cls": "matero-toolbar-button mdc-icon-button mat-mdc-icon-button mat-unthemed mat-mdc-button-base",
+   "w": 48,
+   "h": 48,
+   "margin": "0px 4px",
+   "br": "50%",
+   "minw": "0px",
+   "lh": "32px"
+  },
+  {
+   "cls": "matero-toolbar-button mdc-icon-button mat-mdc-icon-button mat-unthemed mat-mdc-button-base",
+   "w": 48,
+   "h": 48,
+   "margin": "0px 4px",
+   "br": "50%",
+   "minw": "auto",
+   "lh": "32px"
+  },
+  {
+   "cls": "matero-toolbar-button mdc-icon-button mat-mdc-icon-button mat-unthemed mat-mdc-button-base",
+   "w": 48,
+   "h": 48,
+   "margin": "0px 4px",
+   "br": "50%",
+   "minw": "auto",
+   "lh": "32px"
+  },
+  {
+   "cls": "mat-mdc-menu-trigger matero-toolbar-button mdc-icon-button mat-mdc-icon-button mat-unthemed mat-mdc-button-base",
+   "w": 48,
+   "h": 48,
+   "margin": "0px 4px",
+   "br": "50%",
+   "minw": "0px",
+   "lh": "32px"
+  },
+  {
+   "cls": "mat-mdc-menu-trigger matero-toolbar-button mdc-icon-button mat-mdc-icon-button mat-unthemed mat-mdc-button-base",
+   "w": 48,
+   "h": 48,
+   "margin": "0px 4px",
+   "br": "50%",
+   "minw": "0px",
+   "lh": "32px"
+  }
+ ],
+ "user_panel_icons": [
+  {
+   "cls": "mdc-icon-button mat-mdc-icon-button mat-unthemed mat-mdc-button-base",
+   "w": 24,
+   "h": 24,
+   "lh": "24px",
+   "pad": "12px"
+  },
+  {
+   "cls": "mdc-icon-button mat-mdc-icon-button mat-unthemed mat-mdc-button-base",
+   "w": 24,
+   "h": 24,
+   "lh": "24px",
+   "pad": "12px"
+  },
+  {
+   "cls": "mdc-icon-button mat-mdc-icon-button mat-unthemed mat-mdc-button-base",
+   "w": 24,
+   "h": 24,
+   "lh": "24px",
+   "pad": "12px"
+  }
+ ],
+ "card_margin": "16px",
+ "checkbox_spacing": [
+  {
+   "cls": "mat-mdc-checkbox mat-accent",
+   "mr": "8px",
+   "w": 40,
+   "h": 40
+  },
+  {
+   "cls": "mat-mdc-checkbox mat-accent",
+   "mr": "8px",
+   "w": 303,
+   "h": 40
+  },
+  {
+   "cls": "mat-mdc-checkbox mat-accent mdc-checkbox--disabled mat-mdc-checkbox-disabled",
+   "mr": "8px",
+   "w": 340.5,
+   "h": 40
+  }
+ ],
+ "topmenu": "no topmenu"
+}
