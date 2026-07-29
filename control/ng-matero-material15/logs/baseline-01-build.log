@@ -1,0 +1,32 @@
+- Generating browser application bundles (phase: setup)...
+✔ Browser application bundle generation complete.
+✔ Browser application bundle generation complete.
+- Copying assets...
+✔ Copying assets complete.
+- Generating index html...
+✔ Index html generation complete.
+
+Initial Chunk Files           | Names                          |  Raw Size | Estimated Transfer Size
+main.449761f5ed0a69d1.js      | main                           |   2.17 MB |               430.72 kB
+scripts.245b93c506f43430.js   | scripts                        | 484.92 kB |               104.46 kB
+styles.236f8057f269291a.css   | styles                         | 226.61 kB |                21.83 kB
+polyfills.d34c72b73af6a774.js | polyfills                      |  33.08 kB |                10.68 kB
+runtime.fa35e7f0ad85260c.js   | runtime                        |   3.38 kB |                 1.60 kB
+
+| Initial Total                  |   2.90 MB |               569.28 kB
+
+Lazy Chunk Files              | Names                          |  Raw Size | Estimated Transfer Size
+671.df0b2fb2a6a178ee.js       | material-material-module       | 113.50 kB |                21.89 kB
+847.915ef7bda51c609d.js       | forms-forms-module             |  35.38 kB |                 7.48 kB
+135.ca8ef6b8add768ea.js       | tables-tables-module           |  17.66 kB |                 3.90 kB
+458.ef8632c5e720a427.js       | profile-profile-module         |  13.64 kB |                 3.18 kB
+490.d44b39c6d7fb2f42.js       | utilities-utilities-module     |  12.08 kB |                 2.57 kB
+686.07a2e7f1454c111c.js       | permissions-permissions-module |   9.24 kB |                 2.06 kB
+319.41aff65ec70c151c.js       | design-design-module           |   4.05 kB |                 1.33 kB
+614.ab465a6bc2838746.js       | media-media-module             |   1.89 kB |               955 bytes
+
+Build at: 2026-07-29T03:19:36.694Z - Hash: ea88b0ab982d6869 - Time: 43670ms
+
+Warning: bundle initial exceeded maximum budget. Budget 2.00 MB was not met by 922.66 kB with a total of 2.90 MB.
+
+
