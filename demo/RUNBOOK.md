@@ -32,7 +32,7 @@ recorded reason is the actual migration risk, not the version number.**
 ## 3:00–4:30 — The oracle, and one deliberate failure
 
 ```bash
-npm run visual        # 45 tests: 21 snapshots + 22 computed-style probes, pinned container
+npm run visual        # 46 tests: 21 snapshots + 23 computed-style probes, pinned container
 ```
 
 While it runs, say what is in it: the components, **the four real overlays** — dialog, select
@@ -40,7 +40,7 @@ panel, autocomplete panel, calendar — the keyboard focus ring, two breakpoints
 itself. *The dialog is opened, not drawn: a hand-written copy of Material's DOM would keep matching
 after MDC replaced the real one.*
 
-Then point at the second suite, because it is the better story: **22 computed-style probes**, one
+Then point at the second suite, because it is the better story: **23 computed-style probes**, one
 per `OV-nn` intent, asserting the value on the running app. Say why it exists — the control run on
 somebody else's design system found three theming regressions a screenshot diff cannot see — and
 then say what it did here: **it found three dead overrides in our own library on its first run**,
@@ -58,8 +58,10 @@ Visual regression on accounts-dashboard: <n> pixels differ (0.0xx%).
 …and, in the second suite, a sentence instead of a pixel count:
 
 ```
-OV-05c: Header cells carry the slate-900 brand weight, not the Material grey
-  expected rgb(18, 22, 29)  actual rgb(200, 16, 46)
+1) OV-05c: Header cells carry the slate-900 brand weight, not the Material grey
+   + expected - actual
+   -'rgb(200, 16, 46)'
+   +'rgb(18, 22, 29)'
 ```
 
 *One gate tells you something moved. The other tells you which promise you broke.*
