@@ -63,17 +63,13 @@
         <bofa-button variant="primary" (click)="openDialog()">Open the real dialog</bofa-button>
         <span class="showcase__result" *ngIf="dialogResult">{{ dialogResult }}</span>
       </div>
-      <!-- Also rendered inline so the snapshot does not depend on overlay timing. -->
-      <div class="bofa-dialog showcase__dialog" data-state="open">
-        <h2 class="mat-dialog-title">Confirm this transfer</h2>
-        <div class="mat-dialog-content">
-          You are sending $1,250.00 to Duke Energy from Advantage Plus Banking ••4410.
-        </div>
-        <div class="mat-dialog-actions showcase__dialog-actions">
-          <bofa-button variant="ghost">Cancel</bofa-button>
-          <bofa-button variant="primary">Confirm</bofa-button>
-        </div>
-      </div>
+      <!--
+        The dialog is captured by opening the real overlay (see the `dialog-open`
+        snapshot), not by rendering static markup here. A hand-authored copy of
+        Material's DOM would keep matching after MDC changed the real one, which
+        makes the snapshot a decoration rather than an oracle — and this is the
+        step-up-auth surface.
+      -->
     </section>
 
     <section *ngSwitchCase="'tabs'" class="showcase__stack">

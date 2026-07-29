@@ -1,0 +1,17 @@
+| `material-form-field` | 474,992 | 1,296,000 | 36.65% |
+| `forms-elements` | 460,030 | 1,296,000 | 35.50% |
+| `profile-overview` | 393,373 | 1,296,000 | 30.35% |
+| `dashboard` | 226,606 | 1,296,000 | 17.49% |
+| `material-input` | 165,496 | 1,296,000 | 12.77% |
+| `tables-remote-data` | 137,671 | 1,296,000 | 10.62% |
+| `tables-kitchen-sink` | 119,130 | 1,296,000 | 9.19% |
+| `material-button` | 84,933 | 1,296,000 | 6.55% |
+| `material-radio` | 84,590 | 1,296,000 | 6.53% |
+| `material-table` | 81,481 | 1,296,000 | 6.29% |
+| `material-checkbox` | 77,552 | 1,296,000 | 5.98% |
+| `material-slide-toggle` | 74,268 | 1,296,000 | 5.73% |
+| `utilities-css-helpers` | 72,449 | 1,296,000 | 5.59% |
+| `material-list` | 69,076 | 1,296,000 | 5.33% |
+| `material-card` | 61,868 | 1,296,000 | 4.77% |
+| `material-menu` | 47,049 | 1,296,000 | 3.63% |
+| `material-expansion` | 33,158 | 1,296,000 | 2.56% |

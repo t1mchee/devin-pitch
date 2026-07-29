@@ -1,0 +1,152 @@
+{
+ "table_classes": "mat-table cdk-table mat-sort ng-tns-c266-2 ng-star-inserted mat-table-hover mat-table-striped",
+ "odd_row_bg": [
+  {
+   "cls": "mat-row cdk-row ng-tns-c266-2 ng-star-inserted",
+   "bg": "rgb(255, 255, 255)"
+  },
+  {
+   "cls": "mat-row cdk-row ng-tns-c266-2 ng-star-inserted mat-row-odd",
+   "bg": "rgb(245, 245, 245)"
+  },
+  {
+   "cls": "mat-row cdk-row ng-tns-c266-2 ng-star-inserted",
+   "bg": "rgb(255, 255, 255)"
+  },
+  {
+   "cls": "mat-row cdk-row ng-tns-c266-2 ng-star-inserted mat-row-odd",
+   "bg": "rgb(245, 245, 245)"
+  }
+ ],
+ "hover_row_bg": "rgb(232, 234, 246)",
+ "nav_list": [
+  {
+   "cls": "mat-nav-list mat-list-base",
+   "w": 350,
+   "maxw": "350px"
+  }
+ ],
+ "plain_list": [
+  {
+   "cls": "mat-list mat-list-base",
+   "w": 350,
+   "maxw": "350px"
+  },
+  {
+   "cls": "mat-list mat-list-base",
+   "w": 350,
+   "maxw": "350px"
+  },
+  {
+   "cls": "mat-list mat-list-base",
+   "w": 350,
+   "maxw": "350px"
+  },
+  {
+   "cls": "mat-list mat-list-base",
+   "w": 350,
+   "maxw": "350px"
+  }
+ ],
+ "toolbar_buttons": [
+  {
+   "cls": "mat-focus-indicator matero-toolbar-button mat-icon-button mat-button-base ng-star-inserted",
+   "w": 40,
+   "h": 40,
+   "margin": "0px 4px",
+   "br": "50%",
+   "minw": "0px",
+   "lh": "40px"
+  },
+  {
+   "cls": "mat-focus-indicator matero-toolbar-button mat-icon-button mat-button-base",
+   "w": 40,
+   "h": 40,
+   "margin": "0px 4px",
+   "br": "50%",
+   "minw": "0px",
+   "lh": "40px"
+  },
+  {
+   "cls": "mat-focus-indicator matero-toolbar-button mat-icon-button mat-button-base",
+   "w": 40,
+   "h": 40,
+   "margin": "0px 4px",
+   "br": "50%",
+   "minw": "0px",
+   "lh": "40px"
+  },
+  {
+   "cls": "mat-focus-indicator matero-toolbar-button mat-icon-button mat-button-base",
+   "w": 40,
+   "h": 40,
+   "margin": "0px 4px",
+   "br": "50%",
+   "minw": "0px",
+   "lh": "40px"
+  },
+  {
+   "cls": "mat-focus-indicator mat-menu-trigger matero-toolbar-button mat-icon-button mat-button-base",
+   "w": 40,
+   "h": 40,
+   "margin": "0px 4px",
+   "br": "50%",
+   "minw": "0px",
+   "lh": "40px"
+  },
+  {
+   "cls": "mat-focus-indicator mat-menu-trigger matero-toolbar-button mat-icon-button mat-button-base",
+   "w": 40,
+   "h": 40,
+   "margin": "0px 4px",
+   "br": "50%",
+   "minw": "0px",
+   "lh": "40px"
+  }
+ ],
+ "user_panel_icons": [
+  {
+   "cls": "mat-focus-indicator mat-icon-button mat-button-base",
+   "w": 24,
+   "h": 24,
+   "lh": "24px",
+   "pad": "0px"
+  },
+  {
+   "cls": "mat-focus-indicator mat-icon-button mat-button-base",
+   "w": 24,
+   "h": 24,
+   "lh": "24px",
+   "pad": "0px"
+  },
+  {
+   "cls": "mat-focus-indicator mat-icon-button mat-button-base",
+   "w": 24,
+   "h": 24,
+   "lh": "24px",
+   "pad": "0px"
+  }
+ ],
+ "card_margin": "16px",
+ "checkbox_spacing": [
+  {
+   "cls": "mat-checkbox mat-accent",
+   "mr": "8px",
+   "w": 16,
+   "h": 24
+  },
+  {
+   "cls": "mat-checkbox mat-accent",
+   "mr": "8px",
+   "w": 301,
+   "h": 24.8
+  },
+  {
+   "cls": "mat-checkbox mat-accent mat-checkbox-disabled",
+   "mr": "8px",
+   "w": 343,
+   "h": 24.8
+  }
+ ],
+ "topmenu": "no topmenu"
+}

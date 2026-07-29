@@ -1,0 +1,115 @@
+    Migrating components:
+    autocomplete
+    form-field
+    input
+    option
+    optgroup
+    select
+    button
+    card
+    checkbox
+    chips
+    dialog
+    list
+    menu
+    paginator
+    progress-bar
+    progress-spinner
+    radio
+    slide-toggle
+    slider
+    snack-bar
+    table
+    tabs
+    tooltip
+    Migrating project: ng-matero
+    CssSyntaxError: <css input>:11:1: Unknown word
+    
+       9 | // Light theme
+      10 | //
+    > 11 | $primary: mat.define-palette(mat.$indigo-palette);
+         | ^
+      12 | $accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+      13 | $theme: mat.define-light-theme($primary, $accent);
+    
+    Failed to process stylesheet: /schematics/ng-add/files/src/styles/_themes.scss (see error above).
+    Successfully migrated the project.
+UPDATE src/app/routes/dashboard/dashboard.component.html (8050 bytes)
+UPDATE src/app/routes/sessions/login/login.component.html (2031 bytes)
+UPDATE src/app/routes/sessions/register/register.component.html (2120 bytes)
+UPDATE src/app/routes/design/icons/icons.component.html (723 bytes)
+UPDATE src/app/routes/material/autocomplete/autocomplete.component.html (690 bytes)
+UPDATE src/app/routes/material/badge/badge.component.html (455 bytes)
+UPDATE src/app/routes/material/bottom-sheet/bottom-sheet.component.html (207 bytes)
+UPDATE src/app/routes/material/button/button.component.html (2259 bytes)
+UPDATE src/app/routes/material/button-toggle/button-toggle.component.html (2515 bytes)
+UPDATE src/app/routes/material/card/card.component.html (3515 bytes)
+UPDATE src/app/routes/material/checkbox/checkbox.component.html (1438 bytes)
+UPDATE src/app/routes/material/chips/chips.component.html (1930 bytes)
+UPDATE src/app/routes/material/datepicker/datepicker.component.html (4630 bytes)
+UPDATE src/app/routes/material/dialog/dialog.component.html (1079 bytes)
+UPDATE src/app/routes/material/divider/divider.component.html (1266 bytes)
+UPDATE src/app/routes/material/form-field/form-field.component.html (2948 bytes)
+UPDATE src/app/routes/material/grid-list/grid-list.component.html (1725 bytes)
+UPDATE src/app/routes/material/icon/icon.component.html (996 bytes)
+UPDATE src/app/routes/material/input/input.component.html (2424 bytes)
+UPDATE src/app/routes/material/list/list.component.html (2413 bytes)
+UPDATE src/app/routes/material/menu/menu.component.html (1533 bytes)
+UPDATE src/app/routes/material/paginator/paginator.component.html (810 bytes)
+UPDATE src/app/routes/material/progress-bar/progress-bar.component.html (949 bytes)
+UPDATE src/app/routes/material/progress-spinner/progress-spinner.component.html (742 bytes)
+UPDATE src/app/routes/material/radio-button/radio-button.component.html (1504 bytes)
+UPDATE src/app/routes/material/ripple/ripple.component.html (908 bytes)
+UPDATE src/app/routes/material/select/select.component.html (3025 bytes)
+UPDATE src/app/routes/material/sidenav/sidenav.component.html (854 bytes)
+UPDATE src/app/routes/material/slide-toggle/slide-toggle.component.html (1022 bytes)
+UPDATE src/app/routes/material/slider/slider.component.html (1981 bytes)
+UPDATE src/app/routes/material/snack-bar/snack-bar.component.html (499 bytes)
+UPDATE src/app/routes/material/sort/sort.component.html (627 bytes)
+UPDATE src/app/routes/material/stepper/stepper.component.html (1487 bytes)
+UPDATE src/app/routes/material/tab/tab.component.html (2868 bytes)
+UPDATE src/app/routes/material/table/table.component.html (3395 bytes)
+UPDATE src/app/routes/material/toolbar/toolbar.component.html (1021 bytes)
+UPDATE src/app/routes/material/tooltip/tooltip.component.html (1543 bytes)
+UPDATE src/app/routes/material/tree/tree.component.html (833 bytes)
+UPDATE src/app/routes/forms/elements/elements.component.html (8242 bytes)
+UPDATE src/app/routes/forms/select/select.component.html (5241 bytes)
+UPDATE src/app/routes/forms/dynamic/dynamic.component.html (801 bytes)
+UPDATE src/app/routes/forms/datetime/datetime.component.html (6152 bytes)
+UPDATE src/app/routes/profile/layout/layout.component.html (1445 bytes)
+UPDATE src/app/routes/profile/overview/overview.component.html (5907 bytes)
+UPDATE src/app/routes/profile/settings/settings.component.html (4225 bytes)
+UPDATE src/app/routes/utilities/css-helpers/css-helpers.component.html (8041 bytes)
+UPDATE src/app/routes/utilities/css-grid/css-grid.component.html (2044 bytes)
+UPDATE src/app/theme/sidebar/user-panel.component.scss (716 bytes)
+UPDATE src/app/theme/topmenu/topmenu.component.scss (992 bytes)
+UPDATE src/app/theme/header/header.component.scss (1176 bytes)
+UPDATE src/app/routes/dashboard/dashboard.component.ts (1741 bytes)
+UPDATE src/app/routes/material/form-field/form-field.component.scss (274 bytes)
+UPDATE src/app/routes/material/list/list.component.scss (206 bytes)
+UPDATE src/app/routes/forms/datetime/datetime.component.scss (41 bytes)
+UPDATE schematics/ng-add/files/src/styles/_app-theme.scss (1463 bytes)
+UPDATE src/app/theme/header/_header-theme.scss (417 bytes)
+UPDATE src/app/theme/topmenu/_topmenu-theme.scss (809 bytes)
+UPDATE src/styles/_app-theme.scss (1463 bytes)
+UPDATE src/styles/_themes.scss (1404 bytes)
+UPDATE src/styles/custom/_material.scss (512 bytes)
+UPDATE src/styles/custom/_table-theme.scss (1121 bytes)
+UPDATE src/styles/custom/_table.scss (118 bytes)
+UPDATE src/app/material.module.ts (4122 bytes)
+UPDATE src/app/routes/material/dialog/dialog.component.ts (1727 bytes)
+UPDATE src/app/routes/material/chips/chips.component.ts (1610 bytes)
+UPDATE src/app/theme/topmenu/topmenu-panel.component.ts (2229 bytes)
+UPDATE src/app/routes/material/sidenav/dual-sidenav.ts (519 bytes)
+UPDATE src/app/routes/forms/select/edit/edit.component.ts (654 bytes)
+UPDATE src/app/routes/tables/kitchen-sink/edit/edit.component.ts (462 bytes)
+UPDATE src/app/routes/tables/remote-data/remote-data.component.ts (2856 bytes)
+UPDATE src/app/routes/material/table/table.component.ts (3072 bytes)
+UPDATE src/app/shared/services/paginator-i18n.service.ts (1791 bytes)
+UPDATE src/app/routes/forms/select/select.component.ts (1910 bytes)
+UPDATE src/app/routes/material/button/button.component.ts (538 bytes)
+UPDATE src/app/routes/material/card/card.component.ts (423 bytes)
+UPDATE src/app/routes/material/icon/icon.component.ts (388 bytes)
+UPDATE src/app/routes/material/slide-toggle/slide-toggle.component.ts (509 bytes)
+UPDATE src/app/routes/material/snack-bar/snack-bar.component.ts (541 bytes)
+UPDATE src/app/routes/material/paginator/paginator.component.ts (570 bytes)
