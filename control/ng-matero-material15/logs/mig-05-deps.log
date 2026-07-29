@@ -1,0 +1,21 @@
+npm WARN EBADENGINE Unsupported engine {
+npm WARN EBADENGINE   package: 'node-releases@2.0.51',
+npm WARN EBADENGINE   required: { node: '>=18' },
+npm WARN EBADENGINE   current: { node: 'v16.20.2', npm: '8.19.4' }
+npm WARN EBADENGINE }
+npm WARN deprecated @angular/flex-layout@15.0.0-beta.42: This package has been deprecated. Please see https://blog.angular.io/modern-css-in-angular-layouts-4a259dca9127
+
+added 1 package, removed 3 packages, changed 6 packages, and audited 2111 packages in 4s
+
+241 packages are looking for funding
+  run `npm fund` for details
+
+144 vulnerabilities (7 low, 35 moderate, 96 high, 6 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.

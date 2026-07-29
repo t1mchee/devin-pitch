@@ -48,7 +48,9 @@ Three separate classes of work survive the codemod:
    The build is green, the unit tests are green, and the application is visually wrong.
 
 Point 3 is why this repository has a committed visual regression baseline at Angular 14
-(`apps/retail-banking-e2e/visual-baselines`, 15 images, deterministic across runs).
+(`apps/retail-banking-e2e/visual-baselines`, 21 images including four real overlays and the
+customer-facing `/accounts` surface; 0 px drift across repeat runs in the pinned renderer, measured
+in `docs/evidence/ORACLE-noise-floor.md`).
 The baseline, not the compiler, is the oracle for this migration.
 
 ## Reproducing
@@ -56,6 +58,11 @@ The baseline, not the compiler, is the oracle for this migration.
 ```bash
 nvm use 16.20.2
 cp -r bofa-digital-banking /tmp/gate && cd /tmp/gate
+# NX_SKIP_PROVENANCE_CHECK disables Nx's signature check on the migration
+# packages it downloads. It is set here because this sandbox has no network path
+# to the provenance endpoint, and it is called out rather than buried: on a BofA
+# runner it must NOT be set. If the check fails there, that is a finding to
+# investigate, not a flag to add — see docs/meeting/security-qa.md Q4.
 NX_SKIP_PROVENANCE_CHECK=true npx nx migrate nx@15.9.7
 npm install --legacy-peer-deps
 NX_SKIP_PROVENANCE_CHECK=true npx nx migrate --run-migrations --if-exists

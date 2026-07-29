@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { map } from 'rxjs/operators';
+import { ActivatedRoute, Router } from '@angular/router';
+import { map, take } from 'rxjs/operators';
+
+import { BofaAuthService } from '@bofa/auth-sdk-wrapper';
 
 /**
  * Terminal route for a denied navigation. In production this hands off to the
@@ -18,7 +20,7 @@ import { map } from 'rxjs/operators';
         <code>{{ attempted$ | async }}</code
         >. Sign in with your enterprise credentials to continue.
       </p>
-      <bofa-button variant="primary">Continue to sign in</bofa-button>
+      <bofa-button variant="primary" (pressed)="continueToSignIn()">Continue to sign in</bofa-button>
     </main>
   `,
   styles: [
@@ -52,5 +54,23 @@ import { map } from 'rxjs/operators';
 export class SignInComponent {
   readonly attempted$ = this.route.queryParamMap.pipe(map((params) => params.get('r') || '/accounts'));
 
-  constructor(private readonly route: ActivatedRoute) {}
+  constructor(
+    private readonly route: ActivatedRoute,
+    private readonly router: Router,
+    private readonly auth: BofaAuthService
+  ) {}
+
+  /**
+   * Stands in for the SSO round trip: the wrapper refreshes the principal and
+   * the customer is returned to the url they were denied.
+   *
+   * The demo SDK returns a fixed principal, so the refresh cannot change an
+   * entitlement and this route is unreachable in the running demo — the guard's
+   * deny and redirect behaviour is covered by `bofa-auth.guard.spec.ts` instead.
+   * Behind a real SSO endpoint the refresh is what grants the new session.
+   */
+  continueToSignIn(): void {
+    this.auth.startSessionRefresh();
+    this.attempted$.pipe(take(1)).subscribe((url) => this.router.navigateByUrl(url));
+  }
 }

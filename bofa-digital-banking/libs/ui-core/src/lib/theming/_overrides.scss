@@ -149,12 +149,18 @@
   // badly with older customers who read it as an active filter.
   //
   // MDC: mat-sort-header is not an MDC component; the arrow hooks are unchanged.
+  //
+  // `!important` is load-bearing, not laziness: Material drives the arrow's
+  // opacity from an Angular animation (`@arrowOpacity`), which writes an inline
+  // style, and an inline style outranks any selector. Without this the rule is
+  // dead CSS — which is how it shipped until the computed-style contract
+  // (override-contract.cy.ts) measured it at 0 instead of 0.35.
   .mat-sort-header-arrow {
-    opacity: 0.35;
+    opacity: 0.35 !important;
   }
 
   .mat-sort-header:hover .mat-sort-header-arrow {
-    opacity: 1;
+    opacity: 1 !important;
   }
 }
 
@@ -163,10 +169,14 @@
 //
 // MDC: options are `.mat-mdc-option` (an `mdc-list-item`) and their text sits in
 // `.mdc-list-item__primary-text`; the active option is `.mat-mdc-option-active`.
-// NOTE: `.mat-select-value-text` (the closed trigger) is not inside the overlay
-// panel, so the v14 rule under `.bofa-select-panel` did not match at v14 either.
-// It is translated faithfully rather than silently rehomed — see the PR.
-::ng-deep .bofa-select-panel {
+// NOTE: `.mat-mdc-select-value-text` (the closed trigger) is not inside the
+// overlay panel, so this rule did not match at v14 either. It is translated
+// faithfully rather than silently rehomed — see the PR.
+//
+// No `::ng-deep`: this file is compiled into the global stylesheet, where
+// `::ng-deep` is not a real selector and the browser drops the whole rule. The
+// overlay lives outside the app root, so a global rule is the correct tool.
+.bofa-select-panel {
   .mat-mdc-select-value-text {
     font-variant-numeric: tabular-nums;
   }
@@ -249,11 +259,16 @@
 // `.mdc-evolution-chip__text-label`, so the text colour has to be set there; the
 // container shape is driven by the `--mdc-chip-container-shape-radius` token.
 .bofa-chips {
+  // `min-height` as well as `height`: Material floors the chip container height
+  // (32px at v14, and the MDC chip carries its own min-height), so a bare
+  // `height` is silently floored and the 28px rhythm never happens. Measured,
+  // not assumed — see OV-11 in the override contract.
   .mat-mdc-chip.mat-mdc-standard-chip {
     --mdc-chip-container-height: 28px;
     --mdc-chip-container-shape-radius: 14px;
 
     height: 28px;
+    min-height: 28px;
     border-radius: 14px;
     background: bofa.$boa-slate-100;
     font-size: 12px;
@@ -346,7 +361,8 @@
 // MDC: the panel is `.mat-mdc-autocomplete-panel`; options are `.mat-mdc-option`
 // list items whose height is a `min-height`, so both have to be pinned to keep
 // the 40px row.
-::ng-deep .bofa-autocomplete-panel {
+// Global, not `::ng-deep`, for the same reason as OV-07.
+.bofa-autocomplete-panel {
   &.mat-mdc-autocomplete-panel {
     max-height: 224px;
   }

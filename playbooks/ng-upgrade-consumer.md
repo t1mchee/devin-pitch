@@ -28,7 +28,7 @@ drift is the single largest cause of a migration PR being rejected.
    `_overrides.scss` with its `OV-nn` number and one line on what it does.
 
 2. **Baseline.** Run `nx run-many --target=build --all`, `nx run-many --target=test --all`
-   and `nx e2e retail-banking-e2e`. Record the pass state. **If anything fails before you
+   and `npm run visual`. Record the pass state. **If anything fails before you
    start, stop and report.** You cannot attribute a failure you did not establish a
    baseline for.
 
