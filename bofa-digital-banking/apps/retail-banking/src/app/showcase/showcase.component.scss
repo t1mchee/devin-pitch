@@ -5,6 +5,29 @@
   background: #fff;
 }
 
+// The harness surface has to follow the palette. It did not, and the result was
+// that `?theme=dark` recoloured every control's foreground white and left this
+// panel white underneath it: labels, hints, inactive tab labels, the select
+// trigger and the datepicker toggle icon all rendered at 1.0:1 on the exact
+// route the dark contract runs on.
+:host-context(.bofa-theme-dark) {
+  .showcase {
+    background: #303030;
+  }
+
+  .showcase__panel {
+    background: #3f4550;
+  }
+
+  .showcase__panel--detail {
+    background: #4a4f57;
+  }
+
+  .showcase__back {
+    color: #9ec5ff;
+  }
+}
+
 .showcase__header {
   margin-bottom: 24px;
 }

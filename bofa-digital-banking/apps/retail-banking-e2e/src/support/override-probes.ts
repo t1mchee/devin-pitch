@@ -50,6 +50,9 @@ export interface OverrideProbe {
 }
 
 const RED_600 = 'rgb(200, 16, 46)';
+const RED_300 = 'rgb(232, 101, 111)';
+const RED_100 = 'rgb(249, 196, 201)';
+const DANGER_600 = 'rgb(176, 0, 32)';
 const BLUE_500 = 'rgb(1, 33, 105)';
 const SLATE_50 = 'rgb(246, 247, 249)';
 const SLATE_750 = 'rgb(74, 79, 87)';
@@ -78,6 +81,27 @@ export const OVERRIDE_PROBES: OverrideProbe[] = [
     // so the slate rule is carried on the element itself.
     target: '[data-variant=default] .mdc-line-ripple',
     expect: { 'background-color': SLATE_300 },
+  },
+  {
+    ov: 'OV-01c',
+    intent: 'Disabled field *value* stays legible, not just its label',
+    component: 'form-field',
+    // v15/MDC: `.mat-input-element` -> `.mat-mdc-input-element`.
+    target: '[data-variant=disabled] input.mat-mdc-input-element',
+    // OV-01 covered the label and stopped there, so the account name a read-only
+    // field exists to show rendered at 2.66:1 in the light theme. The ratio is
+    // asserted separately; this pins the value someone can read in review.
+    expect: { color: SLATE_600 },
+    expectDark: { color: SLATE_300 },
+  },
+  {
+    ov: 'OV-01d',
+    intent: 'Validation copy uses the brand danger red, which clears AA (Material\u2019s does not)',
+    component: 'form-field',
+    // v15/MDC: `.mat-error` -> `.mat-mdc-form-field-error`.
+    target: '[data-variant=error] .mat-mdc-form-field-error',
+    expect: { color: DANGER_600 },
+    expectDark: { color: RED_100 },
   },
   {
     ov: 'OV-02',
@@ -208,6 +232,21 @@ export const OVERRIDE_PROBES: OverrideProbe[] = [
     // regardless of this rule, but Material's own bar is 2px.
     target: '.bofa-tabs:not(.bofa-legacy-shell) .mdc-tab-indicator__content--underline',
     expect: { height: '3px', 'background-color': RED_600 },
+    // No longer vacuous on the dark surface: red-600 is 2.24:1 against the dark
+    // page, below 1.4.11's 3:1 for a non-text state indicator, so the dark scope
+    // states red-300 (4.10:1) outright.
+    expectDark: { height: '3px', 'background-color': RED_300 },
+  },
+  {
+    ov: 'OV-10b',
+    intent: 'The active section label is the brand accent and stays readable in both palettes',
+    component: 'tabs',
+    // v15/MDC: `.mat-tab-label-active` -> `.mat-mdc-tab.mdc-tab--active`, and the
+    // label colour lands on the text span rather than on the label element.
+    target:
+      '.bofa-tabs:not(.bofa-legacy-shell) .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label',
+    expect: { color: RED_600 },
+    expectDark: { color: RED_100 },
   },
   {
     ov: 'OV-11',
@@ -309,26 +348,40 @@ export const OVERRIDE_PROBES: OverrideProbe[] = [
  * oracle, which only ever screenshots the light theme here.
  *
  * HOW MUCH OF THIS IS *INCREMENTAL* POWER — measured, not assumed. A reviewer
- * parsed the compiled bundle: the `.bofa-theme-dark` scope emits 397 rules and
- * not one `height`, `min-height`, `max-height`, `padding*` or
- * `border-bottom-width`. So the honest breakdown of these 7 is:
+ * parsed the compiled bundle: the `.bofa-theme-dark` scope emits no `height`,
+ * `min-height`, `max-height`, `padding*` or `border-bottom-width` at all. So the
+ * honest breakdown of these 11 is:
  *
- *   - OV-05c, OV-05d, OV-07, OV-11 — can fail on the dark surface alone. Two of
- *     them already did, on the first hostile review of this block: OV-05d was
+ *   - OV-01c, OV-01d, OV-05c, OV-05d, OV-07, OV-10 (colour half), OV-10b, OV-11
+ *     — **8 probes that can fail on the dark surface alone.** Four of them were
+ *     *created by* dark-surface failures the contrast gate caught: OV-05d was
  *     asserting the light stripe colour and certifying a 1.07:1 statement row as
- *     correct, and OV-05c was doing the same for 1.80:1 header text. Both now
- *     carry an `expectDark`, and the ratios themselves are asserted separately.
+ *     correct, OV-05c the same for 1.80:1 header text, OV-10's ink bar was
+ *     2.24:1 against the dark page, and OV-10b's active label was too.
+ *     OV-01c/OV-01d are the pair that turned out to be broken in the **light**
+ *     theme as well.
  *   - OV-15, OV-17, OV-18 — **geometry duplicates.** Nothing in the dark scope
  *     touches these properties, so they fail symmetrically with their light
  *     twins. Duplicates, not vacuous: they still fail when the rule is deleted
  *     (`oracle-logs/delete-rule-ov18.log`), they just cannot fail dark-only.
  *     Kept as a tripwire for a future dark rule that changes density.
- *   - OV-10 — its `height: 3px` half has teeth; its `background-color` half is
- *     **vacuous in both themes**, because primary is brand red in the dark
- *     palette too. Same disclosure as OV-08 and OV-13.
  *
- * So: 3 probes carry the dark surface, not 7. Quote 3.
+ * So: 8 probes carry the dark surface, not 11 — plus the contrast gate, which is
+ * where four of those eight came from and which is the only assertion here that
+ * constrains legibility rather than a recorded value.
  */
 export const DARK_PROBES: OverrideProbe[] = OVERRIDE_PROBES.filter((probe) =>
-  ['OV-05c', 'OV-05d', 'OV-07', 'OV-10', 'OV-11', 'OV-15', 'OV-17', 'OV-18'].includes(probe.ov)
+  [
+    'OV-01c',
+    'OV-01d',
+    'OV-05c',
+    'OV-05d',
+    'OV-07',
+    'OV-10',
+    'OV-10b',
+    'OV-11',
+    'OV-15',
+    'OV-17',
+    'OV-18',
+  ].includes(probe.ov)
 );

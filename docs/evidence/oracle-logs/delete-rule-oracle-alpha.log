@@ -1,4 +1,4 @@
-=== repeat-run-1 :: 2026-07-29T07:21:02Z ===
+=== regress-oracle-alpha-blind :: 2026-07-29T07:31:52Z ===
 
 > bofa-digital-banking@0.0.0 visual
 > docker run --rm -u $(id -u):$(id -g) -e HOME=/tmp -e CYPRESS_CACHE_FOLDER=/root/.cache/Cypress -v "$PWD/..":/w -w /w/bofa-digital-banking --entrypoint bash cypress/included@sha256:058d1834239bf09b381325b8369d05e9e0516a46b65b32e6dc0c991801dc517a -c 'npx nx e2e retail-banking-e2e --skip-nx-cache'
@@ -21,14 +21,14 @@ runtime.js                                                 | runtime            
 Lazy Chunk Files                                           | Names                    |  Raw Size
 apps_retail-banking_src_app_showcase_showcase_module_ts.js | showcase-showcase-module |  48.34 kB | 
 
-Build at: 2026-07-29T07:21:16.216Z - Hash: a5604b1952d5e809 - Time: 11785ms
+Build at: 2026-07-29T07:32:05.719Z - Hash: a5604b1952d5e809 - Time: 11309ms
 
 ** Angular Live Development Server is listening on localhost:4200, open your browser on http://localhost:4200/ **
 
 
 ✔ Compiled successfully.
 libva error: vaGetDriverNameByIndex() failed with unknown libva error, driver_name = (null)
-[220:0729/072117.007826:ERROR:gpu_memory_buffer_support_x11.cc(44)] dri3 extension not supported.
+[219:0729/073206.519183:ERROR:gpu_memory_buffer_support_x11.cc(44)] dri3 extension not supported.
 ====================================================================================================
   (Run Starting)
   ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
@@ -44,51 +44,51 @@ libva error: vaGetDriverNameByIndex() failed with unknown libva error, driver_na
 
   design system — visual baseline
 [visual] button-default: 0 px (budget 40)
-    ✓ button renders to spec (838ms)
+    ✓ button renders to spec (814ms)
 [visual] form-field-default: 0 px (budget 40)
-    ✓ form-field renders to spec (404ms)
+    ✓ form-field renders to spec (398ms)
 [visual] select-default: 0 px (budget 40)
-    ✓ select renders to spec (320ms)
+    ✓ select renders to spec (329ms)
 [visual] datepicker-default: 0 px (budget 40)
-    ✓ datepicker renders to spec (308ms)
+    ✓ datepicker renders to spec (425ms)
 [visual] table-default: 0 px (budget 40)
-    ✓ table renders to spec (350ms)
+    ✓ table renders to spec (330ms)
 [visual] dialog-default: 0 px (budget 40)
-    ✓ dialog renders to spec (463ms)
+    ✓ dialog renders to spec (326ms)
 [visual] tabs-default: 0 px (budget 40)
-    ✓ tabs renders to spec (392ms)
+    ✓ tabs renders to spec (419ms)
 [visual] chips-default: 0 px (budget 40)
-    ✓ chips renders to spec (393ms)
+    ✓ chips renders to spec (400ms)
 [visual] slide-toggle-default: 0 px (budget 40)
-    ✓ slide-toggle renders to spec (346ms)
+    ✓ slide-toggle renders to spec (357ms)
 [visual] autocomplete-default: 0 px (budget 40)
-    ✓ autocomplete renders to spec (334ms)
+    ✓ autocomplete renders to spec (363ms)
 [visual] paginator-default: 0 px (budget 40)
-    ✓ paginator renders to spec (331ms)
+    ✓ paginator renders to spec (483ms)
 [visual] currency-input-default: 0 px (budget 40)
-    ✓ currency-input renders to spec (303ms)
+    ✓ currency-input renders to spec (359ms)
 [visual] responsive-grid-default: 0 px (budget 40)
-    ✓ responsive-grid renders to spec (404ms)
-    ✓ form field renders its disabled and error states (133ms)
-    ✓ button exposes a disabled state (107ms)
+    ✓ responsive-grid renders to spec (357ms)
+    ✓ form field renders its disabled and error states (121ms)
+    ✓ button exposes a disabled state (100ms)
 [visual] responsive-grid-md: 0 px (budget 40)
-    ✓ responsive grid collapses below the md breakpoint (296ms)
+    ✓ responsive grid collapses below the md breakpoint (311ms)
 [visual] responsive-grid-sm: 0 px (budget 40)
-    ✓ responsive grid hides the detail pane below the sm breakpoint (311ms)
+    ✓ responsive grid hides the detail pane below the sm breakpoint (276ms)
   design system — overlay and interaction states
 [visual] dialog-open: 0 px (budget 40)
-    ✓ opens the real dialog overlay (413ms)
+    ✓ opens the real dialog overlay (527ms)
 [visual] select-panel-open: 0 px (budget 40)
-    ✓ opens the select panel (415ms)
+    ✓ opens the select panel (411ms)
 [visual] autocomplete-panel-open: 0 px (budget 40)
-    ✓ opens the autocomplete panel (604ms)
+    ✓ opens the autocomplete panel (490ms)
 [visual] datepicker-calendar-open: 0 px (budget 40)
-    ✓ opens the datepicker calendar (503ms)
+    ✓ opens the datepicker calendar (449ms)
 [visual] button-focus-ring: 0 px (budget 40)
-    ✓ shows the keyboard focus ring on the primary button (350ms)
+    ✓ shows the keyboard focus ring on the primary button (370ms)
   retail banking — customer surface
 [visual] accounts-dashboard: 0 px (budget 40)
-    ✓ renders the accounts dashboard (399ms)
+    ✓ renders the accounts dashboard (469ms)
   23 passing (9s)
   (Results)
   ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
@@ -150,96 +150,235 @@ libva error: vaGetDriverNameByIndex() failed with unknown libva error, driver_na
   Running:  override-contract.cy.ts                                                         (2 of 2)
 
   design system — override contract (computed styles)
-    ✓ OV-01: Disabled field label stays legible (WCAG AA) against the slate palette (565ms)
-    ✓ OV-01b: Field underline uses the BoA slate rule, not the Material default (171ms)
-    ✓ OV-01c: Disabled field *value* stays legible, not just its label (130ms)
-    ✓ OV-01d: Validation copy uses the brand danger red, which clears AA (Material’s does not) (227ms)
-    ✓ OV-02: Error text sits on a 20px line box so field height never jumps on validation (151ms)
+    ✓ OV-01: Disabled field label stays legible (WCAG AA) against the slate palette (587ms)
+    ✓ OV-01b: Field underline uses the BoA slate rule, not the Material default (276ms)
+    ✓ OV-01c: Disabled field *value* stays legible, not just its label (146ms)
+    ✓ OV-01d: Validation copy uses the brand danger red, which clears AA (Material’s does not) (129ms)
+    ✓ OV-02: Error text sits on a 20px line box so field height never jumps on validation (131ms)
     ✓ OV-03: Primary button is brand red with 8px optical icon/label spacing (137ms)
-    ✓ OV-04: Keyboard focus ring is visible on white and on slate-50 (253ms)
-    ✓ OV-05: Statement rows keep fixed heights so 50 rows paginate predictably in print (166ms)
-    ✓ OV-05b: Currency figures use tabular numerals and right-align on the decimal (146ms)
-    ✓ OV-05c: Header cells carry the slate-900 brand weight, not the Material grey (122ms)
-    ✓ OV-05d: Zebra striping on even rows for statement scanability (165ms)
-    ✓ OV-06: Sort arrow is dimmed until hover so it does not read as an active filter (181ms)
-    ✓ OV-07: Active option in the account picker is tinted brand red, not Material grey (284ms)
-    ✓ OV-08: Selected option is brand red, not accent navy (navy reads as a link here) (268ms)
-    ✓ OV-09: Consent toggle is unambiguous at arm’s length on a tablet (109ms)
-    ✓ OV-09b: A granted consent reads green, not brand red (138ms)
-    ✓ OV-10: Section ink bar is legible on a 4K branch display (137ms)
-    ✓ OV-10b: The active section label is the brand accent and stays readable in both palettes (124ms)
-    ✓ OV-11: Category chips keep a 28px rhythm inside the filter drawer (118ms)
-    ✓ OV-12: Step-up dialog matches the mobile MFA modal: tight padding, squared corners (187ms)
-    ✓ OV-12b: A short confirmation body never acquires an inner scrollbar (291ms)
-    ✓ OV-13: Selected day is brand red; today is outlined, not a second filled circle (250ms)
-    ✓ OV-14: Range label stays on screen on a 1280px branch terminal (129ms)
-    ✓ OV-15: Payee panel never covers the Confirmation of Payee copy (379ms)
-    ✓ OV-16: Amount entry right-aligns on tabular numerals (115ms)
-    ✓ OV-17: Compact density is materially shorter than the default field (117ms)
-    ✓ OV-18: Legacy shell embeds tabs without a second divider line (109ms)
+    ✓ OV-04: Keyboard focus ring is visible on white and on slate-50 (167ms)
+    ✓ OV-05: Statement rows keep fixed heights so 50 rows paginate predictably in print (191ms)
+    ✓ OV-05b: Currency figures use tabular numerals and right-align on the decimal (309ms)
+    ✓ OV-05c: Header cells carry the slate-900 brand weight, not the Material grey (133ms)
+    ✓ OV-05d: Zebra striping on even rows for statement scanability (115ms)
+    ✓ OV-06: Sort arrow is dimmed until hover so it does not read as an active filter (106ms)
+    ✓ OV-07: Active option in the account picker is tinted brand red, not Material grey (289ms)
+    ✓ OV-08: Selected option is brand red, not accent navy (navy reads as a link here) (211ms)
+    ✓ OV-09: Consent toggle is unambiguous at arm’s length on a tablet (108ms)
+    ✓ OV-09b: A granted consent reads green, not brand red (102ms)
+    ✓ OV-10: Section ink bar is legible on a 4K branch display (140ms)
+    ✓ OV-10b: The active section label is the brand accent and stays readable in both palettes (119ms)
+    ✓ OV-11: Category chips keep a 28px rhythm inside the filter drawer (122ms)
+    ✓ OV-12: Step-up dialog matches the mobile MFA modal: tight padding, squared corners (302ms)
+    ✓ OV-12b: A short confirmation body never acquires an inner scrollbar (190ms)
+    ✓ OV-13: Selected day is brand red; today is outlined, not a second filled circle (298ms)
+    ✓ OV-14: Range label stays on screen on a 1280px branch terminal (171ms)
+    ✓ OV-15: Payee panel never covers the Confirmation of Payee copy (261ms)
+    ✓ OV-16: Amount entry right-aligns on tabular numerals (119ms)
+    ✓ OV-17: Compact density is materially shorter than the default field (112ms)
+    ✓ OV-18: Legacy shell embeds tabs without a second divider line (208ms)
   design system — override contract (dark surface)
-    ✓ the dark surface is actually dark (else every probe below is vacuous) (254ms)
-    ✓ OV-01c [dark]: Disabled field *value* stays legible, not just its label (109ms)
-    ✓ OV-01d [dark]: Validation copy uses the brand danger red, which clears AA (Material’s does not) (204ms)
-    ✓ OV-05c [dark]: Header cells carry the slate-900 brand weight, not the Material grey (154ms)
-    ✓ OV-05d [dark]: Zebra striping on even rows for statement scanability (112ms)
-    ✓ OV-07 [dark]: Active option in the account picker is tinted brand red, not Material grey (261ms)
-    ✓ OV-10 [dark]: Section ink bar is legible on a 4K branch display (112ms)
-    ✓ OV-10b [dark]: The active section label is the brand accent and stays readable in both palettes (154ms)
-    ✓ OV-11 [dark]: Category chips keep a 28px rhythm inside the filter drawer (231ms)
-    ✓ OV-15 [dark]: Payee panel never covers the Confirmation of Payee copy (425ms)
-    ✓ OV-17 [dark]: Compact density is materially shorter than the default field (139ms)
-    ✓ OV-18 [dark]: Legacy shell embeds tabs without a second divider line (118ms)
+    ✓ the dark surface is actually dark (else every probe below is vacuous) (291ms)
+    ✓ OV-01c [dark]: Disabled field *value* stays legible, not just its label (115ms)
+    ✓ OV-01d [dark]: Validation copy uses the brand danger red, which clears AA (Material’s does not) (107ms)
+    ✓ OV-05c [dark]: Header cells carry the slate-900 brand weight, not the Material grey (124ms)
+    ✓ OV-05d [dark]: Zebra striping on even rows for statement scanability (106ms)
+    ✓ OV-07 [dark]: Active option in the account picker is tinted brand red, not Material grey (365ms)
+    ✓ OV-10 [dark]: Section ink bar is legible on a 4K branch display (115ms)
+    ✓ OV-10b [dark]: The active section label is the brand accent and stays readable in both palettes (111ms)
+    ✓ OV-11 [dark]: Category chips keep a 28px rhythm inside the filter drawer (230ms)
+    ✓ OV-15 [dark]: Payee panel never covers the Confirmation of Payee copy (268ms)
+    ✓ OV-17 [dark]: Compact density is materially shorter than the default field (121ms)
+    ✓ OV-18 [dark]: Legacy shell embeds tabs without a second divider line (116ms)
   design system — legibility (WCAG AA, light surface)
-    ✓ statement table: even (striped) row clears 4.5:1 (108ms)
-    ✓ statement table: odd row clears 4.5:1 (107ms)
-    ✓ statement table: header cell clears 4.5:1 (103ms)
-    ✓ form field: field label clears 4.5:1 (112ms)
-    ✓ form field: entered value clears 4.5:1 (209ms)
-    ✓ form field: hint clears 4.5:1 (146ms)
-    ✓ form field: disabled value clears 4.5:1 (104ms)
-    ✓ form field: error message clears 4.5:1 (111ms)
-    ✓ tabs: inactive tab label clears 4.5:1 (122ms)
-    ✓ tabs: active tab label clears 4.5:1 (114ms)
-    ✓ select: trigger text clears 4.5:1 (119ms)
-    ✓ chips: chip label clears 4.5:1 (157ms)
-    ✓ paginator: range label clears 4.5:1 (191ms)
-    ✓ currency input: amount clears 4.5:1 (112ms)
-    ✓ tabs: the active-section ink bar clears 3:1 (non-text contrast) (169ms)
-    ✓ datepicker: the toggle icon clears 3:1 (non-text contrast) (107ms)
+    1) statement table: even (striped) row clears 4.5:1
+    2) statement table: odd row clears 4.5:1
+    3) statement table: header cell clears 4.5:1
+    4) form field: field label clears 4.5:1
+    5) form field: entered value clears 4.5:1
+    6) form field: hint clears 4.5:1
+    7) form field: disabled value clears 4.5:1
+    8) form field: error message clears 4.5:1
+    9) tabs: inactive tab label clears 4.5:1
+    10) tabs: active tab label clears 4.5:1
+    11) select: trigger text clears 4.5:1
+    ✓ chips: chip label clears 4.5:1 (120ms)
+    12) paginator: range label clears 4.5:1
+    13) currency input: amount clears 4.5:1
+    ✓ tabs: the active-section ink bar clears 3:1 (non-text contrast) (242ms)
+    14) datepicker: the toggle icon clears 3:1 (non-text contrast)
   design system — legibility (WCAG AA, dark surface)
-    ✓ statement table: even (striped) row clears 4.5:1 (165ms)
-    ✓ statement table: odd row clears 4.5:1 (108ms)
-    ✓ statement table: header cell clears 4.5:1 (186ms)
-    ✓ form field: field label clears 4.5:1 (145ms)
-    ✓ form field: entered value clears 4.5:1 (129ms)
-    ✓ form field: hint clears 4.5:1 (113ms)
-    ✓ form field: disabled value clears 4.5:1 (114ms)
-    ✓ form field: error message clears 4.5:1 (113ms)
-    ✓ tabs: inactive tab label clears 4.5:1 (112ms)
-    ✓ tabs: active tab label clears 4.5:1 (165ms)
-    ✓ select: trigger text clears 4.5:1 (161ms)
-    ✓ chips: chip label clears 4.5:1 (106ms)
-    ✓ paginator: range label clears 4.5:1 (121ms)
-    ✓ currency input: amount clears 4.5:1 (110ms)
-    ✓ tabs: the active-section ink bar clears 3:1 (non-text contrast) (116ms)
-    ✓ datepicker: the toggle icon clears 3:1 (non-text contrast) (113ms)
+    ✓ statement table: even (striped) row clears 4.5:1 (150ms)
+    ✓ statement table: odd row clears 4.5:1 (135ms)
+    ✓ statement table: header cell clears 4.5:1 (144ms)
+    ✓ form field: field label clears 4.5:1 (143ms)
+    ✓ form field: entered value clears 4.5:1 (142ms)
+    ✓ form field: hint clears 4.5:1 (127ms)
+    ✓ form field: disabled value clears 4.5:1 (166ms)
+    ✓ form field: error message clears 4.5:1 (119ms)
+    ✓ tabs: inactive tab label clears 4.5:1 (148ms)
+    ✓ tabs: active tab label clears 4.5:1 (129ms)
+    ✓ select: trigger text clears 4.5:1 (196ms)
+    ✓ chips: chip label clears 4.5:1 (350ms)
+    ✓ paginator: range label clears 4.5:1 (169ms)
+    ✓ currency input: amount clears 4.5:1 (140ms)
+    ✓ tabs: the active-section ink bar clears 3:1 (non-text contrast) (129ms)
+    ✓ datepicker: the toggle icon clears 3:1 (non-text contrast) (134ms)
   design system — the contrast oracle itself
-    ✓ a fully transparent chain resolves to the canvas, not to opaque black (128ms)
-    ✓ composites a semi-transparent foreground instead of treating it as opaque (219ms)
-    ✓ composites a semi-transparent background over the layer behind it (205ms)
-    ✓ agrees with the published figure on a known opaque pair (153ms)
-  75 passing (13s)
+    15) a fully transparent chain resolves to the canvas, not to opaque black
+    16) composites a semi-transparent foreground instead of treating it as opaque
+    ✓ composites a semi-transparent background over the layer behind it (123ms)
+    ✓ agrees with the published figure on a known opaque pair (124ms)
+  59 passing (13s)
+  16 failing
+  1) design system — legibility (WCAG AA, light surface)
+       statement table: even (striped) row clears 4.5:1:
+      AssertionError: statement table / even (striped) row: rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0): expected 1 to be at least 4.5
+      + expected - actual
+      -1
+      +4.5
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:268:71)
+
+  2) design system — legibility (WCAG AA, light surface)
+       statement table: odd row clears 4.5:1:
+      AssertionError: statement table / odd row: rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0): expected 1 to be at least 4.5
+      + expected - actual
+      -1
+      +4.5
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:268:71)
+
+  3) design system — legibility (WCAG AA, light surface)
+       statement table: header cell clears 4.5:1:
+      AssertionError: statement table / header cell: rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0): expected 1.1582250796635216 to be at least 4.5
+      + expected - actual
+      -1.1582250796635216
+      +4.5
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:268:71)
+
+  4) design system — legibility (WCAG AA, light surface)
+       form field: field label clears 4.5:1:
+      AssertionError: form field / field label: rgba(0, 0, 0, 0.6) → rgb(0, 0, 0) on rgb(0, 0, 0): expected 1 to be at least 4.5
+      + expected - actual
+      -1
+      +4.5
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:268:71)
+
+  5) design system — legibility (WCAG AA, light surface)
+       form field: entered value clears 4.5:1:
+      AssertionError: form field / entered value: rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0): expected 1.1582250796635216 to be at least 4.5
+      + expected - actual
+      -1.1582250796635216
+      +4.5
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:268:71)
+
+  6) design system — legibility (WCAG AA, light surface)
+       form field: hint clears 4.5:1:
+      AssertionError: form field / hint: rgba(0, 0, 0, 0.6) → rgb(0, 0, 0) on rgb(0, 0, 0): expected 1 to be at least 4.5
+      + expected - actual
+      -1
+      +4.5
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:268:71)
+
+  7) design system — legibility (WCAG AA, light surface)
+       form field: disabled value clears 4.5:1:
+      AssertionError: form field / disabled value: rgb(93, 102, 115) → rgb(93, 102, 115) on rgb(0, 0, 0): expected 3.6135406151933367 to be at least 4.5
+      + expected - actual
+      -3.6135406151933367
+      +4.5
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:268:71)
+
+  8) design system — legibility (WCAG AA, light surface)
+       form field: error message clears 4.5:1:
+      AssertionError: form field / error message: rgb(176, 0, 32) → rgb(176, 0, 32) on rgb(0, 0, 0): expected 2.8668781711677895 to be at least 4.5
+      + expected - actual
+      -2.8668781711677895
+      +4.5
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:268:71)
+
+  9) design system — legibility (WCAG AA, light surface)
+       tabs: inactive tab label clears 4.5:1:
+      AssertionError: tabs / inactive tab label: rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0): expected 1 to be at least 4.5
+      + expected - actual
+      -1
+      +4.5
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:268:71)
+
+  10) design system — legibility (WCAG AA, light surface)
+       tabs: active tab label clears 4.5:1:
+      AssertionError: tabs / active tab label: rgb(200, 16, 46) → rgb(200, 16, 46) on rgb(0, 0, 0): expected 3.5694398151439466 to be at least 4.5
+      + expected - actual
+      -3.5694398151439466
+      +4.5
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:268:71)
+
+  11) design system — legibility (WCAG AA, light surface)
+       select: trigger text clears 4.5:1:
+      AssertionError: select / trigger text: rgba(0, 0, 0, 0.87) → rgb(0, 0, 0) on rgb(0, 0, 0): expected 1 to be at least 4.5
+      + expected - actual
+      -1
+      +4.5
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:268:71)
+
+  12) design system — legibility (WCAG AA, light surface)
+       paginator: range label clears 4.5:1:
+      AssertionError: paginator / range label: rgba(0, 0, 0, 0.54) → rgb(0, 0, 0) on rgb(0, 0, 0): expected 1 to be at least 4.5
+      + expected - actual
+      -1
+      +4.5
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:268:71)
+
+  13) design system — legibility (WCAG AA, light surface)
+       currency input: amount clears 4.5:1:
+      AssertionError: currency input / amount: rgb(18, 22, 29) → rgb(18, 22, 29) on rgb(0, 0, 0): expected 1.1582250796635216 to be at least 4.5
+      + expected - actual
+      -1.1582250796635216
+      +4.5
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:268:71)
+
+  14) design system — legibility (WCAG AA, light surface)
+       datepicker: the toggle icon clears 3:1 (non-text contrast):
+      AssertionError: datepicker toggle icon: rgba(0, 0, 0, 0.54) → rgb(0, 0, 0) on rgb(0, 0, 0): expected 1 to be at least 3
+      + expected - actual
+      -1
+      +3
+      
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:299:70)
+
+  15) design system — the contrast oracle itself
+       a fully transparent chain resolves to the canvas, not to opaque black:
+     AssertionError: expected 21 to be close to 1 +/- 0.01
+      at eval (webpack:///./src/e2e/override-contract.cy.ts:337:26)
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:329:6)
+
+  16) design system — the contrast oracle itself
+       composites a semi-transparent foreground instead of treating it as opaque:
+     AssertionError: expected 10.049743700462349 to be close to 3.87 +/- 0.02
+      at eval (webpack:///./src/e2e/override-contract.cy.ts:345:26)
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:329:6)
+
   (Results)
   ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
   │ Tests:        75                                                                               │
-  │ Passing:      75                                                                               │
-  │ Failing:      0                                                                                │
+  │ Passing:      59                                                                               │
+  │ Failing:      16                                                                               │
   │ Pending:      0                                                                                │
   │ Skipped:      0                                                                                │
   │ Screenshots:  0                                                                                │
   │ Video:        false                                                                            │
-  │ Duration:     12 seconds                                                                       │
+  │ Duration:     13 seconds                                                                       │
   │ Spec Ran:     override-contract.cy.ts                                                          │
   └────────────────────────────────────────────────────────────────────────────────────────────────┘
 ====================================================================================================
@@ -248,12 +387,17 @@ libva error: vaGetDriverNameByIndex() failed with unknown libva error, driver_na
   ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
   │ ✔  design-system.cy.ts                      00:08       23       23        -        -        - │
   ├────────────────────────────────────────────────────────────────────────────────────────────────┤
-  │ ✔  override-contract.cy.ts                  00:12       75       75        -        -        - │
+  │ ✖  override-contract.cy.ts                  00:13       75       59       16        -        - │
   └────────────────────────────────────────────────────────────────────────────────────────────────┘
-    ✔  All specs passed!                        00:21       98       98        -        -        -  
+    ✖  1 of 2 failed (50%)                      00:22       98       82       16        -        -  
 
  
 
- >  NX   Successfully ran target e2e for project retail-banking-e2e
+ >  NX   Running target "retail-banking-e2e:e2e" failed
 
+   Failed tasks:
+   
+   - retail-banking-e2e:e2e
+   
+   Hint: run the command with --verbose for more details.
 

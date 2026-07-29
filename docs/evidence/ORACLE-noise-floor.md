@@ -9,11 +9,11 @@ plugin now prints on **every** comparison, pass or fail. Reproduce with
 `npm run visual` (pinned container) or `npx nx e2e retail-banking-e2e
 --skip-nx-cache` (host renderer).
 
-Captures are 1280x720. The full command runs **59 tests**: the 23-test image
-suite (21 compared snapshots plus two interaction tests) and 36 computed-style
-tests — 24 light-surface probes, 8 re-asserted on the dark surface, one control
-that fails if the dark surface silently stopped rendering, and three WCAG AA
-contrast ratios on the dark statement table.
+Captures are 1280x720. The full command runs **98 tests**: the 23-test image
+suite (21 compared snapshots plus two interaction tests) and 75 computed-style
+tests — 27 light-surface probes, 11 re-asserted on the dark surface, one control
+that fails if the dark surface silently stopped rendering, 32 WCAG contrast
+ratios (16 targets in both themes), and 4 tests of the contrast oracle itself.
 
 **The raw transcripts for every number on this page are committed** under
 `docs/evidence/oracle-logs/` — the three repeat runs, the host-renderer run, the
