@@ -62,14 +62,18 @@ responsive breakpoints, and the customer-facing `/accounts` dashboard. Overlays 
 opening them, not by rendering look-alike markup — a hand-authored copy of Material's DOM keeps
 matching after MDC changes the real one, which makes it a decoration rather than a test.
 
-And **32 computed-style probes** (`override-contract.cy.ts`) — 24 on the light surface, one per intent in
+And **36 computed-style tests** (`override-contract.cy.ts`) — 24 on the light surface, one per intent in
 `_overrides.scss`, asserting the value the override exists to control on the running app. A
 screenshot proves the surface still looks right; the probe proves the rule is still the thing
 making it look right. Those come apart when a migration rewrites a selector onto something that
 matches nothing and the library default sits close to the brand value — silent in the light
-theme, wrong in the dark one — so **7 of the probes are re-asserted with the dark palette applied**,
+theme, wrong in the dark one — so **8 of the probes are re-asserted with the dark palette applied**,
 behind a control that first proves the dark surface actually rendered (otherwise the whole block
-would pass vacuously against the light theme). This gate came out of the external control run
+would pass vacuously against the light theme), plus **three WCAG AA contrast ratios** on the dark
+statement table. Those three exist because the first version of the dark block asserted the *light*
+zebra colour on the dark surface and so certified an unreadable transaction row (1.07:1) as correct:
+a colour constant records what someone wrote down, a ratio records what the customer can read.
+This gate came out of the external control run
 ([`CONTROL-external-design-system.md`](docs/evidence/CONTROL-external-design-system.md)) and, on
 its first run, found **three dead overrides in this repository's own design system**
 ([`OVERRIDE-CONTRACT-dead-rules.md`](docs/evidence/OVERRIDE-CONTRACT-dead-rules.md)).

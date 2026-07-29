@@ -93,7 +93,7 @@ general point: a gate nobody has tried to defeat is an assumption. **The raw tra
 committed**, including `docs/evidence/oracle-logs/delete-rule-ov08.log` — a probe conspicuously
 *not* failing.
 
-## The dark surface, and why it is not decoration
+## The dark surface — which then failed for a fourth reason nobody had thought of
 
 Seven probes are re-asserted with the dark palette applied (`?theme=dark` → `.bofa-theme-dark` on
 `<body>`, which is also where CDK attaches overlays, so panels and dialogs are themed too). The
@@ -115,10 +115,63 @@ applying, that test fails first and loudly, instead of seven probes quietly re-p
 light theme. `OV-18` was verified the hostile way in both themes: delete the rule and both the light
 and dark assertions fail (`oracle-logs/delete-rule-ov18.log`).
 
-**Limits, stated.** The contract asserts 24 light and 7 dark properties across 18 overrides; it is
-not a complete description of the design system. It runs at one viewport, and the dark pass covers
-7 of 18 overrides, not all of them. The image suite is still light-theme-only — there are no dark
-pixel baselines. It cannot tell you an intent is *wrong* — only that the code no longer
+### And then the dark block certified an unreadable statement table as correct
+
+The first version of that block asserted `background-color: SLATE_50` on the dark surface — the
+*light* zebra stripe — because the probe model had one expected value per property, shared across
+themes. Material's dark palette paints row text white. So:
+
+| dark surface, as first shipped | text | background | ratio | WCAG AA |
+|---|---|---|---|---|
+| even (striped) statement rows | `rgb(255,255,255)` | `rgb(246,247,249)` | **1.07:1** | fails 4.5:1 |
+| header cells (OV-05c) | `rgb(18,22,29)` | `rgb(66,66,66)` | **1.80:1** | fails 4.5:1 |
+| odd statement rows | `rgb(255,255,255)` | `rgb(66,66,66)` | 10.05:1 | passes |
+
+Two of five transaction rows were effectively invisible, and the header line with them. **The gate
+could not see it because the gate was enforcing it:** OV-05d was green *precisely because* it
+asserted the value that caused the defect, and there are no dark pixel baselines to disagree. This
+is the same failure shape as OV-08 — an assertion that passes for a reason unrelated to the intent
+— arriving from the opposite direction, inside the block built to catch that shape. Found by
+hostile review of the round it shipped in, not by the suite.
+
+Three changes, in order of importance:
+
+1. **Three WCAG AA contrast assertions** on the dark statement table (striped row, plain row, header
+   cell), computing the real ratio from the computed foreground and the first ancestor that actually
+   paints a background. This is the only assertion here that constrains *legibility* rather than a
+   recorded value — a colour constant records what someone wrote down, and a migration that moves a
+   library foreground makes the constant right and the render wrong. Hostile check:
+   `oracle-logs/dark-contrast-regression.log`, where removing the fix reports
+   `expected 1.0719326855029048 to be at least 4.5`.
+2. **`expectDark` on the probe model.** Colour is palette-dependent, geometry is not — so a probe
+   may now carry a second expectation for the dark surface, and asserting a light colour constant on
+   a dark surface is now a reviewable choice rather than an accident of the data structure.
+3. `_overrides.scss` gains dark-scoped values for OV-05c and OV-05d (slate-100 header text at
+   8.65:1; a slate-750 stripe at 7.9:1). The *intents* are unchanged — "zebra striping for
+   scanability", "header cells carry the brand weight" — which is the point: an intent survives a
+   palette change and a hard-coded colour does not.
+
+### How much of the dark block carries incremental power? Three probes, not eight.
+
+Measured from the compiled bundle rather than assumed: the `.bofa-theme-dark` scope emits 397 rules
+and no `height`, `min-height`, `max-height`, `padding*` or `border-bottom-width`.
+
+| Probe | Dark-only failure possible? | Why |
+|---|---|---|
+| OV-05c, OV-05d | **yes — and both did** | palette-dependent colours; the defect above |
+| OV-07, OV-11 | yes | brand-constant colours our CSS states outright |
+| OV-15, OV-17, OV-18 | **no — geometry duplicates** | nothing in the dark scope touches these properties, so they fail symmetrically with their light twins. Duplicates, not vacuous: they still fail when the rule is deleted. Kept as a tripwire for a future dark rule that changes density. |
+| OV-10 | colour half **vacuous in both themes** | primary is brand red in the dark palette too; the `height: 3px` half has teeth |
+
+So the number to quote is **three probes plus three contrast ratios**, not eight.
+
+**Limits, stated.** The contract asserts 24 light and 8 dark probes plus 3 contrast ratios across 18
+overrides; it is not a complete description of the design system. It runs at one viewport, and the
+dark pass covers 8 of 18 overrides, not all of them. The image suite is still light-theme-only —
+**there are no dark pixel baselines**, which is exactly why the defect above needed a human to look
+at the screen. Contrast is asserted on the statement table only; the other twelve components have no
+ratio assertion in either theme, so the honest statement is that this repository can now *detect*
+that defect class, not that it has swept for it. It cannot tell you an intent is *wrong* — only that the code no longer
 delivers the value someone wrote down. And its expectations were captured from the running
 Angular 14 app, so they inherit whatever the v14 build actually did, not what the design
 spec says it should do.
