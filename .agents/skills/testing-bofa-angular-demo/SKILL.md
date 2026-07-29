@@ -21,10 +21,28 @@ work needs `--legacy-peer-deps` because of `@angular/flex-layout@14.0.0-beta.41`
 
 ```bash
 npx nx run-many --target=build --all --skip-nx-cache   # expect: 6 projects
-npx nx run-many --target=test --all --skip-nx-cache    # expect: 3 suites / 7 tests
-npx nx run-many --target=lint --all --skip-nx-cache    # expect: 7 projects
-npx nx e2e retail-banking-e2e --skip-nx-cache          # expect: 17 passing, 15 baselines
+npx nx run-many --target=test --all --skip-nx-cache    # expect: 6 projects, 5 suites / 12 tests
+npx nx run-many --target=lint --all --skip-nx-cache    # expect: 7 projects, 0 errors / 3 warnings
+npm run visual                                         # expect: 17 passing, 15 baselines (preferred)
 ```
+
+The **test tally is easy to get wrong**: `test --all` runs 6 projects but only 3 have specs —
+`analytics-sdk-shim` 1 suite/1 test, `auth-sdk-wrapper` 1 suite/4 tests, `ui-core` 3 suites/7 tests
+= **5 suites / 12 tests**. If a project's target is cached it prints *nothing*, so grepping the
+output of a cached run makes it look like only `ui-core`'s "3 suites / 7 tests" ran. Always use
+`--skip-nx-cache` before quoting a count.
+
+The 3 lint warnings are `@typescript-eslint/no-explicit-any` in `analytics-sdk-shim`; `AGENTS.md`
+declares that untyped vendor SDK deliberate, so lint is green with warnings, not broken.
+
+### Prefer `npm run visual` over raw `nx e2e`
+
+`npm run visual` runs the suite inside `cypress/included:10.11.0` via docker and already passes
+`--skip-nx-cache`. Baselines are captured in that container, so **running `nx e2e` directly on the
+host can produce font-hinting diffs that trip the 40px budget** — a false positive that looks like a
+real regression. CI (`.github/workflows/ci.yml`) uses the identical image, and
+`.devin/blueprint.yaml` verifies with `npm run visual`. The image is usually already pulled; docker
+must be running.
 
 ### `nx e2e` is a CACHED target — this matters for determinism claims
 
@@ -46,7 +64,8 @@ ls --time-style=+%H:%M:%S -l dist/cypress/apps/retail-banking-e2e/screenshots/de
 ```
 
 If the timestamps are unchanged after a "passing" run, you got a cache replay. Measured properly,
-this suite is byte-deterministic: max diff across all 15 baselines is 0 px on repeated forced runs.
+this suite is byte-deterministic: max diff across all 15 baselines is 0 px on repeated forced runs
+(confirmed again in the container via two consecutive `npm run visual` runs).
 
 ## Serving the three apps
 
@@ -80,12 +99,23 @@ poll `curl -s -o /dev/null -w '%{http_code}' http://localhost:4200/` rather than
   blocks bootstrap until the first principal resolves, and `/sign-in` is a real route, so a denied
   navigation terminates instead of looping. If this page is ever blank with chrome at 100% CPU,
   suspect a reintroduced router redirect loop rather than a slow build.
-- `/sign-in?r=/accounts` renders a terminal page showing the attempted route. Note the
-  "Continue to sign in" button has **no click binding** — it is a deliberate stub for the SSO
-  handoff, so "nothing happens when I click it" is expected, not a new bug. Also, the stub principal
-  always carries `accounts:read`, so the guard's deny path is **unreachable through normal
-  navigation** — you can only reach `/sign-in` by typing the URL. Don't claim you proved the
-  deny-redirect end to end.
+- `/sign-in?r=/accounts` renders a terminal page showing the attempted route. The "Continue to sign
+  in" button **is now wired** (`(pressed)="continueToSignIn()"`): it calls
+  `BofaAuthService.startSessionRefresh()` and then `navigateByUrl()` to the `?r=` value. To prove it
+  honours `?r=` rather than hardcoding the dashboard, test it with a **non-default** target such as
+  `/sign-in?r=%2F__showcase%2Ftable` — with `?r=%2Faccounts` alone, a hardcoded redirect would look
+  identical.
+- **The stub principal always carries `accounts:read`, so the guard never denies and a cold
+  `/accounts` never bounces to `/sign-in`.** `/sign-in` is only reachable by typing the URL. If a
+  task description says "hit /accounts cold and get bounced", that flow does not exist in the shipped
+  code — verify before accepting the premise.
+- To exercise the real deny path, temporarily remove `'accounts:read'` from `fetchPrincipal()` in
+  `libs/auth-sdk-wrapper/src/lib/bofa-auth.service.ts` (revert afterwards). `/accounts` then does
+  redirect to `/sign-in?r=%2Faccounts`, proving the guard wiring is real. But note
+  `continueToSignIn()` **cannot recover from a genuine denial**: `startSessionRefresh()` re-fetches
+  the same static stub, so entitlements never change and the user stays on `/sign-in`. The sign-in
+  round trip is cosmetic by design — do not report it as a crash, but do not claim the deny→sign-in→
+  access flow works end to end either.
 - Verifying the production build really drops the showcase: `curl` returns **200** for `/__showcase`
   on a static server purely because of SPA `index.html` fallback. That is not evidence the route
   exists. Check the client-side router in a browser (it should land on `/accounts`) and grep the
@@ -113,12 +143,14 @@ re-run the suite. **Never** set `UPDATE_VISUAL_BASELINES=1` and never commit the
 
 Choose the injection carefully — many plausible tweaks are no-ops or fall under the budget:
 
-- `color:` change on `.bofa-table .mat-header-cell` (slate → brand red) → 875 px (0.0949%) →
-  **fails**. Under the old 0.1% ratio budget this passed silently; the budget is now absolute for
-  exactly this case. This is the injection to use when asked whether the oracle catches MDC colour
-  breakage. The diff is correctly localised to the header row (bbox ~`y 150-161`).
-  (An older note said 785 px — that was measured against the pre-round-2 baselines, which have since
-  been deliberately regenerated. 875 px is correct for current baselines.)
+- `color:` change on `.bofa-table .mat-header-cell` (slate → brand red) → **753 px (0.082%)** when
+  run via `npm run visual` against the current container-captured baselines → **fails**. Under the
+  old 0.1% ratio budget this passed silently; the budget is now absolute for exactly this case. This
+  is the injection to use when asked whether the oracle catches MDC colour breakage. The diff is
+  correctly localised to the header row (bbox ~`y 150-161`), and only `table-default` should fail.
+  **This pixel count is renderer- and baseline-dependent — do not quote it from memory.** It has
+  been 785 px, then 875 px, now 753 px, changing each time the baselines were regenerated. Measure it
+  in the run you are actually doing, and treat any doc that hardcodes a figure as suspect.
 
 **Edit the single line surgically — do not use a blunt `sed`.** `color: bofa.$boa-slate-900;`
 appears on **two** lines: 79 (`.bofa-table .mat-header-cell`) and 182 (`.bofa-chips .mat-chip`).

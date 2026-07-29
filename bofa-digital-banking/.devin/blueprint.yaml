@@ -32,5 +32,6 @@ verify:
 notes:
   visual_regression:
     baselines: bofa-digital-banking/apps/retail-banking-e2e/visual-baselines
-    runner: cypress 10.11.0, electron 106, viewport 1280x900
-    diff_budget: 0.1% of pixels
+    runner: pinned container cypress/included:10.11.0, electron 106, viewport 1280x900 (docker required)
+    command: npm run visual   # runs the container with --skip-nx-cache
+    diff_budget: 40 absolute pixels (MAX_DIFF_PIXELS), not a ratio

@@ -38,11 +38,15 @@ npm run visual        # 17 passing, in a pinned container, cache skipped
 Then change `.bofa-table .mat-header-cell` colour to brand red and re-run:
 
 ```
-Visual regression on table-default: 875 pixels differ (0.095%).
+Visual regression on table-default: <n> pixels differ (0.0xx%).
 ```
 
-Say: *0.095 % — the percentage budget we started with allowed 0.1 %, so this shipped a wrong red to
-millions of customers and the suite said green. The budget is now 40 absolute pixels.* Revert.
+Read the number off the screen — it is renderer- and baseline-dependent and has moved every time
+the baselines were regenerated (785 → 875 → 753). On the current baselines it is ~753 px / 0.082 %.
+
+Say: *under a tenth of a percent — the percentage budget we started with allowed 0.1 %, so this
+shipped a wrong red to millions of customers and the suite said green. The budget is now 40
+absolute pixels.* Revert.
 
 ## 4:30–6:00 — "But `ng update` does this"
 
@@ -68,6 +72,20 @@ Run C died on a usage limit — **2 of 3 completed** — before anyone asks.
 
 One repo, one named design-system owner, two weeks. Success = *n* consumer PRs merged with no
 baseline regenerated without a written reason.
+
+## What is stubbed — say it before you are asked
+
+- **SSO/MFA.** `@bofa/auth-sdk-wrapper` returns a fixed principal holding `accounts:read`, so the
+  guard never denies in the running demo and `/sign-in` is unreachable by clicking. The deny,
+  redirect and `?r=` round trip are covered by `bofa-auth.guard.spec.ts`. Do **not** script "watch
+  the guard bounce me" — it will not happen.
+- **Analytics.** `@bofa/analytics-sdk-shim` wraps an untyped vendor SDK that is not present; the
+  point is the boundary, not the vendor.
+- **Financial data.** Account and transaction data is fixtures.
+
+The stack, the wrapper layer, the overrides, the visual oracle, the migration runs and the CI
+gates are all real. The integrations are stubbed at their boundary, which is exactly where the
+migration risk they represent lives.
 
 ## If something breaks live
 

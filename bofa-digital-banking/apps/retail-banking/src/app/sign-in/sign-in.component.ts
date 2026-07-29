@@ -63,6 +63,11 @@ export class SignInComponent {
   /**
    * Stands in for the SSO round trip: the wrapper refreshes the principal and
    * the customer is returned to the url they were denied.
+   *
+   * The demo SDK returns a fixed principal, so the refresh cannot change an
+   * entitlement and this route is unreachable in the running demo — the guard's
+   * deny and redirect behaviour is covered by `bofa-auth.guard.spec.ts` instead.
+   * Behind a real SSO endpoint the refresh is what grants the new session.
    */
   continueToSignIn(): void {
     this.auth.startSessionRefresh();
