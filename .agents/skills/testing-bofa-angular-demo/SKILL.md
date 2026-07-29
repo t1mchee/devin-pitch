@@ -266,10 +266,10 @@ console.log(n,(n/(a.width*a.height)*100).toFixed(4)+'%');"
 
 `apps/retail-banking-e2e/src/e2e/override-contract.cy.ts` + `src/support/override-probes.ts` hold 27
 probes, one per `OV-nn` intent, asserting `getComputedStyle` values on the running app. Total suite
-is **146 tests = 23 snapshot tests (21 snapshots) + 77 computed-style tests (27 light, 11 dark, 1
+is **150 tests = 23 snapshot tests (21 snapshots) + 77 computed-style tests (27 light, 11 dark, 1
 dark-surface anti-vacuity control, 32 WCAG ratios over 16 targets in both themes, 6 tests of the
-contrast oracle itself) + 46 legibility-sweep tests (`legibility-sweep.cy.ts`: every visible text node
-every painted SVG glyph and every CSS-painted indicator on 16 routes x 2 palettes, plus 14 tests that
+contrast oracle itself) + 50 legibility-sweep tests (`legibility-sweep.cy.ts`: every visible text node
+every painted SVG glyph and every CSS-painted indicator on 16 routes x 2 palettes, plus 18 tests that
 attack the sweep itself)**.
 
 The contrast helper lives in `src/support/contrast.ts` and is shared by both suites. Attack it there,
@@ -281,8 +281,8 @@ For the sweep, the highest-value attack is a whole-page one: set `background: #f
 `bofa-root` in `apps/retail-banking/src/app/app.component.ts` and confirm the three customer routes
 fail in the dark palette **while all 21 snapshots and all 38 component probes stay green**.
 
-Every false pass found in rounds 8 and 9 is now self-tested, so attack the generalisations rather
-than re-deriving them. All six are scripted in `scripts/capture-oracle-logs.sh` and each must turn
+Every false pass found in rounds 8, 9 and 10 is now self-tested, so attack the generalisations rather
+than re-deriving them. All ten are scripted in `scripts/capture-oracle-logs.sh` and each must turn
 exactly the self-test that names it red: `regress-oracle-glyph-blind` (sweep only text nodes),
 `regress-oracle-scrim-blind` (`scrimsOver` returns `[]`), `regress-oracle-zorder-blind` (paint order
 by document order alone — one `z-index: 10` used to hide a whole region at a reported 13.20:1),
@@ -290,8 +290,20 @@ by document order alone — one `z-index: 10` used to hide a whole region at a r
 `regress-oracle-sronly-blind` (the icon exemption reads `textContent`, so an `sr-only` label hides an
 icon-only control), and `regress-oracle-review-blanket` (`closest()` for the artwork declaration —
 `data-contrast-reviewed="lgtm"` on `<body>` used to exempt every gradient on the page).
+Round 10 added four more: `regress-oracle-stacking-blind` (the maximum `z-index` over the ancestor
+chain, as though a `transform` did not contain its children — wrong in both directions),
+`regress-oracle-backdrop-armed` (inertness armed by the presence of a `.cdk-overlay-backdrop`, so one
+stray `0x0; opacity: 0` node silences the sweep for every `aria-hidden` subtree),
+`regress-oracle-indicator-narrow` (the caret rule that only recognised a 0x0 box with one painted
+side, so a rotated chevron and an L-shape walked past) and `regress-oracle-clip-literal` (matching
+`inset(45-50%)` literally, which false-failed today's `inset(100%)` sr-only recipe).
 `fault-injection-glyph` is the product-side version: recolour the paginator arrows to the paginator
 surface and the sweep must report an invisible enabled control.
+
+When writing a new sweep self-test, size the planted element **larger than 1x1**: `visible()` skips
+tiny boxes, so a 1x1 probe passes whether or not the behaviour under test works. The first version of
+the `clip-path: inset(100%)` test did exactly that and proved nothing until the deliberate regression
+returned 150/150.
 
 Three directions are *policy*, not defect: off-screen screen-reader-only text is ignored; text over a
 gradient fails as UNMEASURABLE unless **the artwork element itself** carries a
@@ -475,28 +487,42 @@ SVGs inside a control whose `textContent` is non-empty), and every element with 
 text child** via `contrastRatio()` against `requiredRatio()`. Scrims are gathered by
 `collectScrims()` and applied by `scrimsOver()`.
 
-**Fixed as of round 10** — every one of these is now a self-test, and re-injecting the old behaviour
-fails exactly that test (`oracle-logs/regress-oracle-*.log`, each **146 total / 145 pass / 1 fail**):
+**Fixed as of round 11** — every one of these is now a self-test, and re-injecting the old behaviour
+fails exactly that test (`oracle-logs/regress-oracle-*.log`, **150 total**, 1-3 failures each):
 
 - SVG-only content is swept. Recolouring the **enabled paginator arrows** to the paginator surface
   gives `svg "Next page" — 1.00:1, needs 3:1` and moves `paginator-default` ~70 px.
-- Covering siblings are generalised beyond `.cdk-overlay-backdrop`, and paint order is `z-index`
-  first, document order second — an opaque scrim written *before* the text no longer hides at 13.20:1.
+- Covering siblings are generalised beyond `.cdk-overlay-backdrop`, and paint order is resolved at the
+  lowest common ancestor using the `z-index` of the first stacking context on each path, document
+  order breaking ties — an opaque scrim written *before* the text no longer hides at 13.20:1, and a
+  scrim raised inside a `transform` is composited only when the browser really paints it above.
 - Below-the-fold text is measured: gate coverage no longer depends on page height.
 - The icon exemption reads **visible** label text, so an `sr-only` label no longer hides a glyph.
-- CSS-painted indicators (zero-box border triangles — the select caret) are measured at 3:1.
+- CSS-painted indicators are measured at 3:1 by **shape**, not by one drawing technique: a rotated
+  two-border chevron and an L-shaped corner used to walk past a 0x0/one-border rule. A mark that hangs
+  outside its parent is measured against what is behind the parent (a tooltip arrow is a tail of its
+  surface, and measuring it against that surface filed a false defect).
+- The `sr-only` skip covers `clip-path: inset(100%)` and `clip: rect(0,0,0,0)`, not just `inset(50%)`.
 - A `visibility: hidden` scrim is not composited (that false failure scored legible text 1.09:1).
 - `data-contrast-reviewed` must sit on the artwork element and cite a ratio.
-- A sweep with an open modal skips the inert page behind it and measures the overlay.
+- A sweep with an open modal skips the inert page behind it and measures the overlay — but only with a
+  **visible overlay pane that has content**, so a stray `0x0; opacity: 0` `.cdk-overlay-backdrop`
+  cannot silence the whole gate.
 
-**Gaps that survive round 10.** Reproduce them rather than trusting this list, and look for new ones:
+**Gaps that survive round 11.** Reproduce them rather than trusting this list, and look for new ones:
 
 | Gap | Why the model cannot see it | Symptom |
 |---|---|---|
 | **Partial overlays** (documented) | full containment is required — deliberate, it killed 38 tab-ink-bar false positives. | a sticky header / badge / ripple covering ~70% of a text node ⇒ `scrims counted = 0`, 13.20:1 |
-| **Stacking contexts** | `z-index` is compared as a plain number up the ancestor chain; a real stacking context (`transform`, `filter`, `isolation`) is not resolved. | a scrim inside a transformed ancestor could still be mis-ordered — unproven, worth attacking |
+| **Stacking contexts, still partly** | resolved at the lowest common ancestor via the first stacking context on each path (`transform`, `filter`, `isolation`, `contain`, `will-change`, fixed/sticky, positioned + numeric `z-index`). `opacity < 1` as a context creator, and negative `z-index` painting behind its parent's background, are **not** modelled. | a scrim inside an `opacity: 0.99` wrapper, or a negative-`z-index` layer, may still be mis-ordered — attack it |
 | **States nobody enumerates** | the sweep visits routes, not states; hover/focus/validation are the override contract's job. | a colour that only appears on `:hover` is unmeasured unless a probe drives it |
 | **One viewport, one renderer** | 1280x720 in the pinned image. | a defect that only appears at another zoom level, webfont or forced-colours mode is out of scope |
+
+**Trap: `nx e2e` on the host segfaults without an X server.** Cypress 10.11's Electron dies with
+SIGSEGV on this box even with `--no-sandbox`; the log then looks like a product failure. Run host
+comparisons under `xvfb-run -a --server-args="-screen 0 1280x1024x24"` (which is what
+`scripts/capture-oracle-logs.sh` does). Also: this box has ~7.9 GB and no swap, and a browser
+walkthrough overlapping a Dockerised visual run got OOM-killed — do not run them at the same time.
 
 **Verify coverage claims element-by-element.** Round 9 claimed three icon coverages; only the
 paginator arrows were real. The cheap check: `document.querySelectorAll('svg').length` on the route,
@@ -603,7 +629,7 @@ with `ss -ltn | grep :4200`), or run the browser walkthrough and the e2e gate in
 
 Expected host-run result (this is **not** a product regression, see `ORACLE-noise-floor.md`):
 21 of 23 pixel snapshots fail on host-renderer drift (`accounts-dashboard` ~5,963 px,
-`table-default` ~4,656 px), while the **46 sweep and 77 override-contract tests pass** — those two
+`table-default` ~4,656 px), while the **50 sweep and 77 override-contract tests pass** — those two
 layers are renderer-independent, which is the useful signal from a host run. Only `npm run visual`
 (digest-pinned image) is authoritative for pixels.
 

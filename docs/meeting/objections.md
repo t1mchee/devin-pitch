@@ -83,6 +83,23 @@ by construction. Each is now a self-test, with the transcript of the fix removed
 `oracle-logs/regress-oracle-{glyph,scrim,zorder,fold,sronly,review}-*.log`, plus
 `fault-injection-glyph.log` for the product-side version.
 
+Then the *fixes* were attacked, and four more fell — the same family a fourth time, which is itself
+the finding worth saying out loud: **each generalisation was still implemented as one case of the
+thing it was supposed to generalise.** The new paint-order model read the largest `z-index` on the
+ancestor chain, which is not how painting works — a `transform` creates a stacking context its
+children cannot escape — so it both missed a wrapper that genuinely covers text and would have
+composited one the browser paints underneath. Inertness behind a modal was keyed on the *presence* of
+a `.cdk-overlay-backdrop` element, so one stray `0×0; opacity: 0` leftover switched the sweep off for
+every `aria-hidden` subtree on the page. The caret rule recognised a 0×0 box with one painted side, so
+a rotated two-border chevron and an L-shaped corner mark walked past it, while a tooltip arrow — which
+is a *tail* of its surface — was measured against the surface it matches and filed as a false defect.
+And the `sr-only` skip matched `inset(45–50%)` as a string, so today's `inset(100%)` recipe
+false-failed. All four are self-tests
+(`oracle-logs/regress-oracle-{stacking,backdrop-armed,indicator-narrow,clip-literal}.log`), and one of
+them caught a bad *test*: the first version planted a 1×1 element, which the sweep skips for its size,
+so it passed with the bug still in place. The deliberate regression returning 150/150 is what found
+that — a self-test that cannot fail is worth less than no self-test.
+
 The general answer, which is the one that should land: **every gate in this repository has a
 published failure.** The pixel budget has a documented blind spot under 40 px, two probes are
 labelled `KNOWN WEAK` with the log of one not-failing committed, three of the eleven dark probes are

@@ -32,13 +32,13 @@ recorded reason is the actual migration risk, not the version number.**
 ## 3:00–4:30 — The oracle, and one deliberate failure
 
 ```bash
-npm run visual        # 146 tests: 23 image tests over 21 compared snapshots,
+npm run visual        # 150 tests: 23 image tests over 21 compared snapshots,
                       # + 27 light probes, 11 dark probes, 1 anti-vacuity control,
                       # + 32 WCAG ratios (16 targets x 2 themes),
                       # + 6 tests of the contrast oracle itself,
-                      # + 46 legibility-sweep tests (16 routes x 2 palettes,
+                      # + 50 legibility-sweep tests (16 routes x 2 palettes,
                       #   every visible text node and every painted SVG glyph,
-                      #   + 14 tests that attack the sweep itself)
+                      #   + 18 tests that attack the sweep itself)
 ```
 
 While it runs, say what is in it: the components, **the four real overlays** — dialog, select

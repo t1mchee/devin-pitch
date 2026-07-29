@@ -9,23 +9,28 @@ plugin now prints on **every** comparison, pass or fail. Reproduce with
 `npm run visual` (pinned container) or `npx nx e2e retail-banking-e2e
 --skip-nx-cache` (host renderer).
 
-Captures are 1280x720. The full command runs **146 tests**: the 23-test image
+Captures are 1280x720. The full command runs **150 tests**: the 23-test image
 suite (21 compared snapshots plus two interaction tests), 77 computed-style
 tests — 27 light-surface probes, 11 re-asserted on the dark surface, one control
 that fails if the dark surface silently stopped rendering, 32 WCAG contrast
 ratios (16 targets in both themes), and 6 tests of the contrast oracle itself —
-and 46 legibility-sweep tests, which measure **every visible text node, every
+and 50 legibility-sweep tests, which measure **every visible text node, every
 painted SVG glyph and every CSS-painted indicator on 16 routes in both palettes**
-rather than a hand-picked list, plus 14 tests that attack the sweep itself. Those
-14 are the record of two hostile rounds spent attacking the sweep rather than the
-app: it must measure a substantial page; report planted illegible text, an
+rather than a hand-picked list, plus 18 tests that attack the sweep itself. Those
+18 are the record of three hostile rounds spent attacking the sweep rather than
+the app: it must measure a substantial page; report planted illegible text, an
 invisible icon-only control, an icon-only control labelled the accessible way
 with an `sr-only` span, a covering layer raised with `z-index` but written first
-in the DOM, illegible text **below the fold**, and a CSS-painted caret no SVG
-sweep can see; and it must *not* report hidden text, off-screen screen-reader-only
-text, a veil that paints nothing, the dimmed page behind an open modal, or
-artwork whose `data-contrast-reviewed` declaration sits on the artwork itself and
-cites a ratio.
+in the DOM, a covering layer raised **inside a `transform`** (whose `z-index` a
+stacking context contains, which the first model got wrong in both directions),
+illegible text **below the fold**, a CSS-painted caret no SVG sweep can see, and
+the same mark drawn as a rotated two-border chevron or an L-shaped corner; and it
+must *not* report hidden text, off-screen screen-reader-only text, the current
+`sr-only` recipe (`clip-path: inset(100%)`, not only the `inset(50%)` spelling),
+a veil that paints nothing, a tooltip arrow that matches the surface it is a tail
+of, the dimmed page behind an open modal — nor go quiet because a stray
+`0×0; opacity: 0` `.cdk-overlay-backdrop` was left in the DOM — or artwork whose
+`data-contrast-reviewed` declaration sits on the artwork itself and cites a ratio.
 
 The transcripts under `oracle-logs/` are re-captured whenever the suite changes;
 the first table row of `oracle-logs/README.md` records the suite size the current

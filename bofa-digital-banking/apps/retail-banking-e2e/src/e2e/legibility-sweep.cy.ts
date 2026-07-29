@@ -420,4 +420,164 @@ describe('legibility sweep — the sweep itself', () => {
       expect(sweep(doc), report(sweep(doc))).to.have.length(0);
     });
   });
+
+  it('composites a scrim raised inside a transform, and only when it truly paints above', () => {
+    // `z-index` was read as the maximum over the ancestor chain, which is not
+    // how painting works. A `transform` creates a stacking context its children
+    // cannot escape, so the model was wrong in both directions: it missed a
+    // wrapper that genuinely covers the text, and would have composited one the
+    // browser paints underneath.
+    visit('/__showcase/table', 'dark');
+    cy.document().then((doc) => {
+      const holder = doc.createElement('div');
+      holder.style.cssText = 'position:fixed;top:8px;left:8px;width:320px;height:80px';
+      const text = doc.createElement('p');
+      text.style.cssText =
+        'position:absolute;inset:0;margin:0;color:#ffffff;background:#303030';
+      text.textContent = 'Balance under a transformed panel';
+      // `translateZ(0)` is the commonest promotion hint in a real codebase, and
+      // it is what makes the inner `z-index: 10` local.
+      const wrapper = doc.createElement('div');
+      wrapper.style.cssText = 'position:absolute;inset:0;transform:translateZ(0)';
+      const veil = doc.createElement('div');
+      veil.style.cssText = 'position:absolute;inset:0;background:#303030;z-index:10';
+      wrapper.appendChild(veil);
+      holder.append(text, wrapper);
+      doc.body.appendChild(holder);
+
+      const covered = contrastRatio(text);
+      expect(covered.ratio, covered.detail).to.be.lessThan(1.5);
+      expect(report(sweep(doc))).to.contain('transformed panel');
+
+      // The inverse: the same inner `z-index: 10` cannot lift the subtree past a
+      // sibling of the stacking context, so raising the text makes it visible —
+      // and a gate that still reported it would be failing correct code.
+      text.style.zIndex = '1';
+      const raised = contrastRatio(text);
+      expect(raised.ratio, raised.detail).to.be.greaterThan(10);
+      expect(report(sweep(doc))).not.to.contain('transformed panel');
+    });
+  });
+
+  it('is not disarmed by a stray overlay backdrop left in the DOM', () => {
+    // Inertness was armed by the *presence* of a `.cdk-overlay-backdrop`, so one
+    // leftover 0x0 node switched the sweep off for every `aria-hidden` subtree
+    // on the page. It takes an overlay with content now.
+    visit('/accounts', 'light');
+    cy.document().then((doc) => {
+      const container = doc.createElement('div');
+      container.className = 'cdk-overlay-container';
+      const stray = doc.createElement('div');
+      stray.className = 'cdk-overlay-backdrop';
+      stray.style.cssText = 'position:fixed;width:0;height:0;opacity:0';
+      container.appendChild(stray);
+      doc.body.appendChild(container);
+
+      const region = doc.createElement('div');
+      region.setAttribute('aria-hidden', 'true');
+      region.style.cssText = 'position:fixed;top:8px;left:8px;background:#ffffff;padding:8px';
+      const text = doc.createElement('p');
+      text.style.cssText = 'color:#ffffff;margin:0;font-size:14px';
+      text.textContent = 'Wire cut-off time 5pm ET';
+      region.appendChild(text);
+      doc.body.appendChild(region);
+
+      expect(report(sweep(doc)), 'a stray backdrop must not switch the gate off').to.contain(
+        'Wire cut-off'
+      );
+
+      // And an empty pane is not a modal either: it is what a closing animation
+      // leaves behind.
+      const pane = doc.createElement('div');
+      pane.className = 'cdk-overlay-pane';
+      pane.style.cssText = 'position:fixed;top:200px;left:200px;width:200px;height:100px';
+      container.appendChild(pane);
+      expect(report(sweep(doc))).to.contain('Wire cut-off');
+    });
+  });
+
+  it('measures painted marks of any shape, and not a tail of the surface it matches', () => {
+    // The indicator rule recognised one drawing technique (a 0x0 box, one
+    // painted side). A rotated two-border chevron and an L-shaped corner mark
+    // are the same defect drawn differently, and both walked past — while a
+    // tooltip arrow, which hangs outside its parent and paints over what is
+    // behind the tooltip, was measured against the surface it matches and filed
+    // as a false defect.
+    visit('/__showcase/select', 'dark');
+    cy.document().then((doc) => {
+      const host = doc.createElement('div');
+      host.style.cssText =
+        'position:fixed;top:8px;left:8px;width:64px;height:64px;background:#303030';
+      const chevron = doc.createElement('span');
+      chevron.style.cssText =
+        'display:block;width:8px;height:8px;border-right:2px solid #303030;border-bottom:2px solid #303030;transform:rotate(45deg)';
+      host.appendChild(chevron);
+      doc.body.appendChild(host);
+      expect(report(sweep(doc)), 'a rotated chevron is a caret too').to.contain(
+        'css-painted indicator'
+      );
+      host.remove();
+
+      const corner = doc.createElement('div');
+      corner.style.cssText =
+        'position:fixed;top:120px;left:8px;width:10px;height:10px;border-left:2px solid #303030;border-bottom:2px solid #303030;background:transparent';
+      const canvas = doc.createElement('div');
+      canvas.style.cssText = 'position:fixed;top:112px;left:0;width:40px;height:40px;background:#303030';
+      doc.body.append(canvas, corner);
+      expect(report(sweep(doc)), 'an L-shaped mark is a shape too').to.contain(
+        'css-painted indicator'
+      );
+      corner.remove();
+      canvas.remove();
+
+      // A two-tone triangle with one legible half is legible.
+      const surface = doc.createElement('div');
+      surface.style.cssText =
+        'position:fixed;top:200px;left:8px;width:64px;height:64px;background:#303030';
+      const twoTone = doc.createElement('div');
+      twoTone.style.cssText =
+        'width:0;height:0;border-left:6px solid #303030;border-right:6px solid #ffffff;border-top:6px solid transparent';
+      surface.appendChild(twoTone);
+      doc.body.appendChild(surface);
+      expect(report(sweep(doc)), 'one visible half is visible').not.to.contain(
+        'css-painted indicator'
+      );
+      surface.remove();
+
+      // The tooltip arrow: same colour as its surface, painted over the page.
+      const page = doc.createElement('div');
+      page.style.cssText =
+        'position:fixed;top:300px;left:8px;width:200px;height:80px;background:#ffffff';
+      const tooltip = doc.createElement('div');
+      tooltip.style.cssText =
+        'position:absolute;top:8px;left:8px;width:120px;height:24px;background:#303030';
+      const arrow = doc.createElement('div');
+      arrow.style.cssText =
+        'position:absolute;bottom:-6px;left:12px;width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:6px solid #303030';
+      tooltip.appendChild(arrow);
+      page.appendChild(tooltip);
+      doc.body.appendChild(page);
+      expect(report(sweep(doc)), 'an arrow is a tail of its surface').not.to.contain(
+        'css-painted indicator'
+      );
+    });
+  });
+
+  it('recognises the current sr-only recipe, not one spelling of it', () => {
+    // `clip-path: inset(50%)` was matched literally, so `inset(100%)` — what
+    // every current framework emits — was measured and false-failed. The
+    // distinction the gate needs is "clipped away", not a string.
+    visit('/accounts', 'light');
+    cy.document().then((doc) => {
+      // Deliberately a full-size box: a 1x1 clip is already skipped for its
+      // size, so a test written that way passes with the bug still in place —
+      // the first version of this test did exactly that and proved nothing.
+      const label = doc.createElement('span');
+      label.style.cssText =
+        'position:absolute;top:8px;left:8px;width:160px;height:20px;overflow:hidden;clip-path:inset(100%);color:#ffffff;background:#ffffff';
+      label.textContent = 'Skip to main content';
+      doc.body.appendChild(label);
+      expect(report(sweep(doc))).not.to.contain('Skip to main content');
+    });
+  });
 });

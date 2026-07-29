@@ -282,12 +282,21 @@ an icon-only control invisible to the gate.
 
 What remains out of scope is worth stating plainly. It measures what the browser computes, so a
 defect that only appears under a real webfont, a customer's zoom level, or forced-colours mode is not
-covered. Paint order is approximated by `z-index` and then document order, not by resolving stacking
-contexts — better than document order alone, which one `z-index: 10` defeated, but still an
-approximation. A covering layer must *fully contain* the text to count, so a sticky header that hides
-70% of a line is not composited (the alternative, rect intersection, produced 38 false positives on
-tab ink bars). Content behind an open modal is skipped as inert, so a sweep in that state describes
-the dialog and not the page. And text over a gradient is reported as unmeasurable rather than scored,
+covered. Paint order is resolved at the lowest common ancestor of the two elements, comparing the
+`z-index` at the first stacking context on each path and breaking ties by document order — which is
+the third version of this model. Document order alone was defeated by one `z-index: 10`; the maximum
+`z-index` over the ancestor chain was then wrong in both directions, because a `transform` or a
+`filter` creates a stacking context a child's `z-index` cannot escape. It is still an approximation:
+`opacity < 1` and nested contexts under `position: relative` are not fully modelled. A covering layer
+must *fully contain* the text to count, so a sticky header that hides 70% of a line is not composited
+(the alternative, rect intersection, produced 38 false positives on tab ink bars). Content behind an
+open modal is skipped as inert, so a sweep in that state describes the dialog and not the page — and
+that skip now requires a **visible overlay pane with content**, because keying it on the presence of a
+`.cdk-overlay-backdrop` element meant one stray `0×0; opacity: 0` node silenced the sweep for every
+`aria-hidden` subtree on the page. CSS-painted marks are detected by shape rather than by one drawing
+technique (a rotated chevron and an L-shaped corner both used to pass), and a mark that hangs outside
+its parent is measured against what is behind that parent, because a tooltip arrow is a tail of its
+surface and not a mark on it. And text over a gradient is reported as unmeasurable rather than scored,
 which means artwork behind text has to be declared on the artwork element, citing a ratio, by a human
 rather than checked by the gate. Total suite:
-**146 tests**.
+**150 tests**.

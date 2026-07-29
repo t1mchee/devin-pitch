@@ -79,7 +79,7 @@ click, and **two in the light theme**: a disabled account value at 2.66:1 and Ma
 3.68:1. Its own parse holes — transparent read as opaque black, foreground alpha dropped, ancestor
 `opacity` ignored, text over a gradient scored against the canvas — are what the six self-tests pin.
 
-And then **46 legibility-sweep tests** (`legibility-sweep.cy.ts`), which are the answer to the thing
+And then **50 legibility-sweep tests** (`legibility-sweep.cy.ts`), which are the answer to the thing
 that kept happening: three hostile rounds running, the targeted list of contrast probes was green and
 a reviewer found illegible text somewhere the list did not point. Each fix added another selector,
 which is a changelog, not a gate. The sweep walks **every visible text node on 16 routes in both
@@ -95,8 +95,8 @@ correctly* — the components looking right is what hid it. The fix is a set of 
 `bofa-theme.scss`, so a route cannot forget to follow the palette because it no longer states a
 colour of its own.
 
-**Fourteen of the 46 tests attack the sweep rather than the app**, and eleven of them are the record
-of two hostile rounds spent finding ways to fool it. Each one is a specific false verdict, now pinned:
+**Eighteen of the 50 tests attack the sweep rather than the app**, and fifteen of them are the record
+of three hostile rounds spent finding ways to fool it. Each one is a specific false verdict, now pinned:
 an **icon-only control** whose glyph is recoloured to its own surface (a paginator arrow rendered at
 1.00:1 with the gate green, because the sweep kept only nodes with a direct text child and read
 `color`, never `fill`); the same control labelled the *accessible* way, with an `sr-only` span, which
@@ -104,13 +104,21 @@ made it look "decorated" and skipped it; a semi-transparent **sibling** veil (`r
 over the dark table reported 13.20:1 where a human reads 1.1:1); an opaque scrim written *earlier* in
 the DOM and raised with `z-index: 10`, which one line of CSS used to hide a whole region behind a
 reported 13.20:1; illegible text **below the fold**, where the same node passed at `top: 2212` and
-failed at `top: 400`, making coverage a function of page height; and the select **caret**, a zero-box
+failed at `top: 400`, making coverage a function of page height; the select **caret**, a zero-box
 border triangle that contains no SVG at all, so the claim that the glyph sweep covered it was false by
-construction.
+construction — and, once that was fixed, the *other* ways to draw the same mark: a rotated two-border
+chevron and an L-shaped corner walked straight past a rule that recognised only a 0×0 box with one
+painted side. Round ten added two more of the same family: a scrim raised inside a `transform`, which
+the old "maximum `z-index` on the chain" model read as covering text a browser paints *above* it (a
+stacking context contains its children, and the model did not know that); and inertness armed by the
+mere presence of a `.cdk-overlay-backdrop` element, so one stray `0×0; opacity: 0` leftover switched
+the sweep off for every `aria-hidden` subtree on the page.
 
-Three of the fourteen guard the other direction, which matters just as much: a gate that fails correct
-code gets switched off. Hidden text, off-screen skip links, a veil that paints nothing and the dimmed
-page behind an open modal must all stay unreported. And text over a gradient fails as unmeasurable
+Five of the eighteen guard the other direction, which matters just as much: a gate that fails correct
+code gets switched off. Hidden text, off-screen skip links, the current `sr-only` recipe
+(`clip-path: inset(100%)`, not just the `inset(50%)` spelling the first version matched), a veil that
+paints nothing, a tooltip arrow that matches the surface it is a tail of, and the dimmed page behind
+an open modal must all stay unreported. And text over a gradient fails as unmeasurable
 until a human declares `data-contrast-reviewed="… 8.9:1 at the lightest stop"` **on the element
 painting the artwork** — a sentence in the diff a reviewer can argue with, rather than a guess in the
 helper or an `lgtm` on `<body>` that quietly exempts the page.

@@ -20,6 +20,10 @@ FILES=(
 )
 
 for f in "${FILES[@]}"; do cp "$f" "/tmp/oracle-$(basename "$f").orig"; done
+# The end-of-run leak check compares against the tree as it was *before* the run,
+# not against HEAD: capturing evidence for a change that is still uncommitted is
+# the normal case, and comparing to HEAD reported those edits as a leak.
+git -C "$REPO" status --porcelain -- bofa-digital-banking > /tmp/oracle-tree-before.txt
 restore() { for f in "${FILES[@]}"; do cp "/tmp/oracle-$(basename "$f").orig" "$f"; done; }
 
 run() { echo "=== $1 :: $(date -u +%FT%TZ) ==="; npm run visual 2>&1 | sed 's/\x1b\[[0-9;]*m//g'; }
@@ -157,11 +161,9 @@ restore
 # declaration defeated. Every one of these was a green gate over a defect (or a
 # red gate over correct code) that a reviewer found by hand.
 experiment regress-oracle-zorder-blind "$CONTRAST" \
-  '  const [above, below] = [stackLevel(scrim), stackLevel(element)];
-  if (above !== below) {
-    return above > below;
-  }' \
-  '  // Z-ORDER-BLIND, deliberately: document order only'
+  '  const [above, below] = [branchLevel(over, scrim), branchLevel(under, element)];' \
+  '  // Z-ORDER-BLIND, deliberately: both levels forced equal, so document order decides
+  const [above, below] = [branchLevel(over, scrim) * 0, branchLevel(under, element) * 0];'
 experiment regress-oracle-fold-blind "$CONTRAST" \
   '  const offScreen = rect.right <= 0 || rect.bottom <= 0;' \
   '  const view = element.ownerDocument.defaultView; // FOLD-BLIND, deliberately
@@ -181,15 +183,75 @@ experiment regress-oracle-review-blanket "$CONTRAST" \
     ?.trim(); // REVIEW-BLANKET, deliberately
   return declared || null;"
 
+# 23-26. the round-10 approximations. Same family again: a model that a single
+# declaration defeats, in both the false-pass and the false-failure direction.
+#
+# The stacking model read the maximum z-index over the ancestor chain, so a scrim
+# inside a `transform`ed wrapper claimed a level the browser never gives it.
+experiment regress-oracle-stacking-blind "$CONTRAST" \
+  '  for (const node of path) {
+    const style = getComputedStyle(node);
+    const z = Number(style.zIndex);
+    if (!Number.isNaN(z)) {
+      return z;
+    }
+    if (createsStackingContext(style)) {
+      return 0;
+    }
+  }
+  return 0;' \
+  '  // STACKING-BLIND, deliberately: the largest z-index anywhere on the chain,
+  // as though a stacking context did not contain it.
+  return path.reduce((level, node) => {
+    const z = Number(getComputedStyle(node).zIndex);
+    return Number.isNaN(z) ? level : Math.max(level, z);
+  }, 0);'
+# Inertness armed by the presence of a backdrop element: one stray 0x0 node
+# switched the sweep off for every aria-hidden subtree on the page.
+experiment regress-oracle-backdrop-armed "$CONTRAST" \
+  "  const modal = Array.from(
+    doc.querySelectorAll<HTMLElement>('.cdk-overlay-container .cdk-overlay-pane')
+  ).some((pane) => visible(pane) && (pane.textContent ?? '').trim().length > 0);" \
+  "  const modal = !!doc.querySelector('.cdk-overlay-backdrop'); // BACKDROP-ARMED"
+# The indicator rule that recognised exactly one way of drawing a caret.
+experiment regress-oracle-indicator-narrow "$CONTRAST" \
+  '    const glyphish =
+      paints.length > 0 &&
+      paints.length < 4 &&
+      !element.children.length &&
+      !(element.textContent ?? '"'"''"'"').trim() &&
+      parseColour(style.backgroundColor).a === 0 &&
+      element.clientWidth <= 24 &&
+      element.clientHeight <= 24;' \
+  '    // INDICATOR-NARROW, deliberately: a 0x0 box with exactly one painted side
+    const glyphish =
+      paints.length === 1 && element.clientWidth === 0 && element.clientHeight === 0;'
+# And the sr-only detection that matched one spelling of "clipped away".
+experiment regress-oracle-clip-literal "$CONTRAST" \
+  '  const inset = /inset\(\s*(-?\d+(?:\.\d+)?)%/.exec(path);
+  if (inset && parseFloat(inset[1]) >= 45) {
+    return true;
+  }' \
+  '  if (/inset\(\s*(4[5-9]|50)/.test(path)) { // CLIP-LITERAL, deliberately
+    return true;
+  }'
+
 # The last experiment leaves the tree patched: restore before anything else runs,
 # or the deliberately-broken helper gets captured — and committed. It has.
 restore
 
-# 23. host renderer against container baselines -> why the image is digest-pinned
+# 27. host renderer against container baselines -> why the image is digest-pinned
 echo "=== host-renderer (not the pinned image) :: $(date -u +%FT%TZ) ===" > "$OUT/host-renderer-drift.log"
-npx nx e2e retail-banking-e2e --skip-nx-cache 2>&1 | sed 's/\x1b\[[0-9;]*m//g' >> "$OUT/host-renderer-drift.log"
+# Cypress 10.11's Electron segfaults on this box without a real X server, which
+# looks exactly like a product failure in the log. `xvfb-run` is the difference
+# between evidence and a crash report.
+xvfb-run -a --server-args="-screen 0 1280x1024x24" \
+  npx nx e2e retail-banking-e2e --skip-nx-cache 2>&1 |
+  sed 's/\x1b\[[0-9;]*m//g' >> "$OUT/host-renderer-drift.log"
 
-git -C "$REPO" status --porcelain -- bofa-digital-banking > "$OUT/../oracle-logs-tree-clean.txt"
+diff <(cat /tmp/oracle-tree-before.txt) \
+  <(git -C "$REPO" status --porcelain -- bofa-digital-banking) \
+  > "$OUT/../oracle-logs-tree-clean.txt"
 # Not decoration: a missing `restore` once left a deliberately-broken helper in
 # the tree, and it was committed. The evidence run now says so out loud.
 if [ -s "$OUT/../oracle-logs-tree-clean.txt" ]; then

@@ -74,6 +74,30 @@
  *   9. A `visibility: hidden` veil paints nothing but was still composited,
  *      scoring legible text 1.09:1 — a false failure, which costs a gate its
  *      credibility as surely as a false pass.
+ *
+ * Round ten attacked the round-nine fixes. Four more, same family:
+ *
+ *  10. `z-index` was read as the maximum over the ancestor chain, which is not
+ *      how painting works: a `transform` or `filter` on an ancestor creates a
+ *      stacking context that a child's `z-index: 10` cannot escape. Both
+ *      directions were wrong — a scrim that genuinely hid text was ignored, and
+ *      one that a browser paints *below* the text would have been composited.
+ *      Paint order is now resolved at the lowest common ancestor, comparing the
+ *      two branches at the first stacking context on each path.
+ *  11. Inertness was armed by the mere *presence* of a `.cdk-overlay-backdrop`
+ *      element. A stray `0x0; opacity: 0` backdrop left in the DOM therefore
+ *      switched the sweep off for every `aria-hidden` subtree on the page, which
+ *      is one attribute away from disabling the gate. It now takes an overlay
+ *      pane that is visible and has content — the state a user is reading.
+ *  12. The CSS-indicator rule only recognised its narrowest case (a 0x0 box with
+ *      exactly one painted border), so a rotated two-border chevron, an L-shape
+ *      and a two-colour triangle were all invisible to it, while a *tooltip
+ *      arrow* — which is a tail of its surface, painted over what is behind that
+ *      surface — was reported as a false defect because it was measured against
+ *      the surface it matches. Detection is now shape-agnostic and the host
+ *      surface is chosen by geometry.
+ *  13. The `sr-only` detection matched `inset(45–50%)` literally, so the equally
+ *      common `inset(100%)` (and `clip: rect(0,0,0,0)`) false-failed.
  */
 export interface Rgba {
   r: number;
@@ -177,26 +201,79 @@ export function collectScrims(doc: Document): Scrim[] {
  * from computed styles, so this remains an approximation — but one that a single
  * declaration no longer defeats.
  */
-function stackLevel(element: HTMLElement): number {
-  // The largest explicit z-index on the element or a positioned ancestor: a
-  // child of a raised container is raised with it.
-  let level = 0;
-  for (let node: HTMLElement | null = element; node; node = node.parentElement) {
-    const z = Number(getComputedStyle(node).zIndex);
-    if (!Number.isNaN(z)) {
-      level = Math.max(level, z);
+function createsStackingContext(style: CSSStyleDeclaration): boolean {
+  const contains = (style.contain || '')
+    .split(/\s+/)
+    .some((value) => ['paint', 'layout', 'strict', 'content'].includes(value));
+  return Boolean(
+    (style.transform && style.transform !== 'none') ||
+      (style.filter && style.filter !== 'none') ||
+      (style.perspective && style.perspective !== 'none') ||
+      style.isolation === 'isolate' ||
+      (style.mixBlendMode && style.mixBlendMode !== 'normal') ||
+      contains ||
+      /transform|opacity|filter/.test(style.willChange || '') ||
+      style.position === 'fixed' ||
+      style.position === 'sticky' ||
+      (style.position !== 'static' && !Number.isNaN(Number(style.zIndex)))
+  );
+}
+
+/**
+ * The level at which `branch` paints, looking only along the path down to `leaf`.
+ *
+ * A `z-index` inside a stacking context is resolved *within* it and cannot lift
+ * the subtree past a sibling of the context — so the walk stops at the first
+ * boundary and takes that element's own `z-index` (`auto` counts as 0). Reading
+ * the maximum `z-index` over the whole chain, as this used to, let a
+ * `transform`ed wrapper's inner `z-index: 10` claim a level the browser never
+ * gives it.
+ */
+function branchLevel(branch: HTMLElement, leaf: HTMLElement): number {
+  const path: HTMLElement[] = [];
+  for (let node: HTMLElement | null = leaf; node; node = node.parentElement) {
+    path.unshift(node);
+    if (node === branch) {
+      break;
     }
   }
-  return level;
+  for (const node of path) {
+    const style = getComputedStyle(node);
+    const z = Number(style.zIndex);
+    if (!Number.isNaN(z)) {
+      return z;
+    }
+    if (createsStackingContext(style)) {
+      return 0;
+    }
+  }
+  return 0;
 }
 
 function paintsAbove(scrim: HTMLElement, element: HTMLElement): boolean {
-  const [above, below] = [stackLevel(scrim), stackLevel(element)];
+  // Painting is only comparable inside a common stacking parent: find it, then
+  // compare the two branches that descend from it.
+  let common: HTMLElement | null = element.parentElement;
+  while (common && !common.contains(scrim)) {
+    common = common.parentElement;
+  }
+  if (!common) {
+    return false;
+  }
+  const branchOf = (node: HTMLElement): HTMLElement => {
+    let walk = node;
+    while (walk.parentElement && walk.parentElement !== common) {
+      walk = walk.parentElement;
+    }
+    return walk;
+  };
+  const [over, under] = [branchOf(scrim), branchOf(element)];
+  const [above, below] = [branchLevel(over, scrim), branchLevel(under, element)];
   if (above !== below) {
     return above > below;
   }
   // eslint-disable-next-line no-bitwise
-  return !!(element.compareDocumentPosition(scrim) & Node.DOCUMENT_POSITION_FOLLOWING);
+  return !!(under.compareDocumentPosition(over) & Node.DOCUMENT_POSITION_FOLLOWING);
 }
 
 function scrimsOver(element: HTMLElement, scrims: Scrim[], counted: Set<HTMLElement>): Rgba[] {
@@ -475,8 +552,25 @@ function visible(element: HTMLElement): boolean {
   // coverage depends on page height is a gate nobody can reason about. Scrolling
   // does not change a computed colour, so it does not need to be scrolled to.
   const offScreen = rect.right <= 0 || rect.bottom <= 0;
-  const clipped = /inset\(\s*(4[5-9]|50)/.test(style.clipPath || '');
-  return rect.width > 1 && rect.height > 1 && !offScreen && !clipped;
+  return rect.width > 1 && rect.height > 1 && !offScreen && !clipsAway(style);
+}
+
+/**
+ * The clipping idioms that hide content from sighted users. Matching the literal
+ * string `inset(45–50` — as this did — false-failed `clip-path: inset(100%)`,
+ * which is what the current `sr-only` recipe in every CSS framework emits.
+ */
+function clipsAway(style: CSSStyleDeclaration): boolean {
+  const path = style.clipPath || '';
+  const inset = /inset\(\s*(-?\d+(?:\.\d+)?)%/.exec(path);
+  if (inset && parseFloat(inset[1]) >= 45) {
+    return true;
+  }
+  if (/circle\(\s*0(px|%)?[\s)]/.test(path)) {
+    return true;
+  }
+  const legacy = (style as unknown as { clip?: string }).clip || '';
+  return /rect\(\s*0(px)?[\s,]+0(px)?[\s,]+0(px)?[\s,]+0(px)?\s*\)/.test(legacy);
 }
 
 /**
@@ -521,6 +615,43 @@ function exempt(element: HTMLElement): boolean {
   return false;
 }
 
+/** The painted border colours of an element, ignoring zero-width sides. */
+function borderPaints(style: CSSStyleDeclaration): Rgba[] {
+  // Width matters as much as colour: a zero-width side still reports a computed
+  // `currentColor`, and counting those made every triangle look like a
+  // four-sided box and skipped it.
+  return (['Top', 'Right', 'Bottom', 'Left'] as const)
+    .filter((side) => parseFloat(style[`border${side}Width`]) > 0)
+    .map((side) => parseColour(style[`border${side}Color`]))
+    .filter((colour) => colour.a > 0);
+}
+
+/**
+ * The surface a painted mark sits *on*, chosen by geometry rather than by tree
+ * position.
+ *
+ * A tooltip arrow is the same colour as the tooltip because it is a tail of that
+ * surface: it hangs outside its parent's box and is painted over whatever is
+ * behind the tooltip, so measuring it against its parent scored 1.00:1 and filed
+ * a false defect on correct UI. A caret recoloured to match the control it sits
+ * inside is the real thing this rule is for, and the difference between the two
+ * is containment.
+ */
+function hostSurface(indicator: HTMLElement): HTMLElement | null {
+  const parent = indicator.parentElement;
+  if (!parent) {
+    return null;
+  }
+  const mark = indicator.getBoundingClientRect();
+  const box = parent.getBoundingClientRect();
+  const inside =
+    mark.left >= box.left - 0.5 &&
+    mark.right <= box.right + 0.5 &&
+    mark.top >= box.top - 0.5 &&
+    mark.bottom <= box.bottom + 0.5;
+  return inside ? parent : parent.parentElement ?? parent;
+}
+
 export interface Finding {
   where: string;
   text: string;
@@ -545,7 +676,15 @@ export function sweep(doc: Document): Finding[] {
   // Content behind an open modal is dimmed on purpose and inert; reporting it
   // would fail correct UI every time a dialog is swept. Outside that state
   // `aria-hidden` is still measured, because it is still painted.
-  const modal = !!doc.querySelector('.cdk-overlay-backdrop');
+  //
+  // The *presence* of a `.cdk-overlay-backdrop` is not that state. A stray 0x0,
+  // `opacity: 0` backdrop with no overlay behind it armed this rule globally and
+  // hid a real 1.0:1 defect in every `aria-hidden` subtree on the page: one
+  // leftover node, and the sweep switches itself off. What makes the page inert
+  // is an overlay the user is actually reading, so that is what is required.
+  const modal = Array.from(
+    doc.querySelectorAll<HTMLElement>('.cdk-overlay-container .cdk-overlay-pane')
+  ).some((pane) => visible(pane) && (pane.textContent ?? '').trim().length > 0);
   const inert = (element: HTMLElement): boolean =>
     modal && !element.closest('.cdk-overlay-container') && !!element.closest('[aria-hidden=true]');
 
@@ -587,19 +726,27 @@ export function sweep(doc: Document): Finding[] {
   // by construction, and "the caret is covered" was a false claim for a round.
   // This is the general shape of that trick, not a selector for one component.
   doc.body.querySelectorAll<HTMLElement>('*').forEach((element) => {
-    const style = getComputedStyle(element);
-    const zeroBox = element.clientWidth === 0 && element.clientHeight === 0;
-    // Width matters as much as colour: a zero-width side still reports a
-    // computed `currentColor`, and counting those made every triangle look like
-    // a four-sided box and skipped it.
-    const paints = ['Top', 'Right', 'Bottom', 'Left']
-      .filter((side) => parseFloat(style[`border${side}Width` as 'borderTopWidth']) > 0)
-      .map((side) => parseColour(style[`border${side}Color` as 'borderTopColor']))
-      .filter((colour) => colour.a > 0);
-    if (!zeroBox || paints.length !== 1 || !visible(element) || exempt(element) || inert(element)) {
+    if (!visible(element) || exempt(element) || inert(element)) {
       return;
     }
-    const host = element.parentElement;
+    const style = getComputedStyle(element);
+    const paints = borderPaints(style);
+    // Shape-agnostic on purpose. The first version required a 0x0 box with
+    // exactly one painted side, which is *one* way to draw a caret: a rotated
+    // two-border chevron, an L-shaped corner mark and a two-tone triangle all
+    // have boxes and two painted sides, and all three walked past the gate.
+    const glyphish =
+      paints.length > 0 &&
+      paints.length < 4 &&
+      !element.children.length &&
+      !(element.textContent ?? '').trim() &&
+      parseColour(style.backgroundColor).a === 0 &&
+      element.clientWidth <= 24 &&
+      element.clientHeight <= 24;
+    if (!glyphish) {
+      return;
+    }
+    const host = hostSurface(element);
     if (!host) {
       return;
     }
@@ -619,18 +766,21 @@ export function sweep(doc: Document): Finding[] {
       }
       return;
     }
-    const painted = applyOver(
-      composite({ ...paints[0], a: paints[0].a * opacity }, beneath),
-      over
+    // A shape is legible if *any* of the colours it paints with is: a two-tone
+    // triangle with one visible half is visible. Reporting the worst side turned
+    // ordinary two-colour marks into defects.
+    const painted = paints.map((colour) =>
+      applyOver(composite({ ...colour, a: colour.a * opacity }, beneath), over)
     );
-    const ratio = ratioOf(painted, background);
-    if (ratio + 0.005 < 3) {
+    const ratios = painted.map((colour) => ratioOf(colour, background));
+    const best = Math.max(...ratios);
+    if (best + 0.005 < 3) {
       findings.push({
         where: `${describe(element)} (css indicator)`,
         text: 'css-painted indicator',
         required: 3,
-        ratio,
-        detail: `border ${round(painted)} on ${round(background)}`,
+        ratio: best,
+        detail: `border ${round(painted[ratios.indexOf(best)])} on ${round(background)}`,
       });
     }
   });
