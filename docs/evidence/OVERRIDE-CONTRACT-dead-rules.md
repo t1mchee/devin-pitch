@@ -9,7 +9,8 @@ diff. Its closing line was that the cheapest fix is *a computed-style assertion 
 custom override, captured before the migration and re-asserted after*.
 
 So we built it — `apps/retail-banking-e2e/src/e2e/override-contract.cy.ts`, driven by
-`src/support/override-probes.ts`: 23 probes, one per intent in `_overrides.scss`, each
+`src/support/override-probes.ts`: 24 probes on the light surface — at least one per `OV-nn` intent
+in `_overrides.scss`, including `OV-18` — plus 7 re-asserted on the dark surface, each
 asserting the computed value of the property the override exists to control, on the
 running app, in the pinned container.
 
@@ -68,7 +69,7 @@ migration diff is "does `.mat-mdc-x` look like the right rename?" — a guess. W
 contract, the rename is *checked*: if the new selector does not carry the value the intent
 requires, the build is red regardless of how plausible the rename looked.
 
-## How many of the assertions actually constrain our CSS? 21 of 23.
+## How many of the assertions actually constrain our CSS? 22 of 24.
 
 A gate that passes whether or not the code is there is decoration, so every probe was
 tested by deleting the rule it claims to protect and re-running. `OV-05d` (zebra striping)
@@ -85,13 +86,39 @@ paints these brand red on its own.
 | OV-13 selected calendar day | Same: primary fills the selected day. The "today is outlined in navy" half of OV-13 *is* ours, but the showcase renders a fixed month so that today never appears — it cannot be asserted deterministically. | Kept, marked `KNOWN WEAK`. Honest gap. |
 | OV-10 ink bar | `background-color` is vacuous for the same reason; **`height: 3px` is not** — Material's bar is 2px. | Kept as-is; the colour half is documented as vacuous, the height half has teeth. |
 
-So the number to quote in the room is **21 of 23 assertions constrain our own CSS**, not 23.
-This was found by hostile testing of the gate, not by writing it, which is the general point:
-a gate nobody has tried to defeat is an assumption.
+So the number to quote in the room is **22 of 24 light-surface assertions constrain our own CSS**,
+not 24 (OV-08 and OV-13 are vacuous; OV-10 is half vacuous and counted as constraining on its
+`height` half). This was found by hostile testing of the gate, not by writing it, which is the
+general point: a gate nobody has tried to defeat is an assumption. **The raw transcripts are
+committed**, including `docs/evidence/oracle-logs/delete-rule-ov08.log` — a probe conspicuously
+*not* failing.
 
-**Limits, stated.** The contract asserts 23 properties across 18 overrides; it is not a
-complete description of the design system. It runs at one viewport, in the light theme, on
-the pinned renderer. It cannot tell you an intent is *wrong* — only that the code no longer
+## The dark surface, and why it is not decoration
+
+Seven probes are re-asserted with the dark palette applied (`?theme=dark` → `.bofa-theme-dark` on
+`<body>`, which is also where CDK attaches overlays, so panels and dialogs are themed too). The
+subset is chosen by one rule: a probe qualifies when its expected value is a **fixed brand constant
+or a geometry** — something our CSS states outright, and which therefore must not move when the
+palette does. Probes whose expected value is Material-derived are excluded, because under a dark
+palette the *correct* value is different and asserting the light one would be a bug in the test.
+
+This exists because it is the exact shape of the control run's worst finding: an override rewritten
+onto a selector that matches nothing, where the library default happens to equal the brand value —
+invisible in the light theme, wrong in the dark one
+(`CONTROL-external-design-system.md` §5.1). A single-theme oracle, pixel or computed-style, cannot
+see that class of defect at all.
+
+And because a second theme is itself a thing that can silently stop working, the block opens with an
+anti-vacuity control: it asserts that a surface we do **not** override (the Material table
+background) actually changes, `rgb(255,255,255)` → `rgb(66,66,66)`. If `?theme=dark` ever stops
+applying, that test fails first and loudly, instead of seven probes quietly re-passing against the
+light theme. `OV-18` was verified the hostile way in both themes: delete the rule and both the light
+and dark assertions fail (`oracle-logs/delete-rule-ov18.log`).
+
+**Limits, stated.** The contract asserts 24 light and 7 dark properties across 18 overrides; it is
+not a complete description of the design system. It runs at one viewport, and the dark pass covers
+7 of 18 overrides, not all of them. The image suite is still light-theme-only — there are no dark
+pixel baselines. It cannot tell you an intent is *wrong* — only that the code no longer
 delivers the value someone wrote down. And its expectations were captured from the running
 Angular 14 app, so they inherit whatever the v14 build actually did, not what the design
 spec says it should do.

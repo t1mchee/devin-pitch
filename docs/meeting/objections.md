@@ -29,7 +29,7 @@ in either run, so the failing snapshots are still failing in CI, visibly.
 Two things. First, the budget is absolute — 40 pixels — not a percentage: an earlier ratio budget
 of 0.1 % silently accepted a sub-800-pixel brand-colour regression on the table header, which is
 exactly the kind of change that ships a wrong red to millions of customers. Second, the suite runs
-in a pinned `cypress/included:10.11.0` container with `--skip-nx-cache`, because font hinting
+in a container pinned by digest (`cypress/included@sha256:058d1834…`, never the mutable tag) with `--skip-nx-cache`, because font hinting
 differs between a laptop and a CI runner by more than 40 pixels, and because an Nx cache hit is
 not a test run. Re-baselining is a separate, reviewable commit.
 

@@ -1,0 +1,308 @@
+=== host-renderer (not the pinned image) :: 2026-07-29T05:31:52Z ===
+
+> nx run retail-banking-e2e:e2e
+
+- Generating browser application bundles (phase: setup)...
+✔ Browser application bundle generation complete.
+
+Initial Chunk Files                                        | Names                    |  Raw Size
+vendor.js                                                  | vendor                   |   4.97 MB | 
+polyfills.js                                               | polyfills                | 239.94 kB | 
+styles.css, styles.js                                      | styles                   | 236.58 kB | 
+main.js                                                    | main                     | 146.61 kB | 
+runtime.js                                                 | runtime                  |  12.61 kB | 
+
+                                                           | Initial Total            |   5.59 MB
+
+Lazy Chunk Files                                           | Names                    |  Raw Size
+apps_retail-banking_src_app_showcase_showcase_module_ts.js | showcase-showcase-module |  46.74 kB | 
+
+Build at: 2026-07-29T05:31:58.522Z - Hash: 4dd0eae6a28fa661 - Time: 4297ms
+
+** Angular Live Development Server is listening on localhost:4200, open your browser on http://localhost:4200/ **
+
+
+✔ Compiled successfully.
+================================================================================
+  (Run Starting)
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Cypress:        10.11.0                                                                        │
+  │ Browser:        Electron 106 (headless)                                                        │
+  │ Node Version:   v20.18.1 (/usr/bin/node)                                                       │
+  │ Specs:          2 found (design-system.cy.ts, override-contract.cy.ts)                         │
+  │ Searched:       src/**/*.cy.{js,jsx,ts,tsx}                                                    │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+────────────────────────────────────────────────────────────────────────────────────────────────────
+                                                                                                    
+  Running:  design-system.cy.ts                                                             (1 of 2)
+
+  design system — visual baseline
+[visual] button-default: 1220 px (budget 40)
+    1) button renders to spec
+[visual] form-field-default: 2809 px (budget 40)
+    2) form-field renders to spec
+[visual] select-default: 1362 px (budget 40)
+    3) select renders to spec
+[visual] datepicker-default: 1149 px (budget 40)
+    4) datepicker renders to spec
+[visual] table-default: 4656 px (budget 40)
+    5) table renders to spec
+[visual] dialog-default: 747 px (budget 40)
+    6) dialog renders to spec
+[visual] tabs-default: 455 px (budget 40)
+    7) tabs renders to spec
+[visual] chips-default: 1126 px (budget 40)
+    8) chips renders to spec
+[visual] slide-toggle-default: 947 px (budget 40)
+    9) slide-toggle renders to spec
+[visual] autocomplete-default: 823 px (budget 40)
+    10) autocomplete renders to spec
+[visual] paginator-default: 1106 px (budget 40)
+    11) paginator renders to spec
+[visual] currency-input-default: 1056 px (budget 40)
+    12) currency-input renders to spec
+[visual] responsive-grid-default: 1097 px (budget 40)
+    13) responsive-grid renders to spec
+    ✓ form field renders its disabled and error states (168ms)
+    ✓ button exposes a disabled state (253ms)
+[visual] responsive-grid-md: 1097 px (budget 40)
+    14) responsive grid collapses below the md breakpoint
+[visual] responsive-grid-sm: 828 px (budget 40)
+    15) responsive grid hides the detail pane below the sm breakpoint
+  design system — overlay and interaction states
+[visual] dialog-open: 2434 px (budget 40)
+    16) opens the real dialog overlay
+[visual] select-panel-open: 849 px (budget 40)
+    17) opens the select panel
+[visual] autocomplete-panel-open: 761 px (budget 40)
+    18) opens the autocomplete panel
+[visual] datepicker-calendar-open: 1149 px (budget 40)
+    19) opens the datepicker calendar
+[visual] button-focus-ring: 1202 px (budget 40)
+    20) shows the keyboard focus ring on the primary button
+  retail banking — customer surface
+[visual] accounts-dashboard: 5963 px (budget 40)
+    21) renders the accounts dashboard
+  2 passing (12s)
+  21 failing
+  1) design system — visual baseline
+       button renders to spec:
+     Error: Visual regression on button-default: 1220 pixels differ (0.132%). Diff written to /home/ubuntu/repos/devin-pitch/bofa-digital-banking/apps/retail-banking-e2e/visual-diffs/button-default.diff.png. Explain the change in the PR or fix it. Do not re-baseline to make this pass.
+      at Context.eval (webpack:///./src/support/commands.ts:57:14)
+
+  2) design system — visual baseline
+       form-field renders to spec:
+     Error: Visual regression on form-field-default: 2809 pixels differ (0.305%). Diff written to /home/ubuntu/repos/devin-pitch/bofa-digital-banking/apps/retail-banking-e2e/visual-diffs/form-field-default.diff.png. Explain the change in the PR or fix it. Do not re-baseline to make this pass.
+      at Context.eval (webpack:///./src/support/commands.ts:57:14)
+
+  3) design system — visual baseline
+       select renders to spec:
+     Error: Visual regression on select-default: 1362 pixels differ (0.148%). Diff written to /home/ubuntu/repos/devin-pitch/bofa-digital-banking/apps/retail-banking-e2e/visual-diffs/select-default.diff.png. Explain the change in the PR or fix it. Do not re-baseline to make this pass.
+      at Context.eval (webpack:///./src/support/commands.ts:57:14)
+
+  4) design system — visual baseline
+       datepicker renders to spec:
+     Error: Visual regression on datepicker-default: 1149 pixels differ (0.125%). Diff written to /home/ubuntu/repos/devin-pitch/bofa-digital-banking/apps/retail-banking-e2e/visual-diffs/datepicker-default.diff.png. Explain the change in the PR or fix it. Do not re-baseline to make this pass.
+      at Context.eval (webpack:///./src/support/commands.ts:57:14)
+
+  5) design system — visual baseline
+       table renders to spec:
+     Error: Visual regression on table-default: 4656 pixels differ (0.505%). Diff written to /home/ubuntu/repos/devin-pitch/bofa-digital-banking/apps/retail-banking-e2e/visual-diffs/table-default.diff.png. Explain the change in the PR or fix it. Do not re-baseline to make this pass.
+      at Context.eval (webpack:///./src/support/commands.ts:57:14)
+
+  6) design system — visual baseline
+       dialog renders to spec:
+     Error: Visual regression on dialog-default: 747 pixels differ (0.081%). Diff written to /home/ubuntu/repos/devin-pitch/bofa-digital-banking/apps/retail-banking-e2e/visual-diffs/dialog-default.diff.png. Explain the change in the PR or fix it. Do not re-baseline to make this pass.
+      at Context.eval (webpack:///./src/support/commands.ts:57:14)
+
+  7) design system — visual baseline
+       tabs renders to spec:
+     Error: Visual regression on tabs-default: 455 pixels differ (0.049%). Diff written to /home/ubuntu/repos/devin-pitch/bofa-digital-banking/apps/retail-banking-e2e/visual-diffs/tabs-default.diff.png. Explain the change in the PR or fix it. Do not re-baseline to make this pass.
+      at Context.eval (webpack:///./src/support/commands.ts:57:14)
+
+  8) design system — visual baseline
+       chips renders to spec:
+     Error: Visual regression on chips-default: 1126 pixels differ (0.122%). Diff written to /home/ubuntu/repos/devin-pitch/bofa-digital-banking/apps/retail-banking-e2e/visual-diffs/chips-default.diff.png. Explain the change in the PR or fix it. Do not re-baseline to make this pass.
+      at Context.eval (webpack:///./src/support/commands.ts:57:14)
+
+  9) design system — visual baseline
+       slide-toggle renders to spec:
+     Error: Visual regression on slide-toggle-default: 947 pixels differ (0.103%). Diff written to /home/ubuntu/repos/devin-pitch/bofa-digital-banking/apps/retail-banking-e2e/visual-diffs/slide-toggle-default.diff.png. Explain the change in the PR or fix it. Do not re-baseline to make this pass.
+      at Context.eval (webpack:///./src/support/commands.ts:57:14)
+
+  10) design system — visual baseline
+       autocomplete renders to spec:
+     Error: Visual regression on autocomplete-default: 823 pixels differ (0.089%). Diff written to /home/ubuntu/repos/devin-pitch/bofa-digital-banking/apps/retail-banking-e2e/visual-diffs/autocomplete-default.diff.png. Explain the change in the PR or fix it. Do not re-baseline to make this pass.
+      at Context.eval (webpack:///./src/support/commands.ts:57:14)
+
+  11) design system — visual baseline
+       paginator renders to spec:
+     Error: Visual regression on paginator-default: 1106 pixels differ (0.120%). Diff written to /home/ubuntu/repos/devin-pitch/bofa-digital-banking/apps/retail-banking-e2e/visual-diffs/paginator-default.diff.png. Explain the change in the PR or fix it. Do not re-baseline to make this pass.
+      at Context.eval (webpack:///./src/support/commands.ts:57:14)
+
+  12) design system — visual baseline
+       currency-input renders to spec:
+     Error: Visual regression on currency-input-default: 1056 pixels differ (0.115%). Diff written to /home/ubuntu/repos/devin-pitch/bofa-digital-banking/apps/retail-banking-e2e/visual-diffs/currency-input-default.diff.png. Explain the change in the PR or fix it. Do not re-baseline to make this pass.
+      at Context.eval (webpack:///./src/support/commands.ts:57:14)
+
+  13) design system — visual baseline
+       responsive-grid renders to spec:
+     Error: Visual regression on responsive-grid-default: 1097 pixels differ (0.119%). Diff written to /home/ubuntu/repos/devin-pitch/bofa-digital-banking/apps/retail-banking-e2e/visual-diffs/responsive-grid-default.diff.png. Explain the change in the PR or fix it. Do not re-baseline to make this pass.
+      at Context.eval (webpack:///./src/support/commands.ts:57:14)
+
+  14) design system — visual baseline
+       responsive grid collapses below the md breakpoint:
+     Error: Visual regression on responsive-grid-md: 1097 pixels differ (0.198%). Diff written to /home/ubuntu/repos/devin-pitch/bofa-digital-banking/apps/retail-banking-e2e/visual-diffs/responsive-grid-md.diff.png. Explain the change in the PR or fix it. Do not re-baseline to make this pass.
+      at Context.eval (webpack:///./src/support/commands.ts:57:14)
+
+  15) design system — visual baseline
+       responsive grid hides the detail pane below the sm breakpoint:
+     Error: Visual regression on responsive-grid-sm: 828 pixels differ (0.205%). Diff written to /home/ubuntu/repos/devin-pitch/bofa-digital-banking/apps/retail-banking-e2e/visual-diffs/responsive-grid-sm.diff.png. Explain the change in the PR or fix it. Do not re-baseline to make this pass.
+      at Context.eval (webpack:///./src/support/commands.ts:57:14)
+
+  16) design system — overlay and interaction states
+       opens the real dialog overlay:
+     Error: Visual regression on dialog-open: 2434 pixels differ (0.264%). Diff written to /home/ubuntu/repos/devin-pitch/bofa-digital-banking/apps/retail-banking-e2e/visual-diffs/dialog-open.diff.png. Explain the change in the PR or fix it. Do not re-baseline to make this pass.
+      at Context.eval (webpack:///./src/support/commands.ts:57:14)
+
+  17) design system — overlay and interaction states
+       opens the select panel:
+     Error: Visual regression on select-panel-open: 849 pixels differ (0.092%). Diff written to /home/ubuntu/repos/devin-pitch/bofa-digital-banking/apps/retail-banking-e2e/visual-diffs/select-panel-open.diff.png. Explain the change in the PR or fix it. Do not re-baseline to make this pass.
+      at Context.eval (webpack:///./src/support/commands.ts:57:14)
+
+  18) design system — overlay and interaction states
+       opens the autocomplete panel:
+     Error: Visual regression on autocomplete-panel-open: 761 pixels differ (0.083%). Diff written to /home/ubuntu/repos/devin-pitch/bofa-digital-banking/apps/retail-banking-e2e/visual-diffs/autocomplete-panel-open.diff.png. Explain the change in the PR or fix it. Do not re-baseline to make this pass.
+      at Context.eval (webpack:///./src/support/commands.ts:57:14)
+
+  19) design system — overlay and interaction states
+       opens the datepicker calendar:
+     Error: Visual regression on datepicker-calendar-open: 1149 pixels differ (0.125%). Diff written to /home/ubuntu/repos/devin-pitch/bofa-digital-banking/apps/retail-banking-e2e/visual-diffs/datepicker-calendar-open.diff.png. Explain the change in the PR or fix it. Do not re-baseline to make this pass.
+      at Context.eval (webpack:///./src/support/commands.ts:57:14)
+
+  20) design system — overlay and interaction states
+       shows the keyboard focus ring on the primary button:
+     Error: Visual regression on button-focus-ring: 1202 pixels differ (0.130%). Diff written to /home/ubuntu/repos/devin-pitch/bofa-digital-banking/apps/retail-banking-e2e/visual-diffs/button-focus-ring.diff.png. Explain the change in the PR or fix it. Do not re-baseline to make this pass.
+      at Context.eval (webpack:///./src/support/commands.ts:57:14)
+
+  21) retail banking — customer surface
+       renders the accounts dashboard:
+     Error: Visual regression on accounts-dashboard: 5963 pixels differ (0.647%). Diff written to /home/ubuntu/repos/devin-pitch/bofa-digital-banking/apps/retail-banking-e2e/visual-diffs/accounts-dashboard.diff.png. Explain the change in the PR or fix it. Do not re-baseline to make this pass.
+      at Context.eval (webpack:///./src/support/commands.ts:57:14)
+
+  (Results)
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Tests:        23                                                                               │
+  │ Passing:      2                                                                                │
+  │ Failing:      21                                                                               │
+  │ Pending:      0                                                                                │
+  │ Skipped:      0                                                                                │
+  │ Screenshots:  21                                                                               │
+  │ Video:        false                                                                            │
+  │ Duration:     11 seconds                                                                       │
+  │ Spec Ran:     design-system.cy.ts                                                              │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+  (Screenshots)
+  -  /home/ubuntu/repos/devin-pitch/bofa-digital-banking/dist/cypress/apps/retail-ban     (1280x720)
+     king-e2e/screenshots/design-system.cy.ts/vr__button-default.png                                
+  -  /home/ubuntu/repos/devin-pitch/bofa-digital-banking/dist/cypress/apps/retail-ban     (1280x720)
+     king-e2e/screenshots/design-system.cy.ts/vr__form-field-default.png                            
+  -  /home/ubuntu/repos/devin-pitch/bofa-digital-banking/dist/cypress/apps/retail-ban     (1280x720)
+     king-e2e/screenshots/design-system.cy.ts/vr__select-default.png                                
+  -  /home/ubuntu/repos/devin-pitch/bofa-digital-banking/dist/cypress/apps/retail-ban     (1280x720)
+     king-e2e/screenshots/design-system.cy.ts/vr__datepicker-default.png                            
+  -  /home/ubuntu/repos/devin-pitch/bofa-digital-banking/dist/cypress/apps/retail-ban     (1280x720)
+     king-e2e/screenshots/design-system.cy.ts/vr__table-default.png                                 
+  -  /home/ubuntu/repos/devin-pitch/bofa-digital-banking/dist/cypress/apps/retail-ban     (1280x720)
+     king-e2e/screenshots/design-system.cy.ts/vr__dialog-default.png                                
+  -  /home/ubuntu/repos/devin-pitch/bofa-digital-banking/dist/cypress/apps/retail-ban     (1280x720)
+     king-e2e/screenshots/design-system.cy.ts/vr__tabs-default.png                                  
+  -  /home/ubuntu/repos/devin-pitch/bofa-digital-banking/dist/cypress/apps/retail-ban     (1280x720)
+     king-e2e/screenshots/design-system.cy.ts/vr__chips-default.png                                 
+  -  /home/ubuntu/repos/devin-pitch/bofa-digital-banking/dist/cypress/apps/retail-ban     (1280x720)
+     king-e2e/screenshots/design-system.cy.ts/vr__slide-toggle-default.png                          
+  -  /home/ubuntu/repos/devin-pitch/bofa-digital-banking/dist/cypress/apps/retail-ban     (1280x720)
+     king-e2e/screenshots/design-system.cy.ts/vr__autocomplete-default.png                          
+  -  /home/ubuntu/repos/devin-pitch/bofa-digital-banking/dist/cypress/apps/retail-ban     (1280x720)
+     king-e2e/screenshots/design-system.cy.ts/vr__paginator-default.png                             
+  -  /home/ubuntu/repos/devin-pitch/bofa-digital-banking/dist/cypress/apps/retail-ban     (1280x720)
+     king-e2e/screenshots/design-system.cy.ts/vr__currency-input-default.png                        
+  -  /home/ubuntu/repos/devin-pitch/bofa-digital-banking/dist/cypress/apps/retail-ban     (1280x720)
+     king-e2e/screenshots/design-system.cy.ts/vr__responsive-grid-default.png                       
+  -  /home/ubuntu/repos/devin-pitch/bofa-digital-banking/dist/cypress/apps/retail-ban      (768x720)
+     king-e2e/screenshots/design-system.cy.ts/vr__responsive-grid-md.png                            
+  -  /home/ubuntu/repos/devin-pitch/bofa-digital-banking/dist/cypress/apps/retail-ban      (560x720)
+     king-e2e/screenshots/design-system.cy.ts/vr__responsive-grid-sm.png                            
+  -  /home/ubuntu/repos/devin-pitch/bofa-digital-banking/dist/cypress/apps/retail-ban     (1280x720)
+     king-e2e/screenshots/design-system.cy.ts/vr__dialog-open.png                                   
+  -  /home/ubuntu/repos/devin-pitch/bofa-digital-banking/dist/cypress/apps/retail-ban     (1280x720)
+     king-e2e/screenshots/design-system.cy.ts/vr__select-panel-open.png                             
+  -  /home/ubuntu/repos/devin-pitch/bofa-digital-banking/dist/cypress/apps/retail-ban     (1280x720)
+     king-e2e/screenshots/design-system.cy.ts/vr__autocomplete-panel-open.png                       
+  -  /home/ubuntu/repos/devin-pitch/bofa-digital-banking/dist/cypress/apps/retail-ban     (1280x720)
+     king-e2e/screenshots/design-system.cy.ts/vr__datepicker-calendar-open.png                      
+  -  /home/ubuntu/repos/devin-pitch/bofa-digital-banking/dist/cypress/apps/retail-ban     (1280x720)
+     king-e2e/screenshots/design-system.cy.ts/vr__button-focus-ring.png                             
+  -  /home/ubuntu/repos/devin-pitch/bofa-digital-banking/dist/cypress/apps/retail-ban     (1280x720)
+     king-e2e/screenshots/design-system.cy.ts/vr__accounts-dashboard.png                            
+────────────────────────────────────────────────────────────────────────────────────────────────────
+                                                                                                    
+  Running:  override-contract.cy.ts                                                         (2 of 2)
+
+  design system — override contract (computed styles)
+    ✓ OV-01: Disabled field label stays legible (WCAG AA) against the slate palette (568ms)
+    ✓ OV-01b: Field underline uses the BoA slate rule, not the Material default (140ms)
+    ✓ OV-02: Error text sits on a 20px line box so field height never jumps on validation (118ms)
+    ✓ OV-03: Primary button is brand red with 8px optical icon/label spacing (115ms)
+    ✓ OV-04: Keyboard focus ring is visible on white and on slate-50 (252ms)
+    ✓ OV-05: Statement rows keep fixed heights so 50 rows paginate predictably in print (133ms)
+    ✓ OV-05b: Currency figures use tabular numerals and right-align on the decimal (174ms)
+    ✓ OV-05c: Header cells carry the slate-900 brand weight, not the Material grey (194ms)
+    ✓ OV-05d: Zebra striping on even rows for statement scanability (137ms)
+    ✓ OV-06: Sort arrow is dimmed until hover so it does not read as an active filter (114ms)
+    ✓ OV-07: Active option in the account picker is tinted brand red, not Material grey (335ms)
+    ✓ OV-08: Selected option is brand red, not accent navy (navy reads as a link here) (192ms)
+    ✓ OV-09: Consent toggle is unambiguous at arm’s length on a tablet (97ms)
+    ✓ OV-09b: A granted consent reads green, not brand red (97ms)
+    ✓ OV-10: Section ink bar is legible on a 4K branch display (120ms)
+    ✓ OV-11: Category chips keep a 28px rhythm inside the filter drawer (118ms)
+    ✓ OV-12: Step-up dialog matches the mobile MFA modal: tight padding, squared corners (316ms)
+    ✓ OV-12b: A short confirmation body never acquires an inner scrollbar (191ms)
+    ✓ OV-13: Selected day is brand red; today is outlined, not a second filled circle (210ms)
+    ✓ OV-14: Range label stays on screen on a 1280px branch terminal (109ms)
+    ✓ OV-15: Payee panel never covers the Confirmation of Payee copy (255ms)
+    ✓ OV-16: Amount entry right-aligns on tabular numerals (109ms)
+    ✓ OV-17: Compact density is materially shorter than the default field (206ms)
+  23 passing (4s)
+  (Results)
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Tests:        23                                                                               │
+  │ Passing:      23                                                                               │
+  │ Failing:      0                                                                                │
+  │ Pending:      0                                                                                │
+  │ Skipped:      0                                                                                │
+  │ Screenshots:  0                                                                                │
+  │ Video:        false                                                                            │
+  │ Duration:     4 seconds                                                                        │
+  │ Spec Ran:     override-contract.cy.ts                                                          │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+================================================================================
+  (Run Finished)
+       Spec                                              Tests  Passing  Failing  Pending  Skipped  
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ ✖  design-system.cy.ts                      00:11       23        2       21        -        - │
+  ├────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ ✔  override-contract.cy.ts                  00:04       23       23        -        -        - │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+    ✖  1 of 2 failed (50%)                      00:16       46       25       21        -        -  
+
+ 
+
+ >  NX   Running target "retail-banking-e2e:e2e" failed
+
+   Failed tasks:
+   
+   - retail-banking-e2e:e2e
+   
+   Hint: run the command with --verbose for more details.
+

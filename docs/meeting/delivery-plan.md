@@ -12,9 +12,12 @@ follows from that shape.
 | Hop | What actually breaks | Automatable share |
 |---|---|---|
 | 14 → 15 | Material MDC rewrite: every override targeting Material internals stops matching, silently. Bundle grows past budget. | Codemods run clean; the theming work is the job. **[measured]** — `docs/evidence/GATE-01-...md`: migration succeeds, build then fails, and CSS never fails to compile. |
-| 15 → 16 | `@angular/flex-layout` has no release past `15.0.0-beta.42`. Every `fx*` directive becomes hand-written CSS. Legacy Material components removed, so 15's escape hatch closes. | Low. This is the hop that cannot be dodged, which is why it is being run rather than described — session [19b61285](https://app.devin.ai/sessions/19b61285a4ed4715b59cdbacfbf2095e). |
-| 16 → 17 | Standalone-first defaults, `entryComponents` removal, Node runtime moves. | High. |
-| 17 → 18 | Control flow syntax is opt-in; mostly dependency alignment (NgRx, RxJS). | High. |
+| 15 → 16 | `@angular/flex-layout` has no release past `15.0.0-beta.42`. Every `fx*` directive becomes hand-written CSS. Legacy Material components removed, so 15's escape hatch closes. | Low. **[measured]** — run, not landed: PR [#5](https://github.com/t1mchee/devin-pitch/pull/5), written up in `docs/evidence/PHASE2-15-to-16.md`. The `fx*` rewrite holds (the three `responsive-grid` baselines pass at 0 px in CI), Node moved 16 → 18, and the run then **misexplained its own red image suite** as a font problem. Read that section; it is the most useful thing on this page. |
+| 16 → 17 | Standalone-first defaults, `entryComponents` removal, Node runtime moves. | **[model, unevidenced]** — expected high, from the Angular changelogs. Nobody has run it here. |
+| 17 → 18 | Control flow syntax is opt-in; mostly dependency alignment (NgRx, RxJS). | **[model, unevidenced]** — same. And "dependency alignment" is doing a lot of work: `@ngrx/*` ships its own majors and its own schematics, and this repo's NgRx layer has no unit tests, so it is the least evidenced thing in the programme. |
+
+**2 of 4 hops have been run. Neither is merged.** Say that sentence out loud in the meeting before
+anyone else says it for you.
 
 The honest ordering point: hops 3 and 4 are cheap **only if** 1 and 2 were done properly. A team
 that re-baselines its way through 14→15 pays for it twice.
@@ -50,16 +53,29 @@ number of PRs — that is the whole basis of the model below.
   why the consumer tests added in this PR exist to check it rather than assert it.
 - Consumer PR review: 15–30 min each when the library's questions are already answered.
 
-| | Library | 20 consumers | Total per hop |
+| | Library | 20 consumers **[model]** | Total per hop |
 |---|---|---|---|
 | Distinct decisions to make | 3–5 | ~0 (answered once, applied via the parameterised playbook) | 3–5 |
 | Reviewer hours | ~6 | 5–10 | **11–16 h** |
 | Elapsed, at 5 concurrent sessions | 1–2 days | 2–3 days | **~1 week** |
 
-Four hops ⇒ **~4 weeks of elapsed time and 45–65 reviewer hours**, against an EOL deadline. The
-sensitivity is entirely in one variable: if your consumers have their own Material overrides
-outside `ui-core`, the consumer column stops being ~0 and the model breaks. **That is the first
-thing the pilot measures**, and it is measurable in a day with the `component-audit` playbook.
+Four hops ⇒ **~4 weeks of elapsed time and 45–65 reviewer hours**, against an EOL deadline.
+
+**Three ways this model is wrong, before you find them.**
+
+1. *The consumer column is a model, not a measurement.* Three consumers in one repo behind a
+   wrapper is not twenty repos with their own overrides. If your consumers style Material
+   directly, the column stops being ~0 and the total is not 45–65 hours. The
+   `component-audit` playbook measures this in a day, and it is pilot task #1.
+2. *n = 2, same model, same prompt.* The runs agreeing is evidence that the questions are few; it
+   is **not** evidence that a bad stop gets caught. Two runs produced the *same wrong reason* for
+   refusing OV-17. Twenty consumer PRs are therefore not twenty independent chances to catch that
+   — they are one chance repeated twenty times. The pilot should measure *distinct wrong reasons
+   per hop*, and if that number is not ~1, this model is optimistic.
+3. *There is no human control.* Every number here is Devin's cost. Nobody has measured what this
+   migration costs your team today, so "18 minutes" has no denominator and this page contains no
+   savings figure. The pilot must run one hop with a human control on a comparable consumer, or
+   week 3 is a conversation without arithmetic.
 
 ## 4. Escalation — who owns what, and how fast
 

@@ -234,7 +234,10 @@ export const OVERRIDE_PROBES: OverrideProbe[] = [
     open: 'datepicker',
     target: '.mat-calendar-body-selected',
     // KNOWN WEAK, same reason as OV-08: primary is brand red, so Material fills
-    // the selected day red on its own. OV-13b carries the part that is ours.
+    // the selected day red on its own. The white foreground is ours (Material's
+    // contrast for this palette hue is also white, so treat the whole probe as a
+    // rendered-colour tripwire, not as proof the rule fires). Kept because the
+    // dark-surface run below is where this one earns its place.
     expect: { 'background-color': RED_600, color: 'rgb(255, 255, 255)' },
   },
   {
@@ -269,4 +272,37 @@ export const OVERRIDE_PROBES: OverrideProbe[] = [
     target: '[data-variant=compact] .mat-mdc-form-field-infix',
     expect: { 'padding-top': '6.4px', 'padding-bottom': '6.4px' },
   },
+  {
+    ov: 'OV-18',
+    intent: 'Legacy shell embeds tabs without a second divider line',
+    component: 'tabs',
+    // The `bofa-legacy-shell` variant renders on the tabs route. Material's own
+    // `.mat-tab-header` carries a 1px divider; inside the legacy shell the
+    // surrounding chrome already draws one, so ours must be 0. Measured, not
+    // assumed: OV-10 above asserts the non-legacy group, so the two variants
+    // pin each other.
+    target: '.bofa-tabs.bofa-legacy-shell .mat-tab-header',
+    expect: { 'border-bottom-width': '0px' },
+  },
 ];
+
+/**
+ * The subset re-asserted on the dark surface (`?theme=dark`).
+ *
+ * Selection rule, and it is deliberately narrow: a probe belongs here when its
+ * expected value is a **fixed brand constant or a geometry** — something our CSS
+ * states outright and which therefore must not move when the palette does.
+ * Probes whose expected value is a Material-derived colour are excluded,
+ * because the correct dark-theme value is *different* and asserting the light
+ * one would be a bug in the test, not a finding.
+ *
+ * What this buys: two of the three failure modes the external control run found
+ * (dead selector where the default coincides with the brand value; a
+ * comma-separated selector left half-migrated) are theme-dependent. Under a
+ * second palette the coincidence stops holding and the probe goes red. That is
+ * the class of defect a single-theme oracle cannot see — including a pixel
+ * oracle, which only ever screenshots the light theme here.
+ */
+export const DARK_PROBES: OverrideProbe[] = OVERRIDE_PROBES.filter((probe) =>
+  ['OV-05d', 'OV-07', 'OV-10', 'OV-11', 'OV-15', 'OV-17', 'OV-18'].includes(probe.ov)
+);
