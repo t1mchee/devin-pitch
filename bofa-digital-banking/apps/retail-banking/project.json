@@ -91,7 +91,7 @@
       "outputs": ["coverage/apps/retail-banking"],
       "options": {
         "jestConfig": "apps/retail-banking/jest.config.ts",
-        "passWithNoTests": true
+        "passWithNoTests": false
       }
     }
   },

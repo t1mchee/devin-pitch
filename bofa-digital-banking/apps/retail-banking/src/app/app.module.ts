@@ -17,11 +17,23 @@ import { SignInComponent } from './sign-in/sign-in.component';
 import { transactionsReducer } from './state/transactions.reducer';
 import { TransactionsEffects } from './state/transactions.effects';
 
+/**
+ * Visual-regression mode. `?vr=1` disables Angular animations for the whole
+ * app so that an overlay is captured in its settled state rather than part way
+ * through an enter transition — without it, a dialog snapshot differs by
+ * thousands of pixels between runs and the oracle is noise.
+ *
+ * It is a query flag rather than an environment build so the same bundle the
+ * customer gets is the bundle under test.
+ */
+const animationsDisabled =
+  typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('vr');
+
 @NgModule({
   declarations: [AppComponent, DashboardComponent, SignInComponent],
   imports: [
     BrowserModule,
-    BrowserAnimationsModule,
+    BrowserAnimationsModule.withConfig({ disableAnimations: animationsDisabled }),
     HttpClientModule,
     RouterModule.forRoot(APP_ROUTES, { initialNavigation: 'enabledBlocking' }),
     // NgRx NgModule registration. `provideStore` is the standalone-era

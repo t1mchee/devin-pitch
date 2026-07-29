@@ -13,6 +13,12 @@ defaults:
   run:
     working-directory: bofa-digital-banking
 
+env:
+  # Digest pin, not a tag. `cypress/included:10.11.0` is mutable; the baselines
+  # are only a contract if the renderer that produced them cannot be replaced
+  # underneath the check.
+  CYPRESS_IMAGE: cypress/included@sha256:058d1834239bf09b381325b8369d05e9e0516a46b65b32e6dc0c991801dc517a
+
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -42,15 +48,53 @@ jobs:
 
       # Pixel baselines are only meaningful against a pinned renderer: font
       # hinting differs between this runner and a developer laptop by enough
-      # pixels to trip the 40px budget. The image is the contract, and
-      # --skip-nx-cache keeps a cached result from standing in for a real run.
+      # pixels to trip the 40px budget. The image is the contract, so it is
+      # pinned by digest rather than by a mutable tag, and --skip-nx-cache keeps
+      # a cached result from standing in for a real run.
       - name: Visual regression
         run: |
           docker run --rm -u $(id -u):$(id -g) \
             -e HOME=/tmp -e CYPRESS_CACHE_FOLDER=/root/.cache/Cypress \
             -v "$GITHUB_WORKSPACE":/w -w /w/bofa-digital-banking \
-            --entrypoint bash cypress/included:10.11.0 \
+            --entrypoint bash "$CYPRESS_IMAGE" \
             -c "npx nx e2e retail-banking-e2e --skip-nx-cache"
+
+      # Every rule in AGENTS.md that protects the oracle is behavioural until
+      # something enforces it. These files decide whether a visual regression is
+      # visible at all, so a PR that touches them must say so out loud.
+      - name: Guard the oracle
+        if: github.event_name == 'pull_request'
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: |
+          cd "$GITHUB_WORKSPACE"
+          git fetch --no-tags --depth=1 origin "$BASE" "$HEAD" 2>/dev/null || git fetch --no-tags origin
+          CHANGED=$(git diff --name-only "$BASE" "$HEAD" -- \
+            'bofa-digital-banking/apps/retail-banking-e2e/visual-baselines/**' \
+            'bofa-digital-banking/apps/retail-banking-e2e/src/support/visual-regression.plugin.ts' \
+            'bofa-digital-banking/apps/*/project.json' || true)
+          if [ -z "$CHANGED" ]; then
+            echo "No baseline, oracle or budget change in this PR."
+            exit 0
+          fi
+          echo "::warning::This PR changes the visual oracle or a budget:"
+          echo "$CHANGED"
+          BODY=$(jq -r '.pull_request.body // ""' "$GITHUB_EVENT_PATH")
+          if echo "$BODY" | grep -qi 'BASELINE-CHANGE:'; then
+            echo "Declared in the PR description. Requires design-system owner review (CODEOWNERS)."
+            exit 0
+          fi
+          echo "::error::Baseline/oracle/budget changed without a 'BASELINE-CHANGE: <reason>' line in the PR description."
+          exit 1
+
+      # Report-only on purpose: this repository pins an Angular 14 dependency
+      # set that is end-of-life by design, so a blocking gate here would be
+      # permanently red and therefore ignored. What matters is that the number
+      # is printed on every migration PR and moves in the right direction.
+      - name: Dependency audit (report only)
+        if: always()
+        run: npm audit --audit-level=critical || true
 
       - name: Upload visual diffs
         if: failure()

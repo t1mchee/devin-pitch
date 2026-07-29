@@ -1,0 +1,23 @@
+# Ownership of the things an automated migration must not decide on its own.
+#
+# The CI job "Guard the oracle" makes a baseline or budget change visible; this
+# file makes a named human accountable for it. Both are needed: a warning nobody
+# owns is a warning nobody reads.
+
+# The design system and its theming intent.
+/bofa-digital-banking/libs/ui-core/                                   @t1mchee
+/bofa-digital-banking/libs/ui-core/src/lib/theming/                   @t1mchee
+
+# The visual oracle: baselines, the comparison itself, and the diff budget.
+/bofa-digital-banking/apps/retail-banking-e2e/visual-baselines/       @t1mchee
+/bofa-digital-banking/apps/retail-banking-e2e/src/support/            @t1mchee
+
+# Auth and analytics boundaries.
+/bofa-digital-banking/libs/auth-sdk-wrapper/                          @t1mchee
+/bofa-digital-banking/libs/analytics-sdk-shim/                        @t1mchee
+
+# The rules an agent is held to, the environment it runs in, and CI itself.
+/bofa-digital-banking/AGENTS.md                                       @t1mchee
+/bofa-digital-banking/.devin/                                         @t1mchee
+/playbooks/                                                           @t1mchee
+/.github/                                                             @t1mchee

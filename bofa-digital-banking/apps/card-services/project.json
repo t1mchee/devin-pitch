@@ -87,7 +87,7 @@
       "outputs": ["coverage/apps/card-services"],
       "options": {
         "jestConfig": "apps/card-services/jest.config.ts",
-        "passWithNoTests": true
+        "passWithNoTests": false
       }
     }
   },

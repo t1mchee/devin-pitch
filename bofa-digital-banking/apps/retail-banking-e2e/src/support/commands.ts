@@ -22,7 +22,9 @@ declare global {
 }
 
 Cypress.Commands.add('visitShowcase', (component: string) => {
-  cy.visit(`/__showcase/${component}`);
+  // `?vr=1` disables Angular animations app-wide (see app.module.ts) so an
+  // overlay is captured settled rather than mid-transition.
+  cy.visit(`/__showcase/${component}?vr=1`);
   cy.get('.showcase', { timeout: 15000 }).should('be.visible');
   // Let fonts settle before capture; a half-loaded webfont is the classic
   // source of false positives in visual regression.

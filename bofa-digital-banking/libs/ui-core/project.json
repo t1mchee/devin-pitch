@@ -26,7 +26,7 @@
       "outputs": ["coverage/libs/ui-core"],
       "options": {
         "jestConfig": "libs/ui-core/jest.config.ts",
-        "passWithNoTests": true
+        "passWithNoTests": false
       }
     },
     "lint": {

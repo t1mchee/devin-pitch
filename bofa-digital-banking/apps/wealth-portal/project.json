@@ -87,7 +87,7 @@
       "outputs": ["coverage/apps/wealth-portal"],
       "options": {
         "jestConfig": "apps/wealth-portal/jest.config.ts",
-        "passWithNoTests": true
+        "passWithNoTests": false
       }
     }
   },
