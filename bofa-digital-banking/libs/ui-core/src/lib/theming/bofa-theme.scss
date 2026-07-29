@@ -34,7 +34,18 @@ $boa-theme: mat.define-light-theme(
 // in the light theme and wrong in the dark one. A single-theme oracle cannot
 // see that class of defect at all. Colours only: geometry, density and
 // typography are shared with the light theme by construction.
-$boa-dark-theme: mat.define-dark-theme($boa-primary, $boa-accent, $boa-warn);
+// v15 map signature (see the light theme above). Colours only by design: the
+// dark surface is applied via `all-component-colors`, so it inherits the light
+// theme's geometry, density and typography. Palette values are unchanged.
+$boa-dark-theme: mat.define-dark-theme(
+  (
+    color: (
+      primary: $boa-primary,
+      accent: $boa-accent,
+      warn: $boa-warn,
+    ),
+  )
+);
 
 .bofa-theme-dark {
   @include mat.all-component-colors($boa-dark-theme);

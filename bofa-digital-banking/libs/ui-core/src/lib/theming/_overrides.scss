@@ -397,21 +397,19 @@
 
 // OV-18 — Keep in sync with the legacy shell.
 //
-// STOP-AND-ASK (unmapped): the class names map mechanically to MDC
-// (`.mat-mdc-tab-header`, `.mat-mdc-tab-body-content`), but the intent — "keep in
-// sync with the legacy shell" — references an external contract (the "legacy
-// shell") that is not present in this repository. Whether removing the tab-header
-// bottom border and making the tab body overflow visible still "keeps it in sync"
-// after the MDC rebuild cannot be verified from the code. Per the playbook, an
-// override whose intent is ambiguous/unrecoverable is a question for the design
-// system owner, so the override is left intact (below) and reported rather than
-// silently ported.
+// MAPPED (was stop-and-ask). The base now ships the "legacy shell" as an in-repo
+// variant — `bofa-tabs [legacyShell]="true"` renders `.bofa-tabs.bofa-legacy-shell`
+// — and the override contract pins the intent concretely: the tab header must
+// carry no divider (`border-bottom-width: 0`) because the surrounding legacy
+// chrome already draws one, so a second line would double it. MDC renames the
+// header to `.mat-mdc-tab-header` and the body to `.mat-mdc-tab-body-content`;
+// the intent (no second divider, visible body overflow) is preserved on those.
 .bofa-tabs.bofa-legacy-shell {
-  .mat-tab-header {
+  .mat-mdc-tab-header {
     border-bottom-width: 0;
   }
 
-  .mat-tab-body-content {
+  .mat-mdc-tab-body-content {
     overflow: visible;
   }
 }

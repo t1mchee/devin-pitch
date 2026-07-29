@@ -281,7 +281,8 @@ export const OVERRIDE_PROBES: OverrideProbe[] = [
     // surrounding chrome already draws one, so ours must be 0. Measured, not
     // assumed: OV-10 above asserts the non-legacy group, so the two variants
     // pin each other.
-    target: '.bofa-tabs.bofa-legacy-shell .mat-tab-header',
+    // MDC: `.mat-tab-header` → `.mat-mdc-tab-header` (see OV-18 in _overrides.scss).
+    target: '.bofa-tabs.bofa-legacy-shell .mat-mdc-tab-header',
     expect: { 'border-bottom-width': '0px' },
   },
 ];
