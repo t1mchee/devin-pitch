@@ -6,15 +6,15 @@ to the same standard the external control run was held to. Each log is a full
 `npm run visual` transcript (digest-pinned `cypress/included@sha256:058d1834…`, `--skip-nx-cache`),
 captured by `scripts/capture-oracle-logs.sh` on 2026-07-29. Everything except
 `dark-contrast-regression.log` and `host-renderer-drift-prefonts.log` was re-captured after the
-round-11 sweep fixes landed, so those logs show the current **154-test** suite (23 image + 77
-computed-style + 54 sweep). The two exceptions are kept as originally captured because each is the
+round-12 sweep fixes landed, so those logs show the current **156-test** suite (23 image + 77
+computed-style + 56 sweep). The two exceptions are kept as originally captured because each is the
 record of a specific state at a specific moment that no longer reproduces: a dark-theme contrast
 defect on the 59-test suite (`delete-rule-dark-zebra.log` is its current equivalent), and this host's
 renderer before an apt install changed its fonts.
 
 | log | what it establishes | result |
 |---|---|---|
-| `noise-repeat-{1,2,3}.log` | renderer noise floor: three consecutive runs, unmodified tree | **0 px on all 21 snapshots**, all 154 tests green, three times |
+| `noise-repeat-{1,2,3}.log` | renderer noise floor: three consecutive runs, unmodified tree | **0 px on all 21 snapshots**, all 156 tests green, three times |
 | `host-renderer-drift-prefonts.log` | why the image is digest-pinned: the same suite on the host renderer against the same baselines, 12:02 | **21 of 21 snapshots fail**, `tabs-default` 455 px … `accounts-dashboard` 5,963 px, while every sweep and override-contract test passes — the drift is the renderer, not the CSS |
 | `host-renderer-drift.log` | the same command, same commit, same baselines, 20:37 — after recovering a broken desktop session installed `kde-plasma-desktop`/`ffmpeg` and with them font packages | **0 px on all 21**, fully green. Read with the row above: the renderer moved under the project *without a commit*, and the digest pin is why no baseline moved with it. A green host run is not evidence that the pin is unnecessary (`ORACLE-noise-floor.md` §2.1) |
 | `fault-injection-colour.log` | the budget catches a real regression: one brand colour swapped to red in `_overrides.scss` | `table-default` **753 px**, `accounts-dashboard` **788 px** — and probe `OV-05c` fails |
@@ -46,6 +46,10 @@ renderer before an apt install changed its fonts.
 | `regress-oracle-cover-contains.log` | round 11: a covering layer must *contain* the text's box, not cover most of it | the sticky-veil self-test fails at **13.20:1** — a veil inside a `position: sticky` wrapper is offset by the sticky `top`, falls eight pixels short, and white-on-white text scores as legible |
 | `regress-oracle-clip-firstvalue.log` | round 11: "clipped away" decided by the **first** percentage in `inset()` | two failures in one test — `inset(45%)` on a 300×28 box hid a painted 10% band from the gate, and `inset(0 0 100% 0)`, clipped to nothing, was measured as visible |
 | `regress-oracle-modal-textonly.log` | round 11: inertness armed by any visible pane containing a character of text | the modal self-test fails — a **2×2 pane containing a full stop** switched the gate off for every `aria-hidden` subtree on the page, exactly as the stray backdrop did a round earlier |
+| `regress-oracle-static-scrim.log` | round 12: covers collected by `position !== static`, as they were until this round | the static-cover self-test fails at **13.20:1** — an ordinary in-flow `div` with a background paints over a negative `z-index`, so text on a blank region measured as legible |
+| `regress-oracle-indicator-unscoped.log` | round 12: the indicator rule fires on shape alone, with no requirement that the mark indicates anything | the bordered-chrome self-test fails — an empty `<td>` and an empty 60 px box carrying the design system's own 12 %-alpha divider token are reported at 1.32:1, on markup where nothing is wrong |
+| `regress-oracle-modal-nogeometry.log` | round 12: a dialog role is enough to make a page inert, with no painted size required | the modal self-test fails — a **2×2 `role="dialog"`** silenced the gate exactly as the full stop had a round earlier |
+| `regress-oracle-clip-round.log` | round 12: the `round <radius>` tail of `inset()` parsed as a fifth side | the clipping self-test fails — `inset(50% round 4px)`, valid CSS that hides the element, became unparseable and therefore reported |
 | `regress-oracle-indicator-r10.log` | round 11: the round-10 indicator rule — fewer than four painted sides, a 24 px ceiling, the element's own box only | the shape self-test fails — an invisible four-sided 12 px frame, a 32 px mark and a caret drawn in `::before` all went unreported |
 | `dark-contrast-regression.log` | the defect the dark block itself shipped, reproduced: remove the dark zebra value and the WCAG assertion fires | **`expected 1.0719326855029048 to be at least 4.5`** — white statement text on the light stripe, plus `OV-05d [dark]` |
 

@@ -287,8 +287,11 @@ covered. Paint order is resolved at the lowest common ancestor of the two elemen
 the third version of this model. Document order alone was defeated by one `z-index: 10`; the maximum
 `z-index` over the ancestor chain was then wrong in both directions, because a `transform` or a
 `filter` creates a stacking context a child's `z-index` cannot escape. It is still an approximation:
-`opacity < 1` and nested contexts under `position: relative` are not fully modelled. A covering layer
-counts when it covers at least **half** the text's box: requiring full containment (which is how the
+`opacity < 1` and nested contexts under `position: relative` are not fully modelled. Covers are not
+filtered by `position` any more, because positioning is not what decides paint order: an in-flow
+background paints above a negative `z-index` and below text at the same level, and filtering on
+`position` got both of those wrong — text under a static sibling's opaque background scored 13.20:1.
+A covering layer counts when it covers at least **half** the text's box: requiring full containment (which is how the
 false positives on tab ink bars were killed) let a veil inside a `position: sticky` wrapper fall eight
 pixels short of the line it hid and score white-on-white text at 13.20:1, while compositing a sliver
 would mis-state the colour of the part still on screen. Fifty per cent is a policy, not a
@@ -296,16 +299,24 @@ rasterisation. Content behind an
 open modal is skipped as inert, so a sweep in that state describes the dialog and not the page — and
 that skip requires a visible pane holding something with a **dialog role or `aria-modal`**: keying it
 on the presence of a `.cdk-overlay-backdrop` element meant one stray `0×0; opacity: 0` node silenced
-the sweep for every `aria-hidden` subtree on the page, and keying it on "a visible pane with text in
-it" meant a 2×2 pane containing a full stop did the same. CSS-painted marks are detected by shape
+the sweep for every `aria-hidden` subtree on the page, keying it on "a visible pane with text in
+it" meant a 2×2 pane containing a full stop did the same, and semantics alone were satisfied by a 2×2
+`role="dialog"`, so the dialog must also be painted at least 64×64 — two orders of magnitude below the
+smallest real dialog in this app. CSS-painted marks are detected by shape
 rather than by one drawing technique — a rotated chevron, an L-shaped corner, a four-sided frame, a
-32 px mark and a caret drawn in `::before` each used to pass — and a mark that hangs outside
+32 px mark and a caret drawn in `::before` each used to pass — but only where the mark plausibly
+*indicates* something: inside a control, or carrying a name. Shape alone reported an empty `<td>` and
+an empty box drawn with this design system's own 12 %-alpha divider token at 1.32:1, and a gate that
+fires on ordinary table chrome is one a team switches off. The stated cost is an unnamed, unclassed
+mark loose in content, which is also the case assistive technology cannot see. A mark that hangs outside
 its parent is measured against what is behind that parent, because a tooltip arrow is a tail of its
 surface and not a mark on it. Clipping is evaluated rather than string-matched: `inset()` is expanded
 to four sides and summed per axis, so `inset(100%)` is hidden and `inset(45%)` is measured, and the
-legacy `clip` property is honoured only where CSS applies it, on a positioned element. Values in
+legacy `clip` property is honoured only where CSS applies it, on a positioned element. The optional
+`round <radius>` tail is a corner radius rather than a fifth side, and reading it as one made
+`inset(50% round 4px)` unparseable and therefore reported. Values in
 absolute units (`inset(4px)`) cannot be resolved without the box and are treated as not clipping. And
 text over a gradient is reported as unmeasurable rather than scored,
 which means artwork behind text has to be declared on the artwork element, citing a ratio, by a human
 rather than checked by the gate. Total suite:
-**154 tests**.
+**156 tests**.

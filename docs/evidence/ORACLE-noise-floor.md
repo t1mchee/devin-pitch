@@ -9,14 +9,14 @@ plugin now prints on **every** comparison, pass or fail. Reproduce with
 `npm run visual` (pinned container) or `npx nx e2e retail-banking-e2e
 --skip-nx-cache` (host renderer).
 
-Captures are 1280x720. The full command runs **154 tests**: the 23-test image
+Captures are 1280x720. The full command runs **156 tests**: the 23-test image
 suite (21 compared snapshots plus two interaction tests), 77 computed-style
 tests — 27 light-surface probes, 11 re-asserted on the dark surface, one control
 that fails if the dark surface silently stopped rendering, 32 WCAG contrast
 ratios (16 targets in both themes), and 6 tests of the contrast oracle itself —
-and 54 legibility-sweep tests, which measure **every visible text node, every
+and 56 legibility-sweep tests, which measure **every visible text node, every
 painted SVG glyph and every CSS-painted indicator on 16 routes in both palettes**
-rather than a hand-picked list, plus 22 tests that attack the sweep itself. Those
+rather than a hand-picked list, plus 26 tests that attack the sweep itself. Those
 22 are the record of four hostile rounds spent attacking the sweep rather than
 the app: it must measure a substantial page; report planted illegible text, an
 invisible icon-only control, an icon-only control labelled the accessible way

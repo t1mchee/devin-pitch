@@ -97,7 +97,7 @@ And the `sr-only` skip matched `inset(45–50%)` as a string, so today's `inset(
 false-failed. All four are self-tests
 (`oracle-logs/regress-oracle-{stacking,backdrop-armed,indicator-narrow,clip-literal}.log`), and one of
 them caught a bad *test*: the first version planted a 1×1 element, which the sweep skips for its size,
-so it passed with the bug still in place. The deliberate regression returning 154/154 is what found
+so it passed with the bug still in place. The deliberate regression returning 156/156 is what found
 that — a self-test that cannot fail is worth less than no self-test.
 
 Then a fifth round found the same family again, and it is the honest thing to lead with rather than
@@ -113,12 +113,22 @@ in `::before`, which is where Material draws several of them. All five are self-
 deliberate regression behind them
 (`oracle-logs/regress-oracle-{cover-contains,clip-firstvalue,modal-textonly,indicator-r10}.log`).
 
+A sixth round then found the pair that best explains the whole exercise, because they fail in opposite
+directions. Covers were collected by `position !== static` — not what decides paint order — so text
+under an ordinary in-flow background at a negative `z-index` scored **13.20:1** on a region that was
+blank on screen. Meanwhile the widened caret rule *cried wolf*: an empty `<td>` and an empty box
+carrying our own 12 %-alpha divider token were reported at 1.32:1 on correct markup. The first kind of
+bug loses a defect; the second kind loses the gate, because a check that fires on ordinary table chrome
+gets switched off within a sprint. The shape rule is now scoped to marks that indicate something —
+inside a control, or named — and the residual gap is stated: an unnamed status mark loose in content is
+out of scope, which is also exactly the case a screen reader cannot see.
+
 What that trend line says, and it is the point to make in the room: the *product* defects stopped
-coming several rounds ago; what keeps failing is the oracle's model of a browser, always in the same
-direction — an approximation narrower than the thing it approximates. That is why the residual
-approximations are enumerated in `OVERRIDE-CONTRACT-dead-rules.md` — sliver coverage, `inset()` in
-absolute units, `opacity < 1` as a stacking context, negative `z-index` — rather than described as
-complete.
+coming several rounds ago; what keeps failing is the oracle's model of a browser — an approximation
+that keeps turning out to be narrower, or occasionally broader, than the thing it approximates. That is
+why the residual approximations are enumerated in `OVERRIDE-CONTRACT-dead-rules.md` — sliver coverage,
+`inset()` in absolute units, `opacity < 1` as a stacking context, nested stacking contexts, unnamed
+marks outside controls — rather than described as complete.
 
 The general answer, which is the one that should land: **every gate in this repository has a
 published failure.** The pixel budget has a documented blind spot under 40 px, two probes are

@@ -152,17 +152,21 @@ export interface Scrim {
 }
 
 /**
- * Every positioned, painted element in the document that could be covering
- * something. Collected once per sweep and passed down, because doing it per
- * measurement is quadratic on a real page.
+ * Every painted element in the document that could be covering something.
+ * Collected once per sweep and passed down, because doing it per measurement is
+ * quadratic on a real page.
+ *
+ * Positioning is not the filter. It was, and that made a whole family of covers
+ * invisible to the gate: an ordinary in-flow `div` with an opaque background
+ * paints over anything at a negative `z-index`, so text under a *static*
+ * sibling's background measured 13.20:1 while the region was blank on screen.
+ * Where a static background sits in paint order is `paintsAbove`'s problem, not
+ * this function's.
  */
 export function collectScrims(doc: Document): Scrim[] {
   const scrims: Scrim[] = [];
   doc.body.querySelectorAll<HTMLElement>('*').forEach((element) => {
     const style = getComputedStyle(element);
-    if (style.position === 'static') {
-      return;
-    }
     // A veil that is not painted covers nothing. Skipping this scored plainly
     // legible text at 1.09:1 behind a `visibility: hidden` overlay — the
     // mirror-image mistake to the ones above, and just as fatal to the gate.
@@ -250,6 +254,15 @@ function branchLevel(branch: HTMLElement, leaf: HTMLElement): number {
   return 0;
 }
 
+/**
+ * Whether `scrim`'s background is painted over `element`.
+ *
+ * CSS paints a stacking context in steps: negative-`z-index` descendants (step
+ * 3), then in-flow block backgrounds (step 4), then inline content and text
+ * (step 7). So an in-flow background is *below* text at the same level and
+ * *above* anything the author pushed to a negative level — which is exactly the
+ * pair of behaviours a position-based filter got wrong in both directions.
+ */
 function paintsAbove(scrim: HTMLElement, element: HTMLElement): boolean {
   // Painting is only comparable inside a common stacking parent: find it, then
   // compare the two branches that descend from it.
@@ -271,6 +284,14 @@ function paintsAbove(scrim: HTMLElement, element: HTMLElement): boolean {
   const [above, below] = [branchLevel(over, scrim), branchLevel(under, element)];
   if (above !== below) {
     return above > below;
+  }
+  const scrimStyle = getComputedStyle(scrim);
+  const inFlowBackground =
+    scrimStyle.position === 'static' &&
+    Number.isNaN(Number(scrimStyle.zIndex)) &&
+    !createsStackingContext(scrimStyle);
+  if (inFlowBackground) {
+    return false;
   }
   // eslint-disable-next-line no-bitwise
   return !!(under.compareDocumentPosition(over) & Node.DOCUMENT_POSITION_FOLLOWING);
@@ -586,8 +607,12 @@ function clipsAway(style: CSSStyleDeclaration): boolean {
   if (inset) {
     // Percentages and zero only: `inset(4px)` cannot be resolved without the box,
     // and guessing is how `inset(0 0 100% 0)` — clipped to nothing — read as
-    // visible, because only the first value was ever looked at.
+    // visible, because only the first value was ever looked at. The optional
+    // `round <radius>` tail is part of the grammar and belongs to the corners,
+    // not the insets: parsing it as a side made `inset(50% round 4px)` — hidden
+    // content, valid CSS — unparseable, and so reported.
     const sides = inset[1]
+      .split(/\s+round\s+/)[0]
       .trim()
       .split(/\s+/)
       .map((part) => (/^0(px|%|)$/.test(part) ? 0 : part.endsWith('%') ? parseFloat(part) : NaN));
@@ -648,6 +673,68 @@ function exempt(element: HTMLElement): boolean {
     }
   }
   return false;
+}
+
+const CONTROL_CHROME = [
+  'button',
+  'a[href]',
+  'input',
+  'select',
+  'textarea',
+  'label',
+  'summary',
+  '[tabindex]',
+  '[role=button]',
+  '[role=link]',
+  '[role=checkbox]',
+  '[role=radio]',
+  '[role=switch]',
+  '[role=menuitem]',
+  '[role=option]',
+  '[role=tab]',
+  '[role=combobox]',
+  '[role=slider]',
+  '[role=spinbutton]',
+  'mat-select',
+  'mat-checkbox',
+  'mat-radio-button',
+  'mat-slide-toggle',
+  'mat-datepicker-toggle',
+  'mat-chip',
+  'mat-paginator',
+  'mat-option',
+  'mat-expansion-panel-header',
+  '.mat-select-trigger',
+  '.mat-sort-header',
+  '.mat-tab-label',
+  '.mat-tooltip',
+].join(', ');
+
+/**
+ * Whether a painted mark plausibly *means* something, which is what WCAG 1.4.11
+ * is about: a graphic needed to understand the content or operate a control.
+ *
+ * "Small, borderless, paints borders" is not that test. Widening the shape rule
+ * without this one reported an empty `<td>` and an empty 60px box carrying the
+ * design system's own 12%-alpha divider token at 1.32:1 — nothing is wrong with
+ * either, and a gate that fires on ordinary table and layout chrome in CI is a
+ * gate people learn to ignore. So a mark counts when it is part of a control, or
+ * when it is named or named-after the thing it indicates; a divider is neither.
+ *
+ * The disclosed cost: an unnamed, unclassed status mark sitting loose in content
+ * is out of scope here. Naming it is also what a screen reader needs, so the
+ * shape of that gap is "it is undetectable to assistive technology too", not
+ * "the sweep is blind to defects a sighted user sees".
+ */
+function indicative(element: HTMLElement): boolean {
+  return (
+    !!element.closest(CONTROL_CHROME) ||
+    element.hasAttribute('aria-label') ||
+    element.hasAttribute('title') ||
+    /badge|dot|status|indicator|icon|caret|arrow|chevron|tick|check|marker/i.test(
+      element.className || ''
+    )
+  );
 }
 
 /** The painted border colours of an element, ignoring zero-width sides. */
@@ -723,16 +810,27 @@ export function sweep(doc: Document): Finding[] {
   // role and `aria-modal`, and the same thing that puts `aria-hidden` on the
   // siblings this rule then trusts. A select panel or a menu is not modal and
   // does not get to silence anything.
+  //
+  // Semantics alone are not that state either: a 2x2 pane with a `role="dialog"`
+  // inside it silenced the gate exactly as the full stop had. A modal is a thing
+  // on the screen, so the dialog has to be painted at a size a dialog is — the
+  // smallest one in this app is two orders of magnitude past this floor, and the
+  // point of the floor is that a probe cannot fake it invisibly.
   const modal = Array.from(
     doc.querySelectorAll<HTMLElement>('.cdk-overlay-container .cdk-overlay-pane')
-  ).some(
-    (pane) =>
-      visible(pane) &&
-      (pane.textContent ?? '').trim().length > 0 &&
-      !!pane.querySelector(
-        '[role=dialog], [role=alertdialog], [aria-modal=true], mat-dialog-container, .mat-dialog-container'
-      )
-  );
+  ).some((pane) => {
+    if (!visible(pane) || !(pane.textContent ?? '').trim()) {
+      return false;
+    }
+    const dialog = pane.querySelector<HTMLElement>(
+      '[role=dialog], [role=alertdialog], [aria-modal=true], mat-dialog-container, .mat-dialog-container'
+    );
+    if (!dialog) {
+      return false;
+    }
+    const box = dialog.getBoundingClientRect();
+    return box.width >= 64 && box.height >= 64;
+  });
   const inert = (element: HTMLElement): boolean =>
     modal && !element.closest('.cdk-overlay-container') && !!element.closest('[aria-hidden=true]');
 
@@ -810,6 +908,7 @@ export function sweep(doc: Document): Finding[] {
       : [element.clientWidth, element.clientHeight];
     const glyphish =
       paints.length > 0 &&
+      indicative(element) &&
       (!!label || !element.children.length) &&
       (!!label || !(element.textContent ?? '').trim()) &&
       parseColour(style.backgroundColor).a === 0 &&

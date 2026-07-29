@@ -24,6 +24,7 @@ transcript of commands that were actually executed.
 | `docs/evidence/ORACLE-noise-floor.md` | The measurement behind the 40-pixel diff budget: 0 px across repeat runs on the pinned renderer, 455–5,963 px across renderers, 753 px of injected signal — and the day the host stopped drifting because an apt install changed its fonts, which is the case for pinning rather than against it. |
 | `playbooks/REVISIONS.md` | What each round of runs changed in the playbook, and on what evidence. |
 | `demo/RUNBOOK.md` | The timed 12-minute live demo, with the failure playbook. |
+| `demo/SPEAKING-NOTES.md` | The whole 45-minute meeting: what to say, what to click, what to volunteer. |
 
 ## Why the Angular upgrade and not the other two
 
@@ -79,7 +80,7 @@ click, and **two in the light theme**: a disabled account value at 2.66:1 and Ma
 3.68:1. Its own parse holes — transparent read as opaque black, foreground alpha dropped, ancestor
 `opacity` ignored, text over a gradient scored against the canvas — are what the six self-tests pin.
 
-And then **50 legibility-sweep tests** (`legibility-sweep.cy.ts`), which are the answer to the thing
+And then **56 legibility-sweep tests** (`legibility-sweep.cy.ts`), which are the answer to the thing
 that kept happening: three hostile rounds running, the targeted list of contrast probes was green and
 a reviewer found illegible text somewhere the list did not point. Each fix added another selector,
 which is a changelog, not a gate. The sweep walks **every visible text node on 16 routes in both
@@ -121,11 +122,23 @@ visible pane with a character of text in it, so a 2×2 pane containing a full st
 again; and the shape-agnostic caret rule still excluded a four-sided frame, anything above 24 px and
 anything drawn in `::before`, where Material draws several of them.
 
-Seven of the twenty-two guard the other direction, which matters just as much: a gate that fails
+Round twelve found two more, and they are the pair worth understanding because they point in opposite
+directions. Covers were collected by `position !== static`, which is not what decides paint order: an
+ordinary in-flow `div` with a background paints over anything at a negative `z-index`, so text under a
+static sibling scored **13.20:1** on a region that was blank on screen. And the widened caret rule
+went the other way — it reported an empty `<td>` and an empty box carrying the design system's own
+12 %-alpha divider token at 1.32:1, on markup where nothing is wrong. A gate that fires on ordinary
+table chrome in CI is a gate people learn to switch off, so the shape rule is now scoped to marks that
+*indicate* something: part of a control, or named. Both directions are self-tests, with the deliberate
+regression for each committed.
+
+Nine of the twenty-six guard the other direction, which matters just as much: a gate that fails
 correct code gets switched off. Hidden text, off-screen skip links, the current `sr-only` recipe
 (`clip-path: inset(100%)`, not just the `inset(50%)` spelling the first version matched), a box
 clipped to nothing by `inset(0 0 100% 0)`, a `clip: rect(0,0,0,0)` on a *static* element where CSS
-ignores it, a veil that
+ignores it, `inset(50% round 4px)` whose `round` token is a corner radius and not a fifth side,
+an empty bordered cell and a divider-bordered box, text painted *over* an in-flow background, a veil
+that
 paints nothing, a tooltip arrow that matches the surface it is a tail of, and the dimmed page behind
 an open modal must all stay unreported. And text over a gradient fails as unmeasurable
 until a human declares `data-contrast-reviewed="… 8.9:1 at the lightest stop"` **on the element

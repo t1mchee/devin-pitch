@@ -23,7 +23,7 @@ work needs `--legacy-peer-deps` because of `@angular/flex-layout@14.0.0-beta.41`
 npx nx run-many --target=build --all --skip-nx-cache   # expect: 6 projects
 npx nx run-many --target=test --all --skip-nx-cache    # expect: 6 projects, 8 suites / 43 tests
 npx nx run-many --target=lint --all --skip-nx-cache    # expect: 7 projects, 0 errors / 3 warnings
-npm run visual                                         # expect: 23 + 54 + 77 = 154 passing, 21 snapshots (preferred)
+npm run visual                                         # expect: 23 + 56 + 77 = 156 passing, 21 snapshots (preferred)
 ```
 
 The **test tally is easy to get wrong**, and it changes as specs are added — always re-derive it,
@@ -275,10 +275,10 @@ console.log(n,(n/(a.width*a.height)*100).toFixed(4)+'%');"
 
 `apps/retail-banking-e2e/src/e2e/override-contract.cy.ts` + `src/support/override-probes.ts` hold 27
 probes, one per `OV-nn` intent, asserting `getComputedStyle` values on the running app. Total suite
-is **154 tests = 23 snapshot tests (21 snapshots) + 77 computed-style tests (27 light, 11 dark, 1
+is **156 tests = 23 snapshot tests (21 snapshots) + 77 computed-style tests (27 light, 11 dark, 1
 dark-surface anti-vacuity control, 32 WCAG ratios over 16 targets in both themes, 6 tests of the
-contrast oracle itself) + 54 legibility-sweep tests (`legibility-sweep.cy.ts`: every visible text node
-every painted SVG glyph and every CSS-painted indicator on 16 routes x 2 palettes, plus 22 tests that
+contrast oracle itself) + 56 legibility-sweep tests (`legibility-sweep.cy.ts`: every visible text node
+every painted SVG glyph and every CSS-painted indicator on 16 routes x 2 palettes, plus 26 tests that
 attack the sweep itself)**.
 
 The contrast helper lives in `src/support/contrast.ts` and is shared by both suites. Attack it there,
@@ -312,7 +312,7 @@ surface and the sweep must report an invisible enabled control.
 When writing a new sweep self-test, size the planted element **larger than 1x1**: `visible()` skips
 tiny boxes, so a 1x1 probe passes whether or not the behaviour under test works. The first version of
 the `clip-path: inset(100%)` test did exactly that and proved nothing until the deliberate regression
-returned 154/154.
+returned 156/156.
 
 Three directions are *policy*, not defect: off-screen screen-reader-only text is ignored; text over a
 gradient fails as UNMEASURABLE unless **the artwork element itself** carries a
@@ -496,8 +496,8 @@ SVGs inside a control whose `textContent` is non-empty), and every element with 
 text child** via `contrastRatio()` against `requiredRatio()`. Scrims are gathered by
 `collectScrims()` and applied by `scrimsOver()`.
 
-**Fixed as of round 11** — every one of these is now a self-test, and re-injecting the old behaviour
-fails exactly that test (`oracle-logs/regress-oracle-*.log`, **154 total**, 1-3 failures each):
+**Fixed as of round 12** — every one of these is now a self-test, and re-injecting the old behaviour
+fails exactly that test (`oracle-logs/regress-oracle-*.log`, **156 total**, 1-3 failures each):
 
 - SVG-only content is swept. Recolouring the **enabled paginator arrows** to the paginator surface
   gives `svg "Next page" — 1.00:1, needs 3:1` and moves `paginator-default` ~70 px.
@@ -511,11 +511,19 @@ fails exactly that test (`oracle-logs/regress-oracle-*.log`, **154 total**, 1-3 
   two-border chevron, an L-shaped corner, a four-sided 12px frame, a 32px mark and a caret drawn in
   `::before` all used to walk past. A mark that hangs outside its parent is measured against what is
   behind the parent (a tooltip arrow is a tail of its surface, and measuring it against that surface
-  filed a false defect).
+  filed a false defect). Shape is now **scoped to marks that indicate something** — inside a control,
+  or named (`aria-label`, `title`, or a class naming what it marks). Shape alone reported an empty
+  `<td>` and an empty 60px box drawn with the design system's own 12%-alpha divider token at 1.32:1.
+- Scrims are collected regardless of `position`, because positioning is not what decides paint order:
+  an in-flow background paints **above** a negative `z-index` and **below** text at the same level.
+  Filtering on `position` scored text under a static sibling's opaque background at 13.20:1 on a
+  region that was blank on screen.
 - Clipping is **evaluated**, not matched: `inset()` is expanded to four sides and summed per axis, so
   `inset(100%)` (the current `sr-only` recipe) and `inset(0 0 100% 0)` are hidden while `inset(45%)`
   is measured, because a 10% band of it is painted. The legacy `clip` property is honoured only on a
-  positioned element, which is the only place CSS applies it.
+  positioned element, which is the only place CSS applies it. The optional `round <radius>` tail is a
+  corner radius, not a fifth side: parsing it as one made `inset(50% round 4px)` unparseable, so
+  hidden content was reported.
 - Coverage is a **fraction**: a layer over >= 50% of the text's box is composited. Requiring
   containment let a veil inside a `position: sticky` wrapper, offset by the sticky `top` and so eight
   pixels short, score unreadable white-on-white text at 13.20:1.
@@ -524,15 +532,18 @@ fails exactly that test (`oracle-logs/regress-oracle-*.log`, **154 total**, 1-3 
 - A sweep with an open modal skips the inert page behind it and measures the overlay — but only for a
   visible pane containing something with a **dialog role / `aria-modal`**. A stray `0x0; opacity: 0`
   `.cdk-overlay-backdrop` silenced the entire gate in round 10, and a 2x2 pane containing a full stop
-  did the same in round 11; a select panel or a menu is not modal and silences nothing.
+  did the same in round 11; a select panel or a menu is not modal and silences nothing. Semantics are
+  not sufficient either — a 2x2 `role="dialog"` did it again in round 12 — so the dialog must be
+  painted at least 64x64.
 
-**Gaps that survive round 11.** Reproduce them rather than trusting this list, and look for new ones:
+**Gaps that survive round 12.** Reproduce them rather than trusting this list, and look for new ones:
 
 | Gap | Why the model cannot see it | Symptom |
 |---|---|---|
 | **Slivers** (documented) | coverage is an area fraction with a 50% threshold: a policy choice, not glyph rasterisation. Compositing a sliver would mis-state the colour of the half still on screen. | a bar over the top 30% of a text node ⇒ `scrims counted = 0`. Above 50% it is reported |
 | **`inset()` in absolute units** | `inset(4px)` cannot be resolved without the box, so it is treated as not clipping. | an element hidden with `clip-path: inset(9999px)` is still measured |
-| **Stacking contexts, still partly** | resolved at the lowest common ancestor via the first stacking context on each path (`transform`, `filter`, `isolation`, `contain`, `will-change`, fixed/sticky, positioned + numeric `z-index`). `opacity < 1` as a context creator, and negative `z-index` painting behind its parent's background, are **not** modelled. | a scrim inside an `opacity: 0.99` wrapper, or a negative-`z-index` layer, may still be mis-ordered — attack it |
+| **Stacking contexts, still partly** | resolved at the lowest common ancestor via the first stacking context on each path (`transform`, `filter`, `isolation`, `contain`, `will-change`, fixed/sticky, positioned + numeric `z-index`). In-flow backgrounds vs negative `z-index` are modelled since round 12; `opacity < 1` as a context creator, and a negative-`z-index` child painting behind its *own* parent's background, are **not**. | a scrim inside an `opacity: 0.99` wrapper may still be mis-ordered — attack it |
+| **Unnamed marks outside controls** | 1.4.11 scope is decided by "part of a control, or named", because shape alone fired on plain table and divider chrome. | a bare `<div>` status dot with no class, `aria-label` or `title` is not measured — and is invisible to a screen reader too |
 | **States nobody enumerates** | the sweep visits routes, not states; hover/focus/validation are the override contract's job. | a colour that only appears on `:hover` is unmeasured unless a probe drives it |
 | **One viewport, one renderer** | 1280x720 in the pinned image. | a defect that only appears at another zoom level, webfont or forced-colours mode is out of scope |
 
@@ -647,7 +658,7 @@ with `ss -ltn | grep :4200`), or run the browser walkthrough and the e2e gate in
 
 Host-run pixel results are **font-dependent and not authoritative in either direction** (see
 `ORACLE-noise-floor.md` §2.1): on this box the same commit gave 21 of 21 failures at 455–5,963 px in
-the morning and 0 px on all 21 after a desktop install added font packages. The **54 sweep and 77
+the morning and 0 px on all 21 after a desktop install added font packages. The **56 sweep and 77
 override-contract tests pass either way** — those two layers are renderer-independent, which is the
 useful signal from a host run. Only `npm run visual` (digest-pinned image) is authoritative for
 pixels.

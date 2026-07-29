@@ -397,9 +397,11 @@ describe('legibility sweep — the sweep itself', () => {
     // one component.
     visit('/__showcase/select', 'dark');
     cy.document().then((doc) => {
-      const host = doc.createElement('div');
+      // A control, because that is where a mark that has to be visible lives,
+      // and because the rule is scoped to marks that indicate something.
+      const host = doc.createElement('button');
       host.style.cssText =
-        'position:fixed;top:8px;left:8px;width:48px;height:48px;background:#303030';
+        'position:fixed;top:8px;left:8px;width:48px;height:48px;background:#303030;border:0';
       const caret = doc.createElement('div');
       caret.style.cssText =
         'width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid #303030';
@@ -505,9 +507,9 @@ describe('legibility sweep — the sweep itself', () => {
     // as a false defect.
     visit('/__showcase/select', 'dark');
     cy.document().then((doc) => {
-      const host = doc.createElement('div');
+      const host = doc.createElement('button');
       host.style.cssText =
-        'position:fixed;top:8px;left:8px;width:64px;height:64px;background:#303030';
+        'position:fixed;top:8px;left:8px;width:64px;height:64px;background:#303030;border:0';
       const chevron = doc.createElement('span');
       chevron.style.cssText =
         'display:block;width:8px;height:8px;border-right:2px solid #303030;border-bottom:2px solid #303030;transform:rotate(45deg)';
@@ -519,6 +521,9 @@ describe('legibility sweep — the sweep itself', () => {
       host.remove();
 
       const corner = doc.createElement('div');
+      // Named after what it marks: outside a control, that name is what makes it
+      // a mark rather than a border, for this gate and for a screen reader.
+      corner.className = 'r10-corner-marker';
       corner.style.cssText =
         'position:fixed;top:120px;left:8px;width:10px;height:10px;border-left:2px solid #303030;border-bottom:2px solid #303030;background:transparent';
       const canvas = doc.createElement('div');
@@ -531,9 +536,9 @@ describe('legibility sweep — the sweep itself', () => {
       canvas.remove();
 
       // A two-tone triangle with one legible half is legible.
-      const surface = doc.createElement('div');
+      const surface = doc.createElement('button');
       surface.style.cssText =
-        'position:fixed;top:200px;left:8px;width:64px;height:64px;background:#303030';
+        'position:fixed;top:200px;left:8px;width:64px;height:64px;background:#303030;border:0';
       const twoTone = doc.createElement('div');
       twoTone.style.cssText =
         'width:0;height:0;border-left:6px solid #303030;border-right:6px solid #ffffff;border-top:6px solid transparent';
@@ -549,6 +554,7 @@ describe('legibility sweep — the sweep itself', () => {
       page.style.cssText =
         'position:fixed;top:300px;left:8px;width:200px;height:80px;background:#ffffff';
       const tooltip = doc.createElement('div');
+      tooltip.className = 'mat-tooltip';
       tooltip.style.cssText =
         'position:absolute;top:8px;left:8px;width:120px;height:24px;background:#303030';
       const arrow = doc.createElement('div');
@@ -614,6 +620,15 @@ describe('legibility sweep — the sweep itself', () => {
         'Available balance 100'
       );
       shorthand.remove();
+
+      // `round <radius>` is part of the `inset()` grammar and describes the
+      // corners. Parsing it as a side made valid CSS unparseable, so hidden
+      // content was reported — the gate crying wolf on a spelling.
+      const rounded = plant(`${fixed}clip-path:inset(50% round 4px)`, 'Available balance round');
+      expect(report(sweep(doc)), 'round is a radius, not a side').not.to.contain(
+        'Available balance round'
+      );
+      rounded.remove();
 
       const staticClip = plant('clip:rect(0,0,0,0)', 'Pending transfers static');
 
@@ -684,6 +699,19 @@ describe('legibility sweep — the sweep itself', () => {
 
       expect(report(sweep(doc)), 'a 2x2 pane is not a modal').to.contain('Zelle daily limit');
 
+      // Nor is a 2x2 pane that *says* it holds a dialog: the semantics were the
+      // whole test, so the same probe with `role="dialog"` inside it silenced the
+      // gate again. A modal is something on the screen.
+      const token = doc.createElement('div');
+      token.setAttribute('role', 'dialog');
+      token.setAttribute('aria-modal', 'true');
+      token.style.cssText = 'width:2px;height:2px';
+      token.textContent = '.';
+      pane.textContent = '';
+      pane.appendChild(token);
+      expect(report(sweep(doc)), 'a 2x2 dialog is not a dialog').to.contain('Zelle daily limit');
+      token.remove();
+
       // What makes a page inert is the thing MatDialog marks as a dialog — the
       // same thing that put `aria-hidden` on the siblings this rule trusts.
       const dialog = doc.createElement('div');
@@ -701,6 +729,77 @@ describe('legibility sweep — the sweep itself', () => {
     });
   });
 
+  it('composites an unpositioned cover, without putting text under every background', () => {
+    // Scrims were collected by `position !== static`, which is not what decides
+    // paint order. An ordinary in-flow `div` with an opaque background paints
+    // over anything at a negative `z-index`, so text under a static sibling
+    // measured 13.20:1 on a region that was blank on screen.
+    visit('/__showcase/table', 'dark');
+    cy.document().then((doc) => {
+      const holder = doc.createElement('div');
+      holder.style.cssText = 'position:fixed;top:8px;left:8px;width:360px;height:44px';
+      const text = doc.createElement('p');
+      text.style.cssText =
+        'position:absolute;inset:0;margin:0;font-size:14px;color:#ffffff;background:#303030;z-index:-1';
+      text.textContent = 'Statement total under a static cover';
+      // No `position`, no `z-index`: just a background, which CSS paints in the
+      // block-background step — above the negative level, below ordinary text.
+      const cover = doc.createElement('div');
+      cover.style.cssText = 'width:360px;height:44px;background:#303030';
+      holder.append(text, cover);
+      doc.body.appendChild(holder);
+
+      const covered = contrastRatio(text);
+      expect(covered.ratio, covered.detail).to.be.lessThan(1.5);
+      expect(report(sweep(doc))).to.contain('static cover');
+
+      // The other direction, which is why positioning looked like the right
+      // filter in the first place: text at the same level paints *over* in-flow
+      // backgrounds, so lifting it out of the negative level makes it legible —
+      // and every page is full of siblings with backgrounds.
+      text.style.zIndex = 'auto';
+      const raised = contrastRatio(text);
+      expect(raised.ratio, raised.detail).to.be.greaterThan(10);
+      expect(report(sweep(doc)), 'a background is not a cover for text above it').not.to.contain(
+        'static cover'
+      );
+    });
+  });
+
+  it('leaves bordered chrome alone and still measures a mark that means something', () => {
+    // The shape rule was widened until an empty `<td>` and an empty box carrying
+    // the design system's own 12%-alpha divider token were reported at 1.32:1.
+    // Nothing is wrong with either; a gate that fires on ordinary table and
+    // layout chrome in CI is one people learn to ignore.
+    visit('/__showcase/table', 'light');
+    cy.document().then((doc) => {
+      const before = sweep(doc).length;
+
+      const cell = doc.createElement('td');
+      cell.style.cssText = 'display:block;width:48px;height:20px;border-bottom:1px solid rgba(0,0,0,0.12)';
+      const divider = doc.createElement('div');
+      divider.style.cssText = 'width:60px;height:60px;border:1px solid rgba(0,0,0,0.12)';
+      doc.body.append(cell, divider);
+      expect(sweep(doc).length, `chrome must not be a finding:\n${report(sweep(doc))}`).to.equal(
+        before
+      );
+
+      // And the same low-alpha border, on the same page, where it is a caret in a
+      // control: that is a real defect and must still be reported.
+      const control = doc.createElement('button');
+      control.style.cssText =
+        'position:fixed;top:8px;left:8px;width:48px;height:48px;background:#ffffff;border:0';
+      const caret = doc.createElement('div');
+      caret.style.cssText =
+        'width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid rgba(0,0,0,0.12)';
+      control.appendChild(caret);
+      doc.body.appendChild(control);
+      expect(report(sweep(doc)), 'an invisible caret is still a defect').to.contain(
+        'css-painted indicator'
+      );
+    });
+  });
+
   it('measures a mark drawn with four sides, at 32px, or in a pseudo-element', () => {
     // Three exclusions with no principle behind them: fewer than four painted
     // sides (a leftover from counting zero-width `currentColor` borders), a 24px
@@ -709,8 +808,8 @@ describe('legibility sweep — the sweep itself', () => {
     visit('/__showcase/select', 'dark');
     cy.document().then((doc) => {
       const surface = (top: number): HTMLElement => {
-        const node = doc.createElement('div');
-        node.style.cssText = `position:fixed;top:${top}px;left:8px;width:80px;height:80px;background:#303030`;
+        const node = doc.createElement('button');
+        node.style.cssText = `position:fixed;top:${top}px;left:8px;width:80px;height:80px;background:#303030;border:0`;
         doc.body.appendChild(node);
         return node;
       };

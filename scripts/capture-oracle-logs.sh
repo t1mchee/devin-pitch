@@ -52,7 +52,19 @@ open(path, 'w').write(s.replace(old, new, 1))
 EOF
 }
 
+# Named experiments can be re-captured on their own. A source change invalidates
+# the `old` block of the experiments that touch the same lines, and those log a
+# loud "experiment NOT run" — re-running forty minutes of unaffected cases to fix
+# six of them is how a capture script stops being run at all.
+SELECTED=("$@")
+selected() {
+  [ ${#SELECTED[@]} -eq 0 ] && return 0
+  for want in "${SELECTED[@]}"; do [ "$want" = "$1" ] && return 0; done
+  return 1
+}
+
 experiment() { # name file old new
+  selected "$1" || return 0
   restore
   if patch "$2" "$3" "$4"; then
     run "$1" > "$OUT/$1.log"
@@ -67,7 +79,11 @@ CONTRAST=apps/retail-banking-e2e/src/support/contrast.ts
 ROOT=apps/retail-banking/src/app/app.component.ts
 
 # 1-3. repeat runs on the pinned renderer, unmodified tree -> the noise floor
-for i in 1 2 3; do restore; run "repeat-run-$i" > "$OUT/noise-repeat-$i.log"; done
+for i in 1 2 3; do
+  selected "noise-repeat-$i" || continue
+  restore
+  run "repeat-run-$i" > "$OUT/noise-repeat-$i.log"
+done
 
 # 4. fault injection: a brand-colour regression a ratio budget would wave through
 experiment fault-injection-colour "$OVR" '$boa-slate-900' '$boa-red-600'
@@ -222,14 +238,19 @@ experiment regress-oracle-stacking-blind "$CONTRAST" \
 # character of text in it — satisfied by a 2x2 pane containing a full stop).
 MODAL="  const modal = Array.from(
     doc.querySelectorAll<HTMLElement>('.cdk-overlay-container .cdk-overlay-pane')
-  ).some(
-    (pane) =>
-      visible(pane) &&
-      (pane.textContent ?? '').trim().length > 0 &&
-      !!pane.querySelector(
-        '[role=dialog], [role=alertdialog], [aria-modal=true], mat-dialog-container, .mat-dialog-container'
-      )
-  );"
+  ).some((pane) => {
+    if (!visible(pane) || !(pane.textContent ?? '').trim()) {
+      return false;
+    }
+    const dialog = pane.querySelector<HTMLElement>(
+      '[role=dialog], [role=alertdialog], [aria-modal=true], mat-dialog-container, .mat-dialog-container'
+    );
+    if (!dialog) {
+      return false;
+    }
+    const box = dialog.getBoundingClientRect();
+    return box.width >= 64 && box.height >= 64;
+  });"
 experiment regress-oracle-backdrop-armed "$CONTRAST" "$MODAL" \
   "  const modal = !!doc.querySelector('.cdk-overlay-backdrop'); // BACKDROP-ARMED"
 experiment regress-oracle-modal-textonly "$CONTRAST" "$MODAL" \
@@ -245,6 +266,7 @@ GLYPHISH='    const [width, height] = label
       : [element.clientWidth, element.clientHeight];
     const glyphish =
       paints.length > 0 &&
+      indicative(element) &&
       (!!label || !element.children.length) &&
       (!!label || !(element.textContent ?? '"'"''"'"').trim()) &&
       parseColour(style.backgroundColor).a === 0 &&
@@ -253,12 +275,14 @@ GLYPHISH='    const [width, height] = label
 experiment regress-oracle-indicator-narrow "$CONTRAST" "$GLYPHISH" \
   '    // INDICATOR-NARROW, deliberately: a 0x0 box with exactly one painted side
     const [width, height] = [element.clientWidth, element.clientHeight];
-    const glyphish = paints.length === 1 && width === 0 && height === 0;'
+    const glyphish =
+      indicative(element) && paints.length === 1 && width === 0 && height === 0;'
 experiment regress-oracle-indicator-r10 "$CONTRAST" "$GLYPHISH" \
   '    // INDICATOR-R10, deliberately: fewer than four sides, 24px, own box only
     const [width, height] = [element.clientWidth, element.clientHeight];
     const glyphish =
       paints.length > 0 &&
+      indicative(element) &&
       paints.length < 4 &&
       !element.children.length &&
       !(element.textContent ?? '"'"''"'"').trim() &&
@@ -270,6 +294,7 @@ experiment regress-oracle-indicator-r10 "$CONTRAST" "$GLYPHISH" \
 # match (which false-failed the current sr-only recipe) and "first percentage
 # >= 45" (which hid a painted band and showed a box clipped to nothing).
 INSET='    const sides = inset[1]
+      .split(/\s+round\s+/)[0]
       .trim()
       .split(/\s+/)
       .map((part) => (/^0(px|%|)$/.test(part) ? 0 : part.endsWith('"'"'%'"'"') ? parseFloat(part) : NaN));
@@ -308,21 +333,58 @@ experiment regress-oracle-cover-contains "$CONTRAST" \
     other.top <= rect.top &&
     other.bottom >= rect.bottom;'
 
+# 27-30 (round 12). Four more holes in the previous round's fixes.
+experiment regress-oracle-static-scrim "$CONTRAST" \
+  '  doc.body.querySelectorAll<HTMLElement>('"'"'*'"'"').forEach((element) => {
+    const style = getComputedStyle(element);
+    // A veil that is not painted covers nothing.' \
+  '  doc.body.querySelectorAll<HTMLElement>('"'"'*'"'"').forEach((element) => {
+    const style = getComputedStyle(element);
+    if (style.position === '"'"'static'"'"') {
+      return; // POSITIONED-ONLY SCRIMS, deliberately
+    }
+    // A veil that is not painted covers nothing.'
+
+experiment regress-oracle-indicator-unscoped "$CONTRAST" \
+      'indicative(element) &&' \
+      'true && // UNSCOPED INDICATORS, deliberately'
+
+experiment regress-oracle-modal-nogeometry "$CONTRAST" \
+    'return box.width >= 64 && box.height >= 64;' \
+    'return box.width >= 0; // SEMANTICS ARE ENOUGH, deliberately'
+
+experiment regress-oracle-clip-round "$CONTRAST" \
+      '.split(/\s+round\s+/)[0]
+      .trim()' \
+      '.trim() // ROUND IS A SIDE, deliberately'
+
 # The last experiment leaves the tree patched: restore before anything else runs,
 # or the deliberately-broken helper gets captured — and committed. It has.
 restore
 
-# 27. host renderer against container baselines -> why the image is digest-pinned.
+# 31. host renderer against container baselines -> why the image is digest-pinned.
 # Result is font-dependent and this file is overwritten every capture:
 # `host-renderer-drift-prefonts.log` is the same command on the same commit before an
 # apt install put Liberation/DejaVu on this host, and is deliberately never re-captured.
-echo "=== host-renderer (not the pinned image) :: $(date -u +%FT%TZ) ===" > "$OUT/host-renderer-drift.log"
-# Cypress 10.11's Electron segfaults on this box without a real X server, which
-# looks exactly like a product failure in the log. `xvfb-run` is the difference
-# between evidence and a crash report.
-xvfb-run -a --server-args="-screen 0 1280x1024x24" \
-  npx nx e2e retail-banking-e2e --skip-nx-cache 2>&1 |
-  sed 's/\x1b\[[0-9;]*m//g' >> "$OUT/host-renderer-drift.log"
+if selected host-renderer-drift; then
+  # A dev server left on 4200 turns this into an interactive prompt ("use a
+  # different port? (Y/n)") that never gets an answer: the run hung for 25
+  # minutes holding the lock, and the log said only that the target failed.
+  if ss -ltn 2>/dev/null | grep -q ':4200 '; then
+    echo "port 4200 is in use — stop the dev server before capturing the host run" >&2
+    exit 1
+  fi
+  echo "=== host-renderer (not the pinned image) :: $(date -u +%FT%TZ) ===" > "$OUT/host-renderer-drift.log"
+  # Cypress 10.11's Electron segfaults on this box without a real X server, which
+  # looks exactly like a product failure in the log. `xvfb-run` is the difference
+  # between evidence and a crash report.
+  # `9>&-`: the lock FD is inherited by children, and `xvfb-run` leaves an Xvfb
+  # daemon behind. One orphaned Xvfb held the lock for half an hour after the
+  # script that took it had exited, so every later capture refused to start.
+  xvfb-run -a --server-args="-screen 0 1280x1024x24" \
+    npx nx e2e retail-banking-e2e --skip-nx-cache 9>&- 2>&1 |
+    sed 's/\x1b\[[0-9;]*m//g' >> "$OUT/host-renderer-drift.log"
+fi
 
 diff <(cat /tmp/oracle-tree-before.txt) \
   <(git -C "$REPO" status --porcelain -- bofa-digital-banking) \
