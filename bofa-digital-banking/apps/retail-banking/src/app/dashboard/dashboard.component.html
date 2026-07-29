@@ -1,0 +1,22 @@
+<main class="dashboard" [bofaTrackView]="'accounts-dashboard'">
+  <header class="dashboard__header">
+    <h1>Accounts</h1>
+    <bofa-button variant="primary" icon="add">Make a transfer</bofa-button>
+  </header>
+
+  <bofa-responsive-grid>
+    <section slot="summary" class="dashboard__summary">
+      <bofa-select label="Account" [options]="accounts" [control]="accountControl"></bofa-select>
+      <bofa-currency-input label="Amount" [control]="amountControl"></bofa-currency-input>
+      <bofa-autocomplete label="Payee" [control]="payeeControl"></bofa-autocomplete>
+      <bofa-slide-toggle label="Paperless statements" [control]="paperlessControl"></bofa-slide-toggle>
+    </section>
+
+    <section slot="detail" class="dashboard__detail">
+      <bofa-tabs [tabs]="['Transactions', 'Scheduled', 'Statements']"></bofa-tabs>
+      <bofa-chips [chips]="['Groceries', 'Utilities', 'Transfers']"></bofa-chips>
+      <bofa-table [rows]="(rows$ | async) || []"></bofa-table>
+      <bofa-paginator [length]="240"></bofa-paginator>
+    </section>
+  </bofa-responsive-grid>
+</main>

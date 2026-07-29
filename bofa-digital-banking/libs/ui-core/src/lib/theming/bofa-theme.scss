@@ -1,0 +1,21 @@
+@use '@angular/material' as mat;
+@use './palette' as bofa;
+@use './typography' as type;
+
+@include mat.core();
+
+// Positional hue arguments: default, lighter, darker.
+$boa-primary: mat.define-palette(bofa.$boa-red-palette, 600, 100, 800);
+$boa-accent: mat.define-palette(bofa.$boa-blue-palette, 500, 50, 700);
+$boa-warn: mat.define-palette(mat.$red-palette);
+
+// Angular Material v14 positional signature for define-light-theme.
+// v15 replaces this with a map, v18 introduces define-theme for M3, and v20
+// replaces the whole entry point with mat.theme(). Every one of those is a
+// breaking change for this file.
+$boa-theme: mat.define-light-theme($boa-primary, $boa-accent, $boa-warn);
+
+@include mat.all-component-themes($boa-theme);
+@include mat.all-component-typographies(type.$boa-typography);
+
+@import './overrides';

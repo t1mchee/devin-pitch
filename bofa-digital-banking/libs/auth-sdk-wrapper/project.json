@@ -1,0 +1,43 @@
+{
+  "name": "auth-sdk-wrapper",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "libs/auth-sdk-wrapper/src",
+  "prefix": "bofa",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/angular:ng-packagr-lite",
+      "outputs": ["dist/libs/auth-sdk-wrapper"],
+      "options": {
+        "project": "libs/auth-sdk-wrapper/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/auth-sdk-wrapper/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/auth-sdk-wrapper/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/auth-sdk-wrapper"],
+      "options": {
+        "jestConfig": "libs/auth-sdk-wrapper/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "libs/auth-sdk-wrapper/**/*.ts",
+          "libs/auth-sdk-wrapper/**/*.html"
+        ]
+      }
+    }
+  },
+  "tags": []
+}

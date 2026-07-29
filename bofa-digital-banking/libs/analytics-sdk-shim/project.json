@@ -1,0 +1,43 @@
+{
+  "name": "analytics-sdk-shim",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "library",
+  "sourceRoot": "libs/analytics-sdk-shim/src",
+  "prefix": "bofa",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/angular:ng-packagr-lite",
+      "outputs": ["dist/libs/analytics-sdk-shim"],
+      "options": {
+        "project": "libs/analytics-sdk-shim/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/analytics-sdk-shim/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/analytics-sdk-shim/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/analytics-sdk-shim"],
+      "options": {
+        "jestConfig": "libs/analytics-sdk-shim/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "libs/analytics-sdk-shim/**/*.ts",
+          "libs/analytics-sdk-shim/**/*.html"
+        ]
+      }
+    }
+  },
+  "tags": []
+}

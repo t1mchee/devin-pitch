@@ -1,0 +1,13 @@
+{
+  "name": "@bofa/auth-sdk-wrapper",
+  "version": "3.4.1",
+  "peerDependencies": {
+    "@angular/core": "^14.0.0",
+    "@angular/common": "^14.0.0",
+    "@angular/router": "^14.0.0"
+  },
+  "dependencies": {
+    "tslib": "^2.3.0"
+  },
+  "sideEffects": false
+}
