@@ -6,31 +6,41 @@
 // When Material changes its internals, preserve the intent, not the selector.
 //
 // Numbering (OV-nn) is referenced by the design-system audit and by migration PRs.
+//
+// MDC MIGRATION (Angular Material 15): the v14 selectors below were rewritten to
+// the MDC DOM hooks that were confirmed by inspecting the rendered markup of each
+// showcase component (not guessed from the class name). The intent comment of each
+// override is preserved verbatim. Two overrides (OV-17, OV-18) could NOT be mapped
+// and are left intact and flagged as open questions — see the STOP-AND-ASK notes.
 // -----------------------------------------------------------------------------
 
-@use 'sass:color';
 @use './palette' as bofa;
 
 // OV-01 — Compliance (WCAG AA): disabled form fields must remain legible against
 // the BoA slate palette. Material's default disabled label fails contrast at 14px
 // on our background, and disabled account fields are common in read-only journeys.
+// MDC: the underline is now the `.mdc-line-ripple` element (::before = resting,
+// ::after = focused) rather than `.mat-form-field-underline`; the label is
+// `.mat-mdc-floating-label`. The `mat-focused` / `mat-form-field-disabled` host
+// state classes are unchanged in MDC.
 .bofa-form-field {
-  .mat-form-field-underline {
-    background-color: bofa.$boa-slate-300;
+  .mdc-line-ripple::before {
+    border-bottom-color: bofa.$boa-slate-300;
   }
 
-  &.mat-focused .mat-form-field-ripple {
-    background-color: bofa.$boa-red-600;
-    height: 2px;
+  &.mat-focused .mdc-line-ripple::after {
+    border-bottom-color: bofa.$boa-red-600;
+    border-bottom-width: 2px;
   }
 
-  &.mat-form-field-disabled .mat-form-field-label {
+  &.mat-form-field-disabled .mat-mdc-floating-label {
     color: bofa.$boa-slate-600;
   }
 
   // OV-02 — Error text must sit on a 20px line box so field heights do not jump
   // when validation fires. Layout shift on the transfer form was a 2022 incident.
-  .mat-form-field-subscript-wrapper {
+  // MDC: subscript wrapper is `.mat-mdc-form-field-subscript-wrapper`.
+  .mat-mdc-form-field-subscript-wrapper {
     margin-top: 6px;
     line-height: 20px;
     min-height: 20px;
@@ -38,49 +48,60 @@
 }
 
 // OV-03 — Brand: icon-and-label spacing per the BoA button spec (8px, optical).
+// MDC: there is no `.mat-button-wrapper`; the button is the flex container and the
+// text sits in `.mdc-button__label`. Icon spacing is applied to the leading icon.
+// Letter-spacing is also carried by the `$button` typography level.
 .bofa-button {
-  .mat-button-wrapper {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
+  &.mdc-button {
     letter-spacing: 0.02em;
   }
 
-  &.mat-flat-button:not([disabled]) {
+  .mat-icon {
+    margin-right: 8px;
+  }
+
+  // MDC: `mat-flat-button` becomes the unelevated button variant.
+  &.mat-mdc-unelevated-button:not([disabled]) {
     background-color: bofa.$boa-red-600;
     color: #fff;
   }
 
   // OV-04 — Focus ring must be visible against both white and slate-50 surfaces.
   // Keyboard-only journeys are audited annually by Accessibility.
-  &.cdk-keyboard-focused .mat-button-focus-overlay {
-    opacity: 0.12;
+  // MDC: the focus overlay is `.mat-mdc-button-persistent-ripple::before`.
+  &.cdk-keyboard-focused {
     outline: 2px solid bofa.$boa-blue-500;
     outline-offset: 2px;
+
+    .mat-mdc-button-persistent-ripple::before {
+      opacity: 0.12;
+    }
   }
 }
 
 // OV-05 — Readability: currency columns align on the decimal, so figures use
 // tabular numerals. Row heights are fixed so a 50-row statement paginates
 // predictably in print and PDF export.
+// MDC: cells are `.mat-mdc-header-cell` / `.mat-mdc-cell`, rows `.mat-mdc-row`.
 .bofa-table {
-  .mat-header-cell {
+  .mat-mdc-header-cell {
     height: 44px;
     font-weight: 600;
     color: bofa.$boa-slate-900;
   }
 
-  .mat-cell {
+  .mat-mdc-cell {
     height: 40px;
     font-variant-numeric: tabular-nums;
   }
 
-  .mat-row:nth-child(even) {
+  .mat-mdc-row:nth-child(even) {
     background: bofa.$boa-slate-50;
   }
 
   // OV-06 — Sort arrows are dimmed until hover; a permanently visible arrow tested
   // badly with older customers who read it as an active filter.
+  // MDC: MatSort DOM is unchanged; `.mat-sort-header-arrow` still applies.
   .mat-sort-header-arrow {
     opacity: 0.35;
   }
@@ -92,36 +113,47 @@
 
 // OV-07 — MDC restructures the select overlay entirely. Values are numeric
 // (account and sort codes), so they use tabular numerals for scanability.
+// MDC: panel class is applied to `.mat-mdc-select-panel`; options are
+// `.mat-mdc-option`; the active option is `.mat-mdc-option-active`; the trigger
+// value text is `.mat-mdc-select-value-text`.
 ::ng-deep .bofa-select-panel {
-  .mat-select-value-text {
+  .mat-mdc-select-value-text {
     font-variant-numeric: tabular-nums;
   }
 
-  .mat-option.mat-active {
+  .mat-mdc-option.mat-mdc-option-active {
     background: rgba(bofa.$boa-red-600, 0.08);
   }
 
   // OV-08 — Selected option keeps brand red text rather than the Material default
   // accent, because accent is navy and reads as a link in this context.
-  .mat-option.mat-selected:not(.mat-option-disabled) {
+  // MDC: selected uses `.mdc-list-item--selected`; disabled uses
+  // `.mdc-list-item--disabled`.
+  .mat-mdc-option.mdc-list-item--selected:not(.mdc-list-item--disabled) {
     color: bofa.$boa-red-600;
   }
 }
 
 // OV-09 — The toggle is used for "paperless statements" and similar consents.
 // The bar is widened so the on/off state is unambiguous at arm's length on tablet.
+// MDC: the slide toggle is rebuilt on `mdc-switch`; the bar is `.mdc-switch__track`
+// and the thumb is `.mdc-switch__handle`; the checked host class is
+// `.mat-mdc-slide-toggle-checked`. NOTE: MDC's switch geometry differs from v14
+// (track/handle sizing and the handle colour are token-driven), so this preserves
+// the geometric + colour INTENT but does not reproduce v14 pixel-for-pixel; the
+// remaining diff is reported in the PR.
 .bofa-slide-toggle {
-  .mat-slide-toggle-bar {
+  .mdc-switch__track {
     width: 40px;
     height: 16px;
   }
 
-  .mat-slide-toggle-thumb {
+  .mdc-switch__handle {
     width: 20px;
     height: 20px;
   }
 
-  &.mat-checked .mat-slide-toggle-thumb {
+  &.mat-mdc-slide-toggle-checked .mdc-switch__handle::after {
     background-color: bofa.$boa-success-600;
   }
 }
@@ -129,27 +161,35 @@
 // OV-10 — Tab labels carry the section nav on the accounts dashboard. The ink bar
 // is thickened to 3px and brand red so the active section is legible on a 4K
 // monitor at a distance, per the branch-teller display standard.
+// MDC: tab is `.mat-mdc-tab` with label text in `.mdc-tab__text-label`; the active
+// tab carries `.mdc-tab--active`; the ink bar is
+// `.mdc-tab-indicator__content--underline`.
 .bofa-tabs {
-  .mat-tab-label {
+  .mat-mdc-tab {
     min-width: 120px;
     opacity: 1;
-    font-weight: 600;
+
+    .mdc-tab__text-label {
+      font-weight: 600;
+    }
   }
 
-  .mat-tab-label-active {
+  .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
     color: bofa.$boa-red-600;
   }
 
-  .mat-ink-bar {
-    height: 3px;
-    background-color: bofa.$boa-red-600;
+  .mdc-tab-indicator__content--underline {
+    border-top-width: 3px;
+    border-color: bofa.$boa-red-600;
   }
 }
 
 // OV-11 — Chips represent transaction categories. Height is fixed at 28px so a
 // wrapping chip list keeps a predictable rhythm inside the filter drawer.
+// MDC: chip is `.mat-mdc-standard-chip` (`.mdc-evolution-chip`); the remove button
+// is `.mat-mdc-chip-remove`.
 .bofa-chips {
-  .mat-chip.mat-standard-chip {
+  .mat-mdc-standard-chip {
     height: 28px;
     border-radius: 14px;
     background: bofa.$boa-slate-100;
@@ -157,21 +197,23 @@
     font-size: 12px;
   }
 
-  .mat-chip.mat-standard-chip .mat-chip-remove {
+  .mat-mdc-standard-chip .mat-mdc-chip-remove {
     opacity: 0.7;
   }
 }
 
 // OV-12 — Dialogs are used for step-up authentication. Padding is tightened and
 // the surface is squared off to match the MFA modal in the mobile app.
+// MDC: the container is `.mat-mdc-dialog-container` wrapping `.mdc-dialog__surface`;
+// the title is `.mat-mdc-dialog-title`.
 .bofa-dialog {
-  .mat-dialog-container {
+  .mat-mdc-dialog-container .mdc-dialog__surface {
     padding: 20px 24px;
     border-radius: 4px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
   }
 
-  .mat-dialog-title {
+  .mat-mdc-dialog-title {
     margin-bottom: 12px;
   }
 }
@@ -179,6 +221,8 @@
 // OV-13 — Datepicker: the selected day must be brand red, and today's date is
 // outlined rather than filled, because two filled circles tested as confusing
 // on the scheduled-payments calendar.
+// MDC: the calendar body DOM is unchanged; `.mat-calendar-body-selected` /
+// `.mat-calendar-body-today` still apply.
 .bofa-datepicker-panel {
   .mat-calendar-body-selected {
     background-color: bofa.$boa-red-600;
@@ -193,12 +237,13 @@
 // OV-14 — Paginator sits under statement tables. The page-size control is
 // compressed because the default 80px label pushes the range label off-screen
 // on the 1280px branch terminals.
+// MDC: labels are `.mat-mdc-paginator-page-size-label` / `.mat-mdc-paginator-range-label`.
 .bofa-paginator {
-  .mat-paginator-page-size-label {
+  .mat-mdc-paginator-page-size-label {
     margin-right: 4px;
   }
 
-  .mat-paginator-range-label {
+  .mat-mdc-paginator-range-label {
     margin: 0 16px;
     font-variant-numeric: tabular-nums;
   }
@@ -206,31 +251,45 @@
 
 // OV-15 — Autocomplete backs payee search. The panel is capped so it never
 // covers the "confirm payee" copy, which is a Confirmation of Payee requirement.
+// MDC: the panel is `.mat-mdc-autocomplete-panel`; options are `.mat-mdc-option`.
 ::ng-deep .bofa-autocomplete-panel {
-  &.mat-autocomplete-panel {
+  &.mat-mdc-autocomplete-panel {
     max-height: 224px;
   }
 
-  .mat-option {
+  .mat-mdc-option {
     height: 40px;
     line-height: 40px;
   }
 }
 
 // OV-16 — Currency input right-aligns and uses tabular numerals.
+// MDC: the input is `.mat-mdc-input-element`; a `matPrefix` renders inside
+// `.mat-mdc-form-field-text-prefix` / `.mat-mdc-form-field-icon-prefix`.
 .bofa-currency-input {
-  .mat-input-element {
+  .mat-mdc-input-element {
     text-align: right;
     font-variant-numeric: tabular-nums;
   }
 
-  .mat-form-field-prefix {
+  .mat-mdc-form-field-text-prefix,
+  .mat-mdc-form-field-icon-prefix {
     margin-right: 4px;
     color: bofa.$boa-slate-600;
   }
 }
 
 // OV-17 — Tightened for density.
+//
+// STOP-AND-ASK (unmapped): the intent comment states only "tightened for density"
+// and does not record the target dimensions. The v14 mechanism — padding on
+// `.mat-form-field-infix` plus a `border-top-width` used to reserve label space —
+// does not exist in MDC: MDC form fields use a fixed container height driven by the
+// theme `density` token, not infix border padding. There is no way to derive which
+// MDC density scale (or container-height override) reproduces the intended compact
+// field from `0.4em / 0.6em` without knowing the target height. Per the playbook
+// this is a design-system-owner decision, not a guess, so the override is left
+// intact (below) and reported as an open question rather than mapped.
 .bofa-form-field.bofa-density-compact {
   .mat-form-field-infix {
     padding: 0.4em 0;
@@ -239,6 +298,16 @@
 }
 
 // OV-18 — Keep in sync with the legacy shell.
+//
+// STOP-AND-ASK (unmapped): the class names map mechanically to MDC
+// (`.mat-mdc-tab-header`, `.mat-mdc-tab-body-content`), but the intent — "keep in
+// sync with the legacy shell" — references an external contract (the "legacy
+// shell") that is not present in this repository. Whether removing the tab-header
+// bottom border and making the tab body overflow visible still "keeps it in sync"
+// after the MDC rebuild cannot be verified from the code. Per the playbook, an
+// override whose intent is ambiguous/unrecoverable is a question for the design
+// system owner, so the override is left intact (below) and reported rather than
+// silently ported.
 .bofa-tabs.bofa-legacy-shell {
   .mat-tab-header {
     border-bottom-width: 0;

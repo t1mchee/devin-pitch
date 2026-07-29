@@ -9,11 +9,21 @@ $boa-primary: mat.define-palette(bofa.$boa-red-palette, 600, 100, 800);
 $boa-accent: mat.define-palette(bofa.$boa-blue-palette, 500, 50, 700);
 $boa-warn: mat.define-palette(mat.$red-palette);
 
-// Angular Material v14 positional signature for define-light-theme.
-// v15 replaces this with a map, v18 introduces define-theme for M3, and v20
-// replaces the whole entry point with mat.theme(). Every one of those is a
-// breaking change for this file.
-$boa-theme: mat.define-light-theme($boa-primary, $boa-accent, $boa-warn);
+// Angular Material v15 replaces the positional `define-light-theme($primary, $accent,
+// $warn)` signature with a single configuration map. The palette values are unchanged;
+// only the call shape is migrated. Typography and density are declared explicitly so the
+// theme object is self-describing (density 0 == the v14 default comfortable spacing).
+$boa-theme: mat.define-light-theme(
+  (
+    color: (
+      primary: $boa-primary,
+      accent: $boa-accent,
+      warn: $boa-warn,
+    ),
+    typography: type.$boa-typography,
+    density: 0,
+  )
+);
 
 @include mat.all-component-themes($boa-theme);
 @include mat.all-component-typographies(type.$boa-typography);
