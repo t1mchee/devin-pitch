@@ -13,12 +13,12 @@ import { AnalyticsSdkShimModule } from '@bofa/analytics-sdk-shim';
 import { AppComponent } from './app.component';
 import { APP_ROUTES } from './app.routes';
 import { DashboardComponent } from './dashboard/dashboard.component';
-import { ShowcaseComponent } from './showcase/showcase.component';
+import { SignInComponent } from './sign-in/sign-in.component';
 import { transactionsReducer } from './state/transactions.reducer';
 import { TransactionsEffects } from './state/transactions.effects';
 
 @NgModule({
-  declarations: [AppComponent, DashboardComponent, ShowcaseComponent],
+  declarations: [AppComponent, DashboardComponent, SignInComponent],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,

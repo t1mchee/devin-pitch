@@ -35,6 +35,25 @@ describe('BofaTableComponent', () => {
     expect(bodyRows.length).toBe(2);
   });
 
+  it('sorts on a header click, ascending then descending', () => {
+    const amountHeader = fixture.nativeElement.querySelectorAll('th')[3] as HTMLElement;
+
+    const amounts = () =>
+      Array.from(fixture.nativeElement.querySelectorAll('tbody tr td:nth-child(4)')).map((c) =>
+        ((c as HTMLElement).textContent || '').trim()
+      );
+
+    expect(amounts()).toEqual(['-$142.18', '$3,210.00']);
+
+    amountHeader.click();
+    fixture.detectChanges();
+    expect(amounts()).toEqual(['-$142.18', '$3,210.00']);
+
+    amountHeader.click();
+    fixture.detectChanges();
+    expect(amounts()).toEqual(['$3,210.00', '-$142.18']);
+  });
+
   it('formats amounts as USD currency', () => {
     const cells: string[] = Array.from(fixture.nativeElement.querySelectorAll('tbody tr:first-child td')).map((c) =>
       ((c as HTMLElement).textContent || '').trim()

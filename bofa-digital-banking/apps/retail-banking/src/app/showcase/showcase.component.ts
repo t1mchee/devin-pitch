@@ -1,10 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormControl, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
 
-import { BofaTransactionRow } from '@bofa/ui-core';
+import { BofaDialogComponent, BofaTransactionRow } from '@bofa/ui-core';
 
 import { SAMPLE_ROWS } from '../state/transactions.effects';
 
@@ -51,19 +52,48 @@ export class ShowcaseComponent implements OnInit, OnDestroy {
     { value: 'sav-8821', label: 'Advantage Savings ••8821' },
   ];
 
-  readonly enabled = new FormControl('Jane Q. Customer');
-  readonly disabled = new FormControl({ value: 'Locked value', disabled: true });
-  readonly errored = new FormControl('');
+  // One control per rendered field. Sharing a control across components put a
+  // customer name in the currency field and made the snapshots nonsense.
+  readonly nickname = new FormControl('Jane Q. Customer');
+  readonly nicknameDisabled = new FormControl({ value: 'Household account', disabled: true });
+  readonly errored = new FormControl('', Validators.required);
+
+  readonly account = new FormControl('chk-4410');
+  readonly accountDisabled = new FormControl({ value: 'sav-8821', disabled: true });
+
+  readonly amount = new FormControl('1,250.00');
+  readonly amountDisabled = new FormControl({ value: '250.00', disabled: true });
+
+  readonly payee = new FormControl('');
+  readonly payeeDisabled = new FormControl({ value: 'Duke Energy', disabled: true });
+
+  dialogResult: string | null = null;
   readonly toggleOn = new FormControl(true);
   readonly toggleOff = new FormControl({ value: false, disabled: true });
   readonly fixedDate = new FormControl(new Date(2024, 0, 15));
   readonly fixedDateDisabled = new FormControl({ value: new Date(2024, 0, 15), disabled: true });
 
-  constructor(private readonly route: ActivatedRoute) {}
+  constructor(private readonly route: ActivatedRoute, private readonly dialog: MatDialog) {}
+
+  openDialog(): void {
+    this.dialogResult = null;
+    this.dialog
+      .open(BofaDialogComponent, {
+        panelClass: 'bofa-dialog',
+        data: {
+          title: 'Confirm this transfer',
+          body: 'You are sending $1,250.00 to Duke Energy from Advantage Plus Banking ••4410.',
+          confirmLabel: 'Confirm transfer',
+        },
+      })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        this.dialogResult = confirmed ? 'Transfer confirmed' : 'Transfer cancelled';
+      });
+  }
 
   ngOnInit(): void {
     this.errored.markAsTouched();
-    this.errored.setErrors({ required: true });
 
     this.route.paramMap
       .pipe(

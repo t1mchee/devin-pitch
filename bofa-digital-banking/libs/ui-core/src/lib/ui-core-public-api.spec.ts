@@ -11,6 +11,7 @@ import * as uiCore from '../index';
 describe('@bofa/ui-core public API', () => {
   const EXPECTED_EXPORTS = [
     'UiCoreModule',
+    'BOFA_ICONS',
     'BofaAutocompleteComponent',
     'BofaButtonComponent',
     'BofaChipsComponent',

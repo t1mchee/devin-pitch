@@ -1,6 +1,6 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { BehaviorSubject, Observable, Subject, of, timer } from 'rxjs';
-import { map, switchMap, takeUntil } from 'rxjs/operators';
+import { BehaviorSubject, Observable, Subject, firstValueFrom, of, timer } from 'rxjs';
+import { filter, map, switchMap, take, takeUntil } from 'rxjs/operators';
 
 export interface BofaPrincipal {
   subjectId: string;
@@ -39,8 +39,24 @@ export class BofaAuthService implements OnDestroy {
     return this.principal$.asObservable();
   }
 
+  /**
+   * Resolves once the first principal has been fetched. The router must not be
+   * allowed to evaluate a guard before this settles: a guard that reads a null
+   * principal denies the very first navigation.
+   */
+  sessionReady(): Promise<BofaPrincipal> {
+    return firstValueFrom(this.resolvedPrincipal());
+  }
+
+  resolvedPrincipal(): Observable<BofaPrincipal> {
+    return this.principal$.pipe(
+      filter((p): p is BofaPrincipal => p !== null),
+      take(1)
+    );
+  }
+
   hasEntitlement(entitlement: string): Observable<boolean> {
-    return this.principal$.pipe(map((p) => !!p && p.entitlements.includes(entitlement)));
+    return this.resolvedPrincipal().pipe(map((p) => p.entitlements.includes(entitlement)));
   }
 
   requireStepUp(level: BofaPrincipal['mfaLevel']): Observable<boolean> {
