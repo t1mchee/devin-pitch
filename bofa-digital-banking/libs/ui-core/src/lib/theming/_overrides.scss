@@ -54,6 +54,35 @@
     color: bofa.$boa-red-100;
   }
 
+  // OV-01e — the label a validation message belongs to, and the label of a field
+  // the customer has just clicked. Material colours both from the primary/warn
+  // palette, i.e. brand red, which is 5.88:1 on white and 2.24:1 on the dark
+  // page. So on the dark surface OV-01d fixed the message (8.65:1) and left the
+  // *required* label it points at illegible at 2.62:1, and every field went
+  // illegible the moment it received focus at 1.64:1 — a control failing while
+  // being used. Same tint as the message: one signal, one value.
+  // The marker is nested *inside* the label and Material colours it with its own
+  // rule, so recolouring the label alone leaves the asterisk behind at 2.62:1.
+  .bofa-theme-dark &.mat-focused .mat-form-field-label,
+  .bofa-theme-dark &.mat-form-field-invalid .mat-form-field-label,
+  .bofa-theme-dark &.mat-form-field-invalid .mat-form-field-label .mat-form-field-required-marker {
+    color: bofa.$boa-red-100;
+  }
+
+  // OV-01f — and the same defect in the *light* theme, which is the shipping one.
+  // Material paints the label of an invalid field, and the required asterisk in
+  // it, with the warn palette's #f44336: 3.37:1 on the form-field fill. So the
+  // field label and the "this is required" marker both failed AA at the moment
+  // validation fired, on the transfer form, in production colours. OV-01d fixed
+  // the message and stopped there. Brand danger red is 6.96:1 on the same fill.
+  //
+  // Found by the legibility sweep on its first run — not by the fourteen-selector
+  // list, which had a probe pointed at `.mat-error` two nodes away.
+  &.mat-form-field-invalid .mat-form-field-label,
+  &.mat-form-field-invalid .mat-form-field-label .mat-form-field-required-marker {
+    color: bofa.$boa-danger-600;
+  }
+
   // OV-02 — Error text must sit on a 20px line box so field heights do not jump
   // when validation fires. Layout shift on the transfer form was a 2022 incident.
   .mat-form-field-subscript-wrapper {
@@ -75,6 +104,16 @@
   &.mat-flat-button:not([disabled]) {
     background-color: bofa.$boa-red-600;
     color: #fff;
+  }
+
+  // OV-03b — the secondary variant is `mat-stroked-button color=accent`, i.e.
+  // brand navy: 14.76:1 on white and 1.12:1 on the dark page. "Download
+  // statement" was there, enabled, and unreadable. The navy tint keeps the
+  // accent signal at 7.47:1. The stroke has to move with it or the button
+  // outline disappears too (1.4.11, 3:1 for a control boundary).
+  .bofa-theme-dark &.mat-stroked-button:not([disabled]) {
+    color: bofa.$boa-blue-100;
+    border-color: bofa.$boa-blue-100;
   }
 
   // OV-04 — Focus ring must be visible against both white and slate-50 surfaces.
@@ -190,6 +229,16 @@
   // accent, because accent is navy and reads as a link in this context.
   .mat-option.mat-selected:not(.mat-option-disabled) {
     color: bofa.$boa-red-600;
+  }
+
+  // OV-08b — and this is where OV-08 stops being the vacuous probe it is
+  // documented as. In the light theme Material paints the selected option brand
+  // red on its own, so the rule above is a tripwire and nothing more. In the
+  // dark palette that same red is 1.20:1 on the panel: the *selected* account —
+  // the one the customer is being asked to confirm — was the least readable line
+  // in the list. The tint is 6.59:1 on Material's dark panel.
+  .bofa-theme-dark & .mat-option.mat-selected:not(.mat-option-disabled) {
+    color: bofa.$boa-red-100;
   }
 }
 
@@ -349,6 +398,13 @@
   .mat-form-field-prefix {
     margin-right: 4px;
     color: bofa.$boa-slate-600;
+  }
+
+  // OV-16b — the currency symbol is part of the amount, not decoration: on a
+  // payment screen "500.00" without a legible "$" is a different number. Slate-600
+  // is 5.81:1 on white and 1.66:1 on the dark page.
+  .bofa-theme-dark & .mat-form-field-prefix {
+    color: bofa.$boa-slate-200;
   }
 }
 

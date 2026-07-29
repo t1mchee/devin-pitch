@@ -9,16 +9,19 @@ $boa-red-600: #c8102e; // primary brand red
 $boa-red-800: #8c0b20;
 
 $boa-blue-50: #e8eef6;
+$boa-blue-100: #9ec5ff; // navy tint for links on a dark surface: 7.47:1 (navy itself is 1.12:1)
 $boa-blue-500: #012169; // brand navy, used for accents and links
 $boa-blue-700: #001845;
 
 $boa-slate-50: #f6f7f9;
 $boa-slate-100: #eceef2;
+$boa-slate-200: #d6dae1; // muted body copy on the dark surface: 9.41:1 (slate-600 is 2.27:1)
 $boa-slate-300: #c7ccd6;
 $boa-slate-600: #5d6673; // WCAG AA on white at 14px
 $boa-slate-750: #4a4f57; // zebra stripe on the dark surface: 8.24:1 with white text
 $boa-slate-900: #12161d;
 
+$boa-success-200: #7fd1a3; // confirmation copy on the dark surface: 7.26:1 (success-600 is 2.43:1)
 $boa-success-600: #0b7a3b;
 $boa-warn-600: #b45309;
 $boa-danger-600: #b00020;

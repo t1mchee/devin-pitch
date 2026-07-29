@@ -1,3 +1,4 @@
+import { contrastRatio, glyphRatio, indicatorRatio } from '../support/contrast';
 import { DARK_PROBES, OVERRIDE_PROBES, OverrideProbe } from '../support/override-probes';
 
 /**
@@ -78,108 +79,6 @@ function assertProbe(probe: OverrideProbe, theme: 'light' | 'dark'): void {
   });
 }
 
-/**
- * WCAG 2.1 contrast, computed the pedantic way. Two shortcuts in the first
- * version of this helper were found by hostile review, and both of them made an
- * illegible render *pass*:
- *
- *   1. `rgba(0, 0, 0, 0)` parsed as opaque black, so a fully transparent
- *      ancestor chain scored 21:1 — the maximum — while rendering white on white.
- *   2. Foreground alpha was dropped, so `rgba(255, 255, 255, 0.5)` scored
- *      10.05:1 where the composited truth is 3.87:1. Secondary text (hints,
- *      disabled labels, inactive tabs) is *exactly* where Material uses alpha,
- *      so this shortcut would have failed precisely on the text it was added to
- *      protect.
- *
- * So: alpha is parsed, every layer is composited over the one behind it, and an
- * ancestor chain that never becomes opaque terminates on the canvas rather than
- * on a convenient default.
- */
-interface Rgba {
-  r: number;
-  g: number;
-  b: number;
-  a: number;
-}
-
-const CANVAS: Rgba = { r: 255, g: 255, b: 255, a: 1 };
-
-function parseColour(value: string): Rgba {
-  const parts = (value.match(/-?\d+(\.\d+)?/g) ?? []).map(Number);
-  if (parts.length < 3) {
-    // `transparent`, `currentColor`, an empty string: treat as fully transparent
-    // rather than as a colour, so it composites away instead of scoring well.
-    return { r: 0, g: 0, b: 0, a: 0 };
-  }
-  return { r: parts[0], g: parts[1], b: parts[2], a: parts.length > 3 ? parts[3] : 1 };
-}
-
-/** Source-over composite of `top` onto an opaque `bottom`. */
-function composite(top: Rgba, bottom: Rgba): Rgba {
-  return {
-    r: top.r * top.a + bottom.r * (1 - top.a),
-    g: top.g * top.a + bottom.g * (1 - top.a),
-    b: top.b * top.a + bottom.b * (1 - top.a),
-    a: 1,
-  };
-}
-
-/** The opaque colour actually painted behind `element`, canvas included. */
-function paintedBackground(element: HTMLElement): Rgba {
-  const layers: Rgba[] = [];
-  let node: HTMLElement | null = element;
-
-  while (node) {
-    const layer = parseColour(getComputedStyle(node).backgroundColor);
-    if (layer.a > 0) {
-      layers.push(layer);
-      if (layer.a === 1) {
-        break;
-      }
-    }
-    node = node.parentElement;
-  }
-
-  return layers.reduceRight((below, above) => composite(above, below), CANVAS);
-}
-
-function luminance({ r, g, b }: Rgba): number {
-  const channel = (value: number): number => {
-    const s = value / 255;
-    return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
-  };
-  return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
-}
-
-function contrastRatio(element: HTMLElement): { ratio: number; detail: string } {
-  const background = paintedBackground(element);
-  const declared = parseColour(getComputedStyle(element).color);
-  const foreground = composite(declared, background);
-
-  const [lighter, darker] = [luminance(foreground), luminance(background)].sort((a, b) => b - a);
-  const ratio = (lighter + 0.05) / (darker + 0.05);
-  const round = ({ r, g, b }: Rgba): string =>
-    `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
-
-  return {
-    ratio,
-    detail: `${getComputedStyle(element).color} → ${round(foreground)} on ${round(background)}`,
-  };
-}
-
-/**
- * Non-text contrast for a painted state indicator (the tab ink bar): its own
- * surface against the surface behind it, per WCAG 1.4.11.
- */
-function indicatorRatio(indicator: HTMLElement): { ratio: number; detail: string } {
-  const bar = paintedBackground(indicator);
-  const behind = paintedBackground(indicator.parentElement as HTMLElement);
-  const [lighter, darker] = [luminance(bar), luminance(behind)].sort((a, b) => b - a);
-  const round = ({ r, g, b }: Rgba): string =>
-    `rgb(${Math.round(r)}, ${Math.round(g)}, ${Math.round(b)})`;
-  return { ratio: (lighter + 0.05) / (darker + 0.05), detail: `${round(bar)} on ${round(behind)}` };
-}
-
 describe('design system — override contract (computed styles)', () => {
   OVERRIDE_PROBES.forEach((probe) => {
     it(`${probe.ov}: ${probe.intent}`, () => assertProbe(probe, 'light'));
@@ -258,15 +157,16 @@ const CONTRAST_TARGETS = [
 (['light', 'dark'] as const).forEach((theme) => {
   describe(`design system — legibility (WCAG AA, ${theme} surface)`, () => {
     CONTRAST_TARGETS.forEach(({ surface, component, label, target }) => {
+      // Every match, not `.first()`: the chip showcase renders three variants and
+      // only the first was ever measured, so a second chip at 2.50:1 sat behind a
+      // green assertion. A selector that matches n elements is a claim about n.
       it(`${surface}: ${label} clears 4.5:1`, () => {
         cy.visitShowcase(component, theme);
-        cy.get(target)
-          .first()
-          .then(($element) => {
-            const { ratio, detail } = contrastRatio($element[0]);
-            cy.log(`${surface} / ${label}: ${detail} = ${ratio.toFixed(2)}:1`);
-            expect(ratio, `${surface} / ${label}: ${detail}`).to.be.at.least(4.5);
-          });
+        cy.get(target).each(($element, index) => {
+          const { ratio, detail } = contrastRatio($element[0]);
+          cy.log(`${surface} / ${label}[${index}]: ${detail} = ${ratio.toFixed(2)}:1`);
+          expect(ratio, `${surface} / ${label}[${index}]: ${detail}`).to.be.at.least(4.5);
+        });
       });
     });
 
@@ -289,28 +189,37 @@ const CONTRAST_TARGETS = [
         });
     });
 
-    it('datepicker: the toggle icon clears 3:1 (non-text contrast)', () => {
+    // The glyph's own `fill`, not the button's `color`. This assertion read the
+    // button until a reviewer changed the SVG's fill alone: the contrast test
+    // stayed green while the icon disappeared, and only the pixel oracle caught
+    // it (382 px). An icon is painted by `fill`; measure what is painted.
+    it('datepicker: the toggle glyph clears 3:1 (non-text contrast)', () => {
       cy.visitShowcase('datepicker', theme);
-      cy.get('[data-variant=default] .mat-datepicker-toggle button')
-        .first()
-        .then(($button) => {
-          const { ratio, detail } = contrastRatio($button[0]);
-          cy.log(`datepicker toggle icon: ${detail} = ${ratio.toFixed(2)}:1`);
-          expect(ratio, `datepicker toggle icon: ${detail}`).to.be.at.least(3);
-        });
+      cy.get('[data-variant=default] .mat-datepicker-toggle svg').each(($svg, index) => {
+        const { ratio, detail } = glyphRatio($svg[0] as unknown as SVGElement);
+        cy.log(`datepicker toggle glyph[${index}]: ${detail} = ${ratio.toFixed(2)}:1`);
+        expect(ratio, `datepicker toggle glyph[${index}]: ${detail}`).to.be.at.least(3);
+      });
     });
   });
 });
 
 /**
  * A gate is only worth what its oracle is worth, so the oracle is tested too —
- * against the two exact inputs that made the previous version report 21:1 and
- * 10.05:1 for renders a customer could not read.
+ * against the exact inputs that made earlier versions report 21:1, 10.05:1 and
+ * 13.20:1 for renders a customer could not read. Every case below is a defect
+ * this helper actually shipped, found by review rather than by the suite.
  */
 describe('design system — the contrast oracle itself', () => {
   const measure = (
-    styles: { fg: string; bg: string; ancestors?: string[] },
-    assertion: (ratio: number) => void
+    styles: {
+      fg: string;
+      bg: string;
+      ancestors?: string[];
+      ancestorStyle?: Partial<CSSStyleDeclaration>;
+      style?: Partial<CSSStyleDeclaration>;
+    },
+    assertion: (measurement: { ratio: number; unmeasurable?: string }) => void
   ) => {
     cy.visitShowcase('table', 'light');
     cy.document().then((doc) => {
@@ -318,22 +227,28 @@ describe('design system — the contrast oracle itself', () => {
       let host = outermost;
       (styles.ancestors ?? []).forEach((background) => {
         host.style.backgroundColor = background;
+        if (styles.ancestorStyle) {
+          Object.assign(host.style, styles.ancestorStyle);
+        }
         const child = doc.createElement('div');
         host.appendChild(child);
         host = child;
       });
       host.style.backgroundColor = styles.bg;
       host.style.color = styles.fg;
+      if (styles.style) {
+        Object.assign(host.style, styles.style);
+      }
       host.textContent = 'Available balance';
       doc.body.appendChild(outermost);
-      assertion(contrastRatio(host).ratio);
+      assertion(contrastRatio(host));
     });
   };
 
   it('a fully transparent chain resolves to the canvas, not to opaque black', () => {
     // Previously 21:1. White text on a transparent stack over a white canvas is
     // invisible, and the ratio has to say so.
-    measure({ fg: 'rgb(255, 255, 255)', bg: 'rgba(0, 0, 0, 0)', ancestors: ['rgba(0, 0, 0, 0)'] }, (ratio) => {
+    measure({ fg: 'rgb(255, 255, 255)', bg: 'rgba(0, 0, 0, 0)', ancestors: ['rgba(0, 0, 0, 0)'] }, ({ ratio }) => {
       expect(ratio).to.be.closeTo(1, 0.01);
     });
   });
@@ -341,21 +256,59 @@ describe('design system — the contrast oracle itself', () => {
   it('composites a semi-transparent foreground instead of treating it as opaque', () => {
     // Previously 10.05:1 (read as opaque white on #424242); composited truth is 3.87:1,
     // i.e. a fail, which is the entire point.
-    measure({ fg: 'rgba(255, 255, 255, 0.5)', bg: 'rgb(66, 66, 66)' }, (ratio) => {
+    measure({ fg: 'rgba(255, 255, 255, 0.5)', bg: 'rgb(66, 66, 66)' }, ({ ratio }) => {
       expect(ratio).to.be.closeTo(3.87, 0.02);
     });
   });
 
   it('composites a semi-transparent background over the layer behind it', () => {
-    measure({ fg: 'rgb(255, 255, 255)', bg: 'rgba(0, 0, 0, 0.5)', ancestors: ['rgb(0, 0, 0)'] }, (ratio) => {
+    measure({ fg: 'rgb(255, 255, 255)', bg: 'rgba(0, 0, 0, 0.5)', ancestors: ['rgb(0, 0, 0)'] }, ({ ratio }) => {
       expect(ratio).to.be.closeTo(21, 0.01);
     });
   });
 
   it('agrees with the published figure on a known opaque pair', () => {
     // #121d29-ish brand slate on the zebra stripe: the light-theme statement row.
-    measure({ fg: 'rgb(18, 22, 29)', bg: 'rgb(246, 247, 249)' }, (ratio) => {
+    measure({ fg: 'rgb(18, 22, 29)', bg: 'rgb(246, 247, 249)' }, ({ ratio }) => {
       expect(ratio).to.be.greaterThan(15);
     });
+  });
+
+  it('folds an ancestor `opacity` into the layer instead of ignoring it', () => {
+    // Previously 13.20:1 on a slide-toggle label whose composited truth was
+    // 3.28:1 — a 4x overstatement, and `opacity` is how Material dims things
+    // that are not disabled as well as things that are.
+    measure(
+      {
+        fg: 'rgb(255, 255, 255)',
+        bg: 'rgba(0, 0, 0, 0)',
+        ancestors: ['rgb(66, 66, 66)'],
+        ancestorStyle: { opacity: '0.38' },
+      },
+      ({ ratio }) => {
+        // White at 38% over #424242-at-38%-over-white composites to rgb(210) on
+        // rgb(183): 1.33:1. The previous version answered 13.20:1 by ignoring
+        // `opacity` entirely, then 2.00:1 by folding it into the background but
+        // not the glyphs. Both were fails, but a gate that misreports by 10x
+        // cannot be used to argue a threshold.
+        expect(ratio).to.be.closeTo(1.33, 0.02);
+      }
+    );
+  });
+
+  it('refuses to score text over a gradient rather than reporting the canvas', () => {
+    // Previously 21:1 over arbitrary artwork, which is the worst possible answer:
+    // maximum confidence, no information. Reporting 0 fails the gate and says why.
+    measure(
+      {
+        fg: 'rgb(255, 255, 255)',
+        bg: 'rgba(0, 0, 0, 0)',
+        style: { backgroundImage: 'linear-gradient(#fff, #000)' },
+      },
+      ({ ratio, unmeasurable }) => {
+        expect(unmeasurable, 'the helper must say it cannot measure this').to.be.a('string');
+        expect(ratio).to.equal(0);
+      }
+    );
   });
 });

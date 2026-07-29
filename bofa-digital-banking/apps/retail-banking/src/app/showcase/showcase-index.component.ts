@@ -29,11 +29,13 @@ import { SHOWCASE_COMPONENTS } from './showcase.component';
         max-width: 960px;
         margin: 0 auto;
       }
+      /* Tokens, not hexes: these three colours are the ones that rendered
+         invisible on /__showcase?theme=dark. See bofa-theme.scss. */
       .index__eyebrow {
         font-size: 12px;
         letter-spacing: 0.08em;
         text-transform: uppercase;
-        color: #5d6673;
+        color: var(--bofa-text-muted);
       }
       .index__title {
         margin: 4px 0 8px;
@@ -42,7 +44,7 @@ import { SHOWCASE_COMPONENTS } from './showcase.component';
       }
       .index__body {
         margin: 0 0 24px;
-        color: #5d6673;
+        color: var(--bofa-text-muted);
       }
       .index__grid {
         display: grid;
@@ -52,15 +54,15 @@ import { SHOWCASE_COMPONENTS } from './showcase.component';
       .index__tile {
         display: block;
         padding: 16px;
-        border: 1px solid #eceef2;
+        border: 1px solid var(--bofa-border);
         border-radius: 4px;
-        color: #012169;
+        color: var(--bofa-link);
         text-decoration: none;
         font-weight: 600;
       }
       .index__tile:hover {
-        border-color: #012169;
-        background: #f6f7f9;
+        border-color: var(--bofa-link);
+        background: var(--bofa-surface-raised);
       }
     `,
   ],

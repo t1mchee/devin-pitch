@@ -5,10 +5,14 @@ import { Component } from '@angular/core';
   template: `<router-outlet></router-outlet>`,
   styles: [
     `
+      /* The token, not #fff. A hard-coded white here painted over the dark
+         <body> and left /accounts, the showcase index and /sign-in rendering
+         white-on-white while their components — which paint their own surfaces —
+         looked correct, which is what hid it for a round. */
       :host {
         display: block;
         min-height: 100vh;
-        background: #fff;
+        background: var(--bofa-surface);
       }
     `,
   ],

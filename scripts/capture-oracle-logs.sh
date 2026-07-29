@@ -4,132 +4,130 @@
 #
 # Every experiment here is "break one thing, prove the gate notices". The tree is
 # restored from a pristine copy before and after each case, so a failed case
-# cannot leak into the next one.
+# cannot leak into the next one, and each edit is asserted to have applied —
+# a log of an experiment that silently never happened is worse than no log.
 set -u
 REPO=/home/ubuntu/repos/devin-pitch
 cd "$REPO/bofa-digital-banking"
 OUT="$REPO/docs/evidence/oracle-logs"
 mkdir -p "$OUT"
 
-OVR=libs/ui-core/src/lib/theming/_overrides.scss
-THEME=libs/ui-core/src/lib/theming/bofa-theme.scss
-SPEC=apps/retail-banking-e2e/src/e2e/override-contract.cy.ts
-cp "$OVR" /tmp/_overrides.orig
-cp "$THEME" /tmp/_theme.orig
-cp "$SPEC" /tmp/_spec.orig
+FILES=(
+  libs/ui-core/src/lib/theming/_overrides.scss
+  libs/ui-core/src/lib/theming/bofa-theme.scss
+  apps/retail-banking-e2e/src/support/contrast.ts
+  apps/retail-banking/src/app/app.component.ts
+)
 
-restore() {
-  cp /tmp/_overrides.orig "$OVR"
-  cp /tmp/_theme.orig "$THEME"
-  cp /tmp/_spec.orig "$SPEC"
-}
+for f in "${FILES[@]}"; do cp "$f" "/tmp/oracle-$(basename "$f").orig"; done
+restore() { for f in "${FILES[@]}"; do cp "/tmp/oracle-$(basename "$f").orig" "$f"; done; }
 
 run() { echo "=== $1 :: $(date -u +%FT%TZ) ==="; npm run visual 2>&1 | sed 's/\x1b\[[0-9;]*m//g'; }
 
-# Deletes an exact block from a file, or aborts loudly rather than capturing a
-# log of an experiment that never happened.
-patch_out() {
-  python3 - "$1" "$2" <<'EOF'
+# Applies one exact replacement, or exits non-zero rather than capturing a log of
+# an experiment that never happened.
+patch() {
+  python3 - "$1" "$2" "$3" <<'EOF'
 import sys
-path, block = sys.argv[1], sys.argv[2]
+path, old, new = sys.argv[1], sys.argv[2], sys.argv[3]
 s = open(path).read()
-assert block in s, f'block not found in {path}: {block[:60]!r}'
-open(path, 'w').write(s.replace(block, '', 1))
+if old not in s:
+    sys.stderr.write(f'block not found in {path}: {old[:70]!r}\n')
+    sys.exit(1)
+open(path, 'w').write(s.replace(old, new, 1))
 EOF
 }
+
+experiment() { # name file old new
+  restore
+  if patch "$2" "$3" "$4"; then
+    run "$1" > "$OUT/$1.log"
+  else
+    echo "block not found — experiment NOT run" > "$OUT/$1.log"
+  fi
+}
+
+OVR=libs/ui-core/src/lib/theming/_overrides.scss
+THEME=libs/ui-core/src/lib/theming/bofa-theme.scss
+CONTRAST=apps/retail-banking-e2e/src/support/contrast.ts
+ROOT=apps/retail-banking/src/app/app.component.ts
 
 # 1-3. repeat runs on the pinned renderer, unmodified tree -> the noise floor
 for i in 1 2 3; do restore; run "repeat-run-$i" > "$OUT/noise-repeat-$i.log"; done
 
 # 4. fault injection: a brand-colour regression a ratio budget would wave through
-restore
-python3 - <<'EOF'
-p = 'libs/ui-core/src/lib/theming/_overrides.scss'
-s = open(p).read().replace('$boa-slate-900', '$boa-red-600', 1)
-open(p, 'w').write(s)
-EOF
-run "fault-injection-header-colour" > "$OUT/fault-injection-colour.log"
+experiment fault-injection-colour "$OVR" '$boa-slate-900' '$boa-red-600'
 
 # 5-12. delete-the-rule: does each gate actually fail without the code it protects?
-case_file() { case "$1" in theme) echo "$THEME";; spec) echo "$SPEC";; *) echo "$OVR";; esac; }
-
-declare -A CASES FILES
-FILES[ov05d]=ovr
-CASES[ov05d]='  .mat-row:nth-child(even) {
+experiment delete-rule-ov05d "$OVR" '  .mat-row:nth-child(even) {
     background: bofa.$boa-slate-50;
   }
-'
-FILES[ov07]=ovr
-CASES[ov07]='  .mat-option.mat-active {
+' ''
+experiment delete-rule-ov07 "$OVR" '  .mat-option.mat-active {
     background: rgba(bofa.$boa-red-600, 0.08);
   }
-'
-FILES[ov08]=ovr
-CASES[ov08]='  .mat-option.mat-selected:not(.mat-option-disabled) {
+' ''
+experiment delete-rule-ov08 "$OVR" '  .mat-option.mat-selected:not(.mat-option-disabled) {
     color: bofa.$boa-red-600;
   }
-'
-FILES[ov18]=ovr
-CASES[ov18]='  .mat-tab-header {
+' ''
+experiment delete-rule-ov18 "$OVR" '  .mat-tab-header {
     border-bottom-width: 0;
   }
-'
+' ''
 # The dark zebra value: the defect the dark block itself once certified as correct.
-FILES[dark-zebra]=ovr
-CASES[dark-zebra]='  .bofa-theme-dark & .mat-row:nth-child(even) {
+experiment delete-rule-dark-zebra "$OVR" '  .bofa-theme-dark & .mat-row:nth-child(even) {
     background: bofa.$boa-slate-750;
   }
-'
+' ''
 # The disabled *value* colour and the error colour: both were AA failures in the
 # LIGHT theme, i.e. in the shipping one.
-FILES[ov01c]=ovr
-CASES[ov01c]='  &.mat-form-field-disabled .mat-input-element {
+experiment delete-rule-ov01c "$OVR" '  &.mat-form-field-disabled .mat-input-element {
     color: bofa.$boa-slate-600;
   }
-'
-FILES[ov01d]=ovr
-CASES[ov01d]='  .mat-error {
+' ''
+experiment delete-rule-ov01d "$OVR" '  .mat-error {
     color: bofa.$boa-danger-600;
   }
-'
+' ''
+# OV-01f: the invalid label and its required marker in the LIGHT theme, found by
+# the legibility sweep on its first run. Deleting it must fail the sweep, not the
+# fourteen-selector list — that is the whole claim being evidenced.
+experiment delete-rule-ov01f "$OVR" '  &.mat-form-field-invalid .mat-form-field-label,
+  &.mat-form-field-invalid .mat-form-field-label .mat-form-field-required-marker {
+    color: bofa.$boa-danger-600;
+  }
+' ''
 # The dark ink bar tint: a non-text state indicator at 2.24:1 without it.
-FILES[dark-inkbar]=ovr
-CASES[dark-inkbar]='  .bofa-theme-dark &.mat-primary .mat-ink-bar {
+experiment delete-rule-dark-inkbar "$OVR" '  .bofa-theme-dark &.mat-primary .mat-ink-bar {
     background-color: bofa.$boa-red-300;
   }
-'
+' ''
 # The dark page surface itself: the two declarations whose absence made five
 # controls render white-on-white while every probe stayed green.
-FILES[dark-surface]=theme
-CASES[dark-surface]='  background: map.get(map.get($boa-dark-theme, background), background);
+experiment delete-rule-dark-surface "$THEME" '  background: map.get(map.get($boa-dark-theme, background), background);
   color: map.get(map.get($boa-dark-theme, foreground), text);
-'
-# And the oracle: put back the alpha-blind parse and prove its own tests catch it.
-FILES[oracle-alpha]=spec
-CASES[oracle-alpha]='  return { r: parts[0], g: parts[1], b: parts[2], a: parts.length > 3 ? parts[3] : 1 };'
+' ''
+# And one layer up: the application root painting opaque white over the themed
+# page. This is the round-7 defect. It is the interesting case in this file
+# because the *component* probes and every snapshot stay green — only the sweep
+# over /accounts, /__showcase and /sign-in can see it.
+experiment regress-root-surface "$ROOT" 'background: var(--bofa-surface);' 'background: #fff;'
 
-for k in ov05d ov07 ov08 ov18 dark-zebra ov01c ov01d dark-inkbar dark-surface oracle-alpha; do
-  restore
-  target=$(case_file "${FILES[$k]}")
-  if [ "$k" = oracle-alpha ]; then
-    python3 - <<'EOF'
-p = 'apps/retail-banking-e2e/src/e2e/override-contract.cy.ts'
-s = open(p).read()
-old = '  return { r: parts[0], g: parts[1], b: parts[2], a: parts.length > 3 ? parts[3] : 1 };'
-new = '  return { r: parts[0], g: parts[1], b: parts[2], a: 1 }; // ALPHA-BLIND, deliberately'
-assert old in s
-open(p, 'w').write(s.replace(old, new, 1))
-EOF
-    run "regress-oracle-alpha-blind" > "$OUT/delete-rule-$k.log"
-  elif patch_out "$target" "${CASES[$k]}"; then
-    run "delete-rule-$k" > "$OUT/delete-rule-$k.log"
-  else
-    echo "block not found for $k — experiment NOT run" > "$OUT/delete-rule-$k.log"
-  fi
-done
+# 13-15. the oracle's own failure modes, put back one at a time.
+experiment regress-oracle-alpha-blind "$CONTRAST" \
+  '  return { r: parts[0], g: parts[1], b: parts[2], a: parts.length > 3 ? parts[3] : 1 };' \
+  '  return { r: parts[0], g: parts[1], b: parts[2], a: 1 }; // ALPHA-BLIND, deliberately'
+experiment regress-oracle-opacity-blind "$CONTRAST" \
+  '  const foreground = composite({ ...declared, a: declared.a * opacity }, background);' \
+  '  const foreground = composite(declared, background); // OPACITY-BLIND, deliberately'
+experiment regress-oracle-gradient-blind "$CONTRAST" \
+  '  const image = style.backgroundImage;
+  return !!image && image !== '"'"'none'"'"';' \
+  '  return false; // GRADIENT-BLIND, deliberately'
 restore
 
-# 13. host renderer against container baselines -> why the image is digest-pinned
+# 16. host renderer against container baselines -> why the image is digest-pinned
 echo "=== host-renderer (not the pinned image) :: $(date -u +%FT%TZ) ===" > "$OUT/host-renderer-drift.log"
 npx nx e2e retail-banking-e2e --skip-nx-cache 2>&1 | sed 's/\x1b\[[0-9;]*m//g' >> "$OUT/host-renderer-drift.log"
 

@@ -12,7 +12,8 @@ setup:
   - name: install
     run: |
       cd bofa-digital-banking
-      npm ci --legacy-peer-deps
+      # Matches CI: no lifecycle scripts on install. See AGENTS.md.
+      npm ci --legacy-peer-deps --ignore-scripts
 
   - name: browsers
     run: |

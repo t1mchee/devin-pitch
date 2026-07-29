@@ -9,11 +9,14 @@ plugin now prints on **every** comparison, pass or fail. Reproduce with
 `npm run visual` (pinned container) or `npx nx e2e retail-banking-e2e
 --skip-nx-cache` (host renderer).
 
-Captures are 1280x720. The full command runs **98 tests**: the 23-test image
-suite (21 compared snapshots plus two interaction tests) and 75 computed-style
+Captures are 1280x720. The full command runs **135 tests**: the 23-test image
+suite (21 compared snapshots plus two interaction tests), 77 computed-style
 tests — 27 light-surface probes, 11 re-asserted on the dark surface, one control
 that fails if the dark surface silently stopped rendering, 32 WCAG contrast
-ratios (16 targets in both themes), and 4 tests of the contrast oracle itself.
+ratios (16 targets in both themes), and 6 tests of the contrast oracle itself —
+and 35 legibility-sweep tests, which measure **every visible text node on 16
+routes in both palettes** rather than a hand-picked list, plus 3 controls that
+keep the sweep from passing vacuously.
 
 **The raw transcripts for every number on this page are committed** under
 `docs/evidence/oracle-logs/` — the three repeat runs, the host-renderer run, the
@@ -89,7 +92,11 @@ for sub-pixel anti-aliasing if a future runner is not perfectly identical.
   not quietly raised until the suite is green.
 - It does not cover snapshots that do not exist yet. The oracle sees 21
   surfaces; anything else migrates unobserved, which is why the pilot's
-  first task is baseline coverage of the real customer journeys.
+  first task is baseline coverage of the real customer journeys. The legibility
+  sweep covers 16 routes in both palettes, which is wider than the pixel suite —
+  but it is complete about *elements*, not about *states*: focus, hover,
+  validation and open overlays are enumerated deliberately by the override
+  contract, and a state nobody enumerated is still unmeasured.
 - pixelmatch runs with `threshold: 0.05` per pixel. A colour change smaller
   than that distance on a handful of pixels is below the floor by construction.
 - **A regression confined to fewer than 40 pixels passes.** The budget is

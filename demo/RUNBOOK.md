@@ -32,10 +32,12 @@ recorded reason is the actual migration risk, not the version number.**
 ## 3:00–4:30 — The oracle, and one deliberate failure
 
 ```bash
-npm run visual        # 98 tests: 23 image tests over 21 compared snapshots,
+npm run visual        # 135 tests: 23 image tests over 21 compared snapshots,
                       # + 27 light probes, 11 dark probes, 1 anti-vacuity control,
                       # + 32 WCAG ratios (16 targets x 2 themes),
-                      # + 4 tests of the contrast oracle itself
+                      # + 6 tests of the contrast oracle itself,
+                      # + 35 legibility-sweep tests (16 routes x 2 palettes,
+                      #   every visible text node, + 3 anti-vacuity controls)
 ```
 
 While it runs, say what is in it: the components, **the four real overlays** — dialog, select
@@ -43,7 +45,7 @@ panel, autocomplete panel, calendar — the keyboard focus ring, two breakpoints
 itself. *The dialog is opened, not drawn: a hand-written copy of Material's DOM would keep matching
 after MDC replaced the real one.*
 
-Then point at the second suite, because it is the better story: **75 computed-style tests**, one
+Then point at the second suite, because it is the better story: **77 computed-style tests**, one
 per `OV-nn` intent, asserting the value on the running app. Say why it exists — the control run on
 somebody else's design system found three theming regressions a screenshot diff cannot see — and
 then say what it did here: **it found three dead overrides in our own library on its first run**,
@@ -76,12 +78,27 @@ in the **light** theme, the shipping one: a disabled account field displayed its
 Material's error red is 3.68:1 against AA's 4.5. The oracle itself had two parse holes on top of
 that — `rgba(0,0,0,0)` read as opaque black (a transparent chain scored 21:1) and foreground alpha
 dropped (`rgba(255,255,255,0.5)` on a dark card scored 10.05:1 instead of 3.87:1). All fixed; the
-oracle now has **four tests of its own**, one per hole.
+oracle now has **six tests of its own**, one per hole.
 
 Be precise about how much the dark block buys: **8 of the 11 dark probes can fail dark-only**; three
 are geometry duplicates that cannot — measured from the compiled bundle, not assumed. The two probes
 that pass whether or not our rule exists are labelled `KNOWN WEAK` in the file, with the log of one
 *not failing* committed at `docs/evidence/oracle-logs/delete-rule-ov08.log`.
+
+And then the part to land if they only remember one thing about the gate, because it is the general
+fix rather than another finding: **the targeted list was the wrong shape.** Three rounds running it
+was green and a reviewer found unreadable text somewhere it did not point; each fix added a
+fifteenth selector. So there is now a **legibility sweep** — every visible text node on 16 routes in
+both palettes, 35 tests. On its first run it found an AA failure in the **shipping light theme** two
+nodes away from an existing probe (the invalid field's label and its required asterisk, Material's
+`#f44336` at **3.37:1**, illegible exactly when validation fires) and the round-7 defect that all 21
+snapshots and all 38 component probes missed: the app root painted `#fff` over the themed page, so
+the three customer-facing routes were white-on-white in the dark palette *while every control on them
+measured correctly*. Fixed by making the page surface a token instead of a hex, so a route cannot
+state a colour the other palette has never heard of. Three of the 35 tests keep the sweep honest —
+it must measure a substantial page, it must report planted illegible text, and it must *not* report
+planted hidden text. `docs/evidence/oracle-logs/regress-root-surface.log` is the sweep catching that
+defect with the fix removed.
 
 Then change `.bofa-table .mat-header-cell` colour to brand red and re-run:
 

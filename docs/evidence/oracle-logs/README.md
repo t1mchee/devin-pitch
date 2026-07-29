@@ -5,34 +5,38 @@ Every figure quoted in `ORACLE-noise-floor.md`, `OVERRIDE-CONTRACT-dead-rules.md
 to the same standard the external control run was held to. Each log is a full
 `npm run visual` transcript (digest-pinned `cypress/included@sha256:058d1834…`, `--skip-nx-cache`),
 captured by `scripts/capture-oracle-logs.sh` on 2026-07-29. Everything except
-`dark-contrast-regression.log` was re-captured after the contrast gate was extended across the
-library, so those logs show the current **98-test** suite (23 image + 75 computed-style).
+`dark-contrast-regression.log` was re-captured after the legibility sweep landed, so those logs show
+the current **135-test** suite (23 image + 77 computed-style + 35 sweep).
 `dark-contrast-regression.log` is kept as originally captured against the 59-test suite because it is
 the record of a specific defect at a specific moment; `delete-rule-dark-zebra.log` is its current
 equivalent.
 
 | log | what it establishes | result |
 |---|---|---|
-| `noise-repeat-{1,2,3}.log` | renderer noise floor: three consecutive runs, unmodified tree | **0 px on all 21 snapshots**, 23 image + 75 computed-style tests green, three times |
+| `noise-repeat-{1,2,3}.log` | renderer noise floor: three consecutive runs, unmodified tree | **0 px on all 21 snapshots**, all 135 tests green, three times |
 | `host-renderer-drift.log` | why the image is digest-pinned: the same suite on the host renderer against the same baselines | **21 of 21 fail**, `tabs-default` 455 px … `accounts-dashboard` 5,963 px |
 | `fault-injection-colour.log` | the budget catches a real regression: one brand colour swapped to red in `_overrides.scss` | `table-default` **753 px**, `accounts-dashboard` **788 px** — and probe `OV-05c` fails |
 | `delete-rule-ov05d.log` | positive control for the probe method: delete the zebra-striping rule | **OV-05d fails** |
 | `delete-rule-ov07.log` | the select-overlay probe has teeth: delete the active-option tint | **OV-07 fails** (`rgba(0,0,0,0.04)` — Material's default) |
 | `delete-rule-ov08.log` | the disclosed vacuous probe: delete the selected-option colour rule | **still fully green** — which is exactly why it is labelled `KNOWN WEAK` |
 | `delete-rule-ov18.log` | the newest probe, attacked in both themes: delete the legacy-shell tab-header border rule | **OV-18 and OV-18 [dark] both fail**, and `tabs-default` goes red too |
-| `delete-rule-dark-zebra.log` | the dark zebra value, deleted on the current suite | 2 failures: the ratio at **1.07:1** (`expected 1.0719326855029048 to be at least 4.5`) **and** `OV-05d [dark]` |
-| `delete-rule-ov01c.log` | the disabled-value colour, deleted — an AA failure that was live in the **light** theme for two rounds | `disabled value` fails at **2.66:1** (`rgba(0,0,0,0.38)` composited to `rgb(155,155,155)`) plus `OV-01c`; **and 6 image snapshots go red**, which is the two oracles agreeing |
-| `delete-rule-ov01d.log` | the brand error colour, deleted — back to Material's `#f44336` | `error message` fails at **3.68:1** plus `OV-01d`, and `form-field-default` goes red |
+| `delete-rule-dark-zebra.log` | the dark zebra value, deleted on the current suite | 4 failures: the targeted ratio at **1.07:1** (`expected 1.0719326855029048 to be at least 4.5`), `OV-05d [dark]`, **and** the sweep independently reporting 10 illegible nodes on `/accounts` and 10 on `/__showcase/table` — three different gates on one defect |
+| `delete-rule-ov01c.log` | the disabled-value colour, deleted — an AA failure that was live in the **light** theme for two rounds | 8 failures: `disabled value` at **2.66:1** (`rgba(0,0,0,0.38)` composited to `rgb(155,155,155)`) plus `OV-01c`, **and 6 image snapshots go red** (`form-field-default` 290 px, datepicker, autocomplete, currency-input and two overlay captures) — the two oracles agreeing |
+| `delete-rule-ov01d.log` | the brand error colour, deleted — back to Material's `#f44336` | all three specs fail: `error message` at **3.68:1**, `OV-01d`, `form-field-default` 201 px, and the sweep reporting the same node from the other direction |
 | `delete-rule-dark-inkbar.log` | the dark ink-bar tint, deleted | the non-text (1.4.11, 3:1) assertion fails at **2.24:1**, plus `OV-10 [dark]` |
-| `delete-rule-dark-surface.log` | the two declarations that give the dark page its surface, deleted — this is **the defect that shipped** | 2 failures at **1.88:1**. Note what this shows: the dark surface is delivered by two rules (the theme class and the showcase panel), so removing one leaves dark-on-dark rather than white-on-white — a *different* AA failure, still caught. Each rule is a control on the other. |
-| `delete-rule-oracle-alpha.log` | the oracle attacked instead of the CSS: the alpha-blind parse restored | **16 failures**, including the oracle's own self-test. Every alpha-composited target collapses to `rgb(0,0,0)` on `rgb(0,0,0)` = 1:1 — i.e. the alpha-blind version would have *inverted* the gate rather than merely weakened it. A gate tested against itself. |
+| `delete-rule-dark-surface.log` | the two declarations that give the dark page its surface, deleted — this is **the defect that shipped** | **18 failures**, and the shape of them is the point: every one of the 16 dark routes fails the sweep, not two named targets. Before the sweep this same experiment produced 2 failures. Same defect, same log, an oracle that now describes it as what it is — a whole-application regression. |
+| `delete-rule-ov01f.log` | the light-theme invalid-label colour, deleted — the defect the **sweep** found on its first run, two nodes from an existing probe | the sweep reports the label and the required asterisk at **3.37:1** on `/__showcase/form-field` (2 nodes, light palette); the 32 targeted ratios and all 38 probes stay green, which is the point of having the sweep. `form-field-default` also moves 280 px, so the pixel oracle sees it too — it just cannot say *why*. |
+| `regress-root-surface.log` | the round-7 defect restored: `bofa-root` painted `background: #fff` over the themed page | the sweep fails on **`/accounts`, `/__showcase` and `/sign-in` in the dark palette**, while all 21 snapshots and all 38 component probes stay green — a whole-page defect that only a whole-page oracle can see |
+| `regress-oracle-opacity-blind.log` | the oracle attacked again: stop folding ancestor `opacity` into the composite | the oracle's own self-test fails (`expected 2.00 to be close to 1.33`) — a 1.5x misreport on a number used to argue a threshold |
+| `regress-oracle-gradient-blind.log` | and again: let it score text over a `background-image` against the canvas | the self-test fails (`the helper must say it cannot measure this: expected undefined to be a string`) — over artwork it must report UNMEASURABLE, not the maximum ratio |
+| `regress-oracle-alpha-blind.log` | the oracle attacked instead of the CSS: the alpha-blind parse restored | **33 failures**, including the oracle's own self-test. Every alpha-composited target collapses to `rgb(0,0,0)` on `rgb(0,0,0)` = 1:1 — i.e. the alpha-blind version would have *inverted* the gate rather than merely weakened it. A gate tested against itself. |
 | `dark-contrast-regression.log` | the defect the dark block itself shipped, reproduced: remove the dark zebra value and the WCAG assertion fires | **`expected 1.0719326855029048 to be at least 4.5`** — white statement text on the light stripe, plus `OV-05d [dark]` |
 
 Read `fault-injection-colour.log` and `delete-rule-ov08.log` together: the first is the gate
 working, the second is the gate not working, and both are committed. A gate whose failures are not
 published is a claim, not a control.
 
-Two things these logs do **not** establish, stated so nobody has to find out by reading carefully:
+What these logs do **not** establish, stated so nobody has to find out by reading carefully:
 
 - The budget is `MAX_DIFF_PIXELS = 40` on a 1280×720 canvas. The injected faults are ~750 px, two
   orders of magnitude above it, so they demonstrate detection, not the detection *threshold*. A
@@ -44,8 +48,13 @@ Two things these logs do **not** establish, stated so nobody has to find out by 
   the ratio is now asserted (`dark-contrast-regression.log`), but the general lesson is the one worth
   carrying into the room: an assertion can encode the bug. `OVERRIDE-CONTRACT-dead-rules.md`.
 - The **image** suite is light-theme-only at two viewports. The external control run's worst
-  regression was invisible in the light theme (`CONTROL-external-design-system.md` §5.1), so 7 of
-  the 18 overrides are now re-asserted as computed styles on a dark surface — behind a control that
-  proves the dark palette actually rendered, since otherwise those 7 would pass vacuously against
-  the light theme. There are still **no dark pixel baselines**, and 11 overrides have no dark
-  assertion.
+  regression was invisible in the light theme (`CONTROL-external-design-system.md` §5.1), so 11 of
+  the 18 overrides are re-asserted as computed styles on a dark surface — behind a control that
+  proves the dark palette actually rendered, since otherwise they would pass vacuously against the
+  light theme — and the legibility sweep runs all 16 routes in both palettes. There are still **no
+  dark pixel baselines**: a dark-only *geometry* or *layout* regression has no gate at all, only
+  colour does.
+- The sweep is complete about **elements, not states**. Focus, hover, validation and open overlays
+  are driven deliberately by `override-contract.cy.ts`; a state nobody enumerated is unmeasured, and
+  `regress-root-surface.log` is a reminder of how long a whole-page defect can hide behind
+  correct-looking components.

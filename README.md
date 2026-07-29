@@ -62,7 +62,7 @@ responsive breakpoints, and the customer-facing `/accounts` dashboard. Overlays 
 opening them, not by rendering look-alike markup — a hand-authored copy of Material's DOM keeps
 matching after MDC changes the real one, which makes it a decoration rather than a test.
 
-And **75 computed-style tests** (`override-contract.cy.ts`) — 27 on the light surface, one per intent in
+And **77 computed-style tests** (`override-contract.cy.ts`) — 27 on the light surface, one per intent in
 `_overrides.scss`, asserting the value the override exists to control on the running app. A
 screenshot proves the surface still looks right; the probe proves the rule is still the thing
 making it look right. Those come apart when a migration rewrites a selector onto something that
@@ -70,14 +70,33 @@ matches nothing and the library default sits close to the brand value — silent
 theme, wrong in the dark one — so **11 of the probes are re-asserted with the dark palette applied**,
 behind a control that first proves the dark surface actually rendered (otherwise the whole block
 would pass vacuously against the light theme), plus **32 WCAG contrast ratios** (16 targets in both
-themes) and **4 tests of the contrast oracle itself**. The ratio gate exists because the first
+themes) and **6 tests of the contrast oracle itself**. The ratio gate exists because the first
 version of the dark block asserted the *light* zebra colour on the dark surface and so certified an
 unreadable transaction row (1.07:1) as correct: a colour constant records what someone wrote down, a
 ratio records what the customer can read. Pointed at the rest of the library it then found six more
 — five dark-surface controls rendering at 1.0:1 including a datepicker toggle you could not see to
 click, and **two in the light theme**: a disabled account value at 2.66:1 and Material's error red at
-3.68:1. Its own two parse holes (transparent read as opaque black; foreground alpha dropped) are what
-the four self-tests pin.
+3.68:1. Its own parse holes — transparent read as opaque black, foreground alpha dropped, ancestor
+`opacity` ignored, text over a gradient scored against the canvas — are what the six self-tests pin.
+
+And then **35 legibility-sweep tests** (`legibility-sweep.cy.ts`), which are the answer to the thing
+that kept happening: three hostile rounds running, the targeted list of contrast probes was green and
+a reviewer found illegible text somewhere the list did not point. Each fix added another selector,
+which is a changelog, not a gate. The sweep walks **every visible text node on 16 routes in both
+palettes** — the three customer-facing routes included — resolves what is actually painted behind each
+one, applies WCAG 1.4.3 (4.5:1, or 3:1 for large text) and exempts only what the standard exempts.
+On its first run it found a defect in the **shipping light theme** that fourteen hand-picked probes had
+sat next to for three rounds: the label of an invalid field, and the "required" asterisk inside it,
+are painted with Material's `#f44336` at **3.37:1** — illegible at the exact moment validation fires
+(OV-01f). It also caught the round-7 defect that every component probe and all 21 snapshots missed:
+`bofa-root` painted `background: #fff` over the themed page, so `/accounts`, `/__showcase` and
+`/sign-in` rendered white-on-white in the dark palette *while every control on them measured
+correctly* — the components looking right is what hid it. The fix is a set of surface tokens in
+`bofa-theme.scss`, so a route cannot forget to follow the palette because it no longer states a
+colour of its own. Three of the 35 tests exist to keep the sweep honest: one proves it still measures
+a substantial page, one plants illegible text and requires it to be reported, one plants *hidden*
+text and requires it not to be.
+
 This gate came out of the external control run
 ([`CONTROL-external-design-system.md`](docs/evidence/CONTROL-external-design-system.md)) and, on
 its first run, found **three dead overrides in this repository's own design system**

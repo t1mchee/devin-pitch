@@ -29,14 +29,15 @@ import { BofaAuthService } from '@bofa/auth-sdk-wrapper';
         max-width: 420px;
         margin: 96px auto;
         padding: 32px;
-        border: 1px solid #eceef2;
+        border: 1px solid var(--bofa-border);
         border-radius: 4px;
       }
+      /* Tokens, not hexes — this route was white-on-white in the dark palette. */
       .sign-in__eyebrow {
         font-size: 12px;
         letter-spacing: 0.08em;
         text-transform: uppercase;
-        color: #5d6673;
+        color: var(--bofa-text-muted);
       }
       .sign-in__title {
         margin: 8px 0 12px;
@@ -45,7 +46,7 @@ import { BofaAuthService } from '@bofa/auth-sdk-wrapper';
       }
       .sign-in__body {
         margin: 0 0 24px;
-        color: #5d6673;
+        color: var(--bofa-text-muted);
         line-height: 20px;
       }
     `,

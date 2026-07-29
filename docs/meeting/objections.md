@@ -33,7 +33,7 @@ paints row text white: two of five transaction rows rendered at **1.07:1** again
 unreadable, and the probe was green *because it asserted the value that caused it*. A hostile
 reviewer found it by looking at the screen. No gate did.
 
-What that changes, concretely: **32 WCAG ratios** — 16 targets in both themes — are now asserted
+What that changed, concretely: **32 WCAG ratios** — 16 targets in both themes — are asserted
 alongside the colour constants, and colour expectations are per-theme (`expectDark`). A constant
 records what someone wrote down; a ratio records what the customer can read, and a migration that
 moves a library foreground keeps the constant right and makes the render wrong.
@@ -47,7 +47,23 @@ labels and a datepicker toggle you could not see to click went white-on-white), 
 light theme, the shipping one**: a disabled account field showing its value at 2.66:1 and Material's
 error red at 3.68:1. The oracle itself had two parse holes — transparent read as opaque black, and
 foreground alpha dropped — either of which could score an invisible render as a pass. It now has
-four tests of its own. §6 of the dead-rules evidence.
+six tests of its own. §6 and §7 of the dead-rules evidence.
+
+And then the round after *that*, because the pattern is the finding: the ratio gate was still a list
+of fourteen selectors, and a reviewer again found unreadable text somewhere the list did not point —
+this time the whole page. `bofa-root` painted `background: #fff` over the themed `<body>`, so all
+three customer-facing routes were white-on-white in the dark palette **while every control on them
+measured correctly**; the components looking right is what hid it. Two fixes, and the second is the
+one worth defending: the page surface, muted text, links and borders are now **tokens** declared once
+per palette, so an application route cannot state a colour the other palette has never heard of; and
+the gate is now a **sweep** — every visible text node on 16 routes in both palettes, 35 tests — rather
+than a list of the places someone already thought about. On its first run the sweep found an AA
+failure in the **shipping light theme** two nodes from an existing probe: the invalid field's label
+and the required asterisk inside it, Material's `#f44336` at **3.37:1**, illegible at the moment
+validation fires. Its own blind spots were closed in the same round (ancestor `opacity` ignored — a
+1.5x misreport; text over a gradient scored as if over the canvas; `visibility:hidden` text reported
+as a defect; a CDK backdrop measured as though it were not there; and only the *first* match of each
+selector measured at all). `oracle-logs/regress-root-surface.log` and `delete-rule-ov01f.log`.
 
 The general answer, which is the one that should land: **every gate in this repository has a
 published failure.** The pixel budget has a documented blind spot under 40 px, two probes are

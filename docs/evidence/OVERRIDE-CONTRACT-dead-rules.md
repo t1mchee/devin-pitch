@@ -165,8 +165,9 @@ and no `height`, `min-height`, `max-height`, `padding*` or `border-bottom-width`
 | OV-07, OV-11 | yes | brand-constant colours our CSS states outright |
 | OV-15, OV-17, OV-18 | **no — geometry duplicates** | nothing in the dark scope touches these properties, so they fail symmetrically with their light twins. Duplicates, not vacuous: they still fail when the rule is deleted. Kept as a tripwire for a future dark rule that changes density. |
 
-So the number to quote is **8 of 11 dark probes, plus 32 contrast ratios and 4 tests of the contrast
-oracle itself**.
+So the number to quote is **8 of 11 dark probes, plus 32 contrast ratios and 6 tests of the contrast
+oracle itself** — and, since §7, a **legibility sweep** over every visible text node on 16 routes in
+both palettes, which is the part of this page that stopped being a list of selectors.
 
 ## §6 — What happened when the ratio gate was pointed at the other twelve components
 
@@ -193,23 +194,79 @@ everything behind it:
 | `rgba(255, 255, 255, 0.5)` on `#424242` | **10.05:1** (alpha dropped) | **3.87:1** | Material uses alpha for exactly the secondary text — hints, disabled values, inactive tabs — that this gate was added to protect |
 
 The helper now parses alpha, composites every layer over the one behind it, and terminates an
-ever-transparent chain on the canvas rather than on a convenient default. It has **four tests of its
-own**, one per hole, in `override-contract.cy.ts` — because a gate nobody has tried to defeat is an
-assumption, and that applies recursively to the thing doing the measuring.
+ever-transparent chain on the canvas rather than on a convenient default. It has **six tests of its
+own**, one per hole (see §7 for the last two), in `override-contract.cy.ts` — because a gate nobody
+has tried to defeat is an assumption, and that applies recursively to the thing doing the measuring.
 
 The ratio gate now covers **16 targets in both themes**: statement rows and header, form-field label
 / value / hint / disabled value / error, active and inactive tab labels, the ink bar as a non-text
 indicator, select trigger, chip label, paginator range label, currency amount, and the datepicker
 toggle icon.
 
-**Limits, stated.** The contract asserts 27 light and 11 dark probes, 32 ratios and 4 oracle
+**Limits, stated.** The contract asserts 27 light and 11 dark probes, 32 ratios and 6 oracle
 self-tests across 18 overrides; it is not a complete description of the design system. It runs at one
 viewport, and the dark pass covers 11 of 18 overrides, not all of them. The image suite is still
 light-theme-only — **there are no dark pixel baselines**, which is why every defect in §6 needed a
-human looking at the screen to find, and why the honest claim is that this repository can now
-*detect* this defect class on 16 named targets, not that it has swept the design system for it.
-At least three surfaces still have no ratio assertion in either theme: slide-toggle labels, dialog
-body copy, and autocomplete option text. It cannot tell you an intent is *wrong* — only that the code
-no longer delivers the value someone wrote down. And its expectations were captured from the running
-Angular 14 app, so they inherit whatever the v14 build actually did, not what the design spec says it
-should do.
+human looking at the screen to find. §7 replaces the "16 named targets" claim with a wider one, and
+the three surfaces listed here as unasserted (slide-toggle labels, dialog body copy, autocomplete
+option text) are now swept — but see §7's own limits, which are about *states*, not elements. It
+cannot tell you an intent is *wrong* — only that the code no longer delivers the value someone wrote
+down. And its expectations were captured from the running Angular 14 app, so they inherit whatever the
+v14 build actually did, not what the design spec says it should do.
+
+## §7 — The list was the wrong shape: what the sweep found
+
+§6 fixed six defects and closed with a limit: *"this repository can now detect this defect class on 16
+named targets, not that it has swept the design system for it."* The next hostile round read that the
+same way the last one did, and found seven more defects — six dark, one in the shipping light theme.
+That is three rounds in a row where a *green* targeted gate sat next to unreadable text, and each
+round's fix was another selector. The pattern is the finding: **a hand-picked target list is a list of
+the places someone has already thought about.**
+
+The worst of the seven is worth stating in full because it is the failure mode a bank should care
+about. `.bofa-theme-dark` correctly themed `<body>`; the application root, `bofa-root`, then painted
+`background: #fff` over it. So `/accounts`, `/__showcase` and `/sign-in` — every route a customer
+sees — rendered **white text on a white page in the dark palette, while every component on them
+measured correctly**, because components paint their own surfaces. All 21 snapshots green, all 38
+component probes green, 32 ratios green. The components looking right is what hid it.
+
+| # | Where | Rendered | Fix |
+|---|---|---|---|
+| 1 | `/accounts`, `/__showcase`, `/sign-in` page surface, dark | **white on white** | the page surface, muted text, links, borders and success copy are now **tokens** (`--bofa-surface`, `--bofa-text-muted`, `--bofa-link`, `--bofa-border`, `--bofa-text-success`) declared once per palette in `bofa-theme.scss`. Light values are the hexes the application stylesheets already carried, so the refactor moves zero light pixels. |
+| 2 | secondary button ("Download statement"), dark | **1.12:1** — brand navy on the dark page | OV-03b: navy tint at 7.47:1, and the stroke with it (1.4.11) |
+| 3 | *selected* option in an open select, dark | **1.20:1** — the account the customer is confirming | OV-08b, which is also where OV-08 stops being the `KNOWN WEAK` tripwire it is labelled as |
+| 4 | any field label **while focused**, dark | **1.64:1** — a control failing while it is being used | OV-01e |
+| 5 | currency prefix (`$`), dark | **1.66:1** — "500.00" without a legible symbol is a different number | OV-16b |
+| 6 | required-field label + asterisk of an invalid field, **both** themes | **3.37:1 light**, 2.62:1 dark | OV-01f. Light is the shipping theme; this was live for three rounds two DOM nodes from an existing probe. Brand danger red is 6.72:1 on the field fill. |
+| 7 | showcase eyebrow / body copy, dark | **2.27:1** | slate-200 token, 9.41:1 |
+
+And four more holes in the **oracle**, all of which made an unreadable render measurable as fine:
+
+| Input | Old helper | Truth | Consequence |
+|---|---|---|---|
+| ancestor `opacity: 0.38` | **13.20:1**, then 2.00:1 | **1.33:1** | `opacity` fades glyphs as well as boxes; folding it into the background only still misreported by 1.5x, and these numbers are what a threshold argument rests on |
+| text over `linear-gradient(...)` | **21:1** (the canvas) | unknowable | maximum confidence, zero information — it now reports `UNMEASURABLE` and fails |
+| `visibility: hidden` text | measured, reported as a defect | not on screen | two false defect reports; a false positive costs a gate its credibility as surely as a false negative costs it its purpose |
+| a CDK overlay panel | measured against the page | the scrim is a **sibling**, not an ancestor | false failure on every overlay target |
+
+Plus two measurement errors that were not parse holes: every ratio target was read with `.first()`, so
+a selector matching three chips asserted one; and the datepicker non-text assertion read the
+*button's* `color` while the glyph is painted by the SVG's `fill` — change the fill alone and the
+contrast test stayed green while the icon vanished (only the pixel oracle caught it, 382 px). Both
+fixed: `.each()` over every match, and a `glyphRatio` that reads what is painted.
+
+**The fix that matters is the shape, not the seven values.** `legibility-sweep.cy.ts` walks every
+visible text node on **16 routes in both palettes** — 32 tests — resolves the composited background
+behind each one, applies WCAG 1.4.3 (4.5:1, or 3:1 for large text) and exempts only what 1.4.3 exempts
+(inactive controls). It found #6 on its first run. Three further tests keep it from going quietly
+green: it must measure >25 text nodes on `/accounts`, it must report planted illegible text, and it
+must **not** report planted hidden text. Raw logs: `oracle-logs/regress-root-surface.log` (the sweep
+catching #1 with the fix removed, while every snapshot and probe stays green) and
+`oracle-logs/delete-rule-ov01f.log`.
+
+**Limits of the sweep, stated.** It is complete about *elements*, not about *states*: focus, hover,
+validation, and open overlays are still enumerated deliberately by the override contract, and a state
+nobody enumerated is unmeasured. It runs at one viewport. It cannot judge non-text contrast (icons,
+borders, indicators) — those remain named assertions. And it measures what the browser computes, so a
+defect that only appears under a real webfont, a customer's zoom level, or forced-colours mode is out
+of scope. Total suite: **135 tests**.

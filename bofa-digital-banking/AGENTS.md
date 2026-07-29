@@ -45,7 +45,11 @@ Read this before changing anything in this repository.
 
 ```bash
 nvm use 16.20.2                     # Angular 14 requires Node 14–16
-npm ci --legacy-peer-deps           # bare `npm ci` fails ERESOLVE on the auth peer pin
+# `--ignore-scripts` is the security policy, not a preference: a lifecycle script
+# from a transitive dependency runs before any human reads the diff. CI installs
+# the same way, so a package that genuinely needs a postinstall must be
+# allowlisted deliberately rather than discovered by a green build here.
+npm ci --legacy-peer-deps --ignore-scripts   # bare `npm ci` fails ERESOLVE on the auth peer pin
 npx nx build ui-core
 npx nx run-many --target=build --all
 npx nx run-many --target=test --all

@@ -266,9 +266,19 @@ console.log(n,(n/(a.width*a.height)*100).toFixed(4)+'%');"
 
 `apps/retail-banking-e2e/src/e2e/override-contract.cy.ts` + `src/support/override-probes.ts` hold 27
 probes, one per `OV-nn` intent, asserting `getComputedStyle` values on the running app. Total suite
-is **98 tests = 23 snapshot tests (21 snapshots) + 75 computed-style tests (27 light, 11 dark, 1
-dark-surface anti-vacuity control, 32 WCAG ratios over 16 targets in both themes, 4 tests of the
-contrast oracle itself)**.
+is **135 tests = 23 snapshot tests (21 snapshots) + 77 computed-style tests (27 light, 11 dark, 1
+dark-surface anti-vacuity control, 32 WCAG ratios over 16 targets in both themes, 6 tests of the
+contrast oracle itself) + 35 legibility-sweep tests (`legibility-sweep.cy.ts`: every visible text node
+on 16 routes x 2 palettes, plus 3 anti-vacuity controls)**.
+
+The contrast helper lives in `src/support/contrast.ts` and is shared by both suites. Attack it there,
+not in the spec: the six self-tests in `override-contract.cy.ts` pin transparent parsing, foreground
+alpha, semi-transparent backgrounds, a known opaque pair, ancestor `opacity`, and refusal to score
+text over a gradient. Useful attacks — flip `paintsArtwork` to `return false`, drop the
+`declared.a * opacity` term, or restore `a: 1` in `parseColour`; each must turn a self-test red.
+For the sweep, the highest-value attack is a whole-page one: set `background: #fff` back on
+`bofa-root` in `apps/retail-banking/src/app/app.component.ts` and confirm the three customer routes
+fail in the dark palette **while all 21 snapshots and all 38 component probes stay green**.
 
 Run only this suite (much faster than the whole thing) in the pinned container. **The `--spec` path
 is workspace-relative — `src/e2e/...` silently finds no specs:**
@@ -443,20 +453,58 @@ When auditing contrast yourself, composite alpha over the resolved background *a
 element `opacity` (e.g. disabled chips at `0.4`) is invisible to both this helper and a naive audit.
 Disabled controls are exempt from WCAG 1.4.3, so don't file them as defects.
 
-## The dark route only recolours components, so "legible" depends on who paints the surface
+## The dark route: "legible" depends on who paints the surface, and `bofa-root` can defeat `body`
 
-`.bofa-theme-dark` uses `mat.all-component-colors`, and the **page/body background stays white**.
-So dark-mode text colours land on whatever surface the component itself paints:
+This has been the single most productive place to find bugs for three rounds running. The defect
+class is always the same: **a light constant surviving onto a dark surface, somewhere the suite does
+not look.** Expect it to recur.
 
-- **Fine** — components that paint their own dark surface: table (`rgb(66,66,66)`), paginator,
-  dialog, and the CDK overlay panels (select, autocomplete, calendar). Chips are fine because they
-  paint a *light* surface and keep dark text.
-- **Invisible at 1.0:1** — components that rely on the page surface: `mat-form-field` labels, hints
-  and disabled input values; **inactive** `mat-tab-label`s; `mat-select` trigger text; and the
-  `mat-datepicker-toggle` icon (`fill: currentColor` → white on white, so the control disappears).
+**Check the whole ancestor chain, not just `body`.** Even after `.bofa-theme-dark` correctly sets a
+dark `background`/`color` on `<body>`, an opaque wrapper *below* body can cover it. `bofa-root`
+declares `:host { min-height: 100vh; background: #fff }` in `app.component.ts`; if it has no
+`:host-context(.bofa-theme-dark)` counterpart, every route renders white-on-white while `body` is
+correctly dark. Diagnose in one line rather than trusting the screenshot:
 
-When testing any new dark surface, check these first — they are green in the suite because contrast
-is asserted on the statement table only.
+```js
+// what actually paints under the text?
+let n = document.querySelector('h1');
+while (n && n.tagName !== 'HTML') {
+  const bg = getComputedStyle(n).backgroundColor;
+  if (bg !== 'rgba(0, 0, 0, 0)') { console.log('painted by', n.tagName, bg); break; }
+  n = n.parentElement;
+}
+console.log(document.elementFromPoint(500, 600).tagName);  // sanity: who is on top
+```
+
+Components that paint their **own** surface (table, paginator, dialog, CDK overlay panels, chips)
+stay legible and therefore *mask* the bug — a dark-looking table on a white page is the signature.
+Per-component dark styling can also be applied unevenly: showcase *detail* routes got
+`:host-context(.bofa-theme-dark)` panels while the showcase **index**, `/accounts` and `/sign-in`
+did not.
+
+**Audit with a generic scanner, not a fixed selector list.** The shipped suite asserts a hand-picked
+list of targets, so it structurally cannot find anything outside it. Walk every visible
+text-bearing element, compute the ratio, and classify enabled vs disabled — this is what surfaced
+the secondary button (1.12:1), the currency `$` prefix (1.66:1), the focused field label (1.64:1),
+the selected select option (1.20:1) and the shared `.showcase__eyebrow` (2.27:1). Persist the
+scanner in `localStorage` so it survives the reloads that `?theme=dark` navigation requires:
+
+```js
+localStorage.setItem('__scanSrc', '(' + scanFn.toString() + ')()');
+// after every navigation:
+eval(localStorage.getItem('__scanSrc'));
+```
+
+**Classify disabled state correctly or you will file false defects.** I twice flagged
+WCAG-exempt disabled controls as bugs. Match `/mat-[a-z-]*disabled/` — `mat-chip-disabled` and
+`mat-button-disabled` do *not* match a narrower pattern — and also check the `disabled` attribute
+and `aria-disabled`.
+
+**States the suite never asserts** — check these by hand every round: `:focus` (the focus colour is
+often a light-theme accent, so fields go illegible the moment they are clicked), `:hover`,
+placeholder text, error/required labels, open overlay panels, the showcase index, `/sign-in`, and
+`/accounts?theme=dark`. A fix applied to `.mat-error` did **not** reach the required label, so verify
+each element of a "fixed" pair independently.
 
 ## `--ignore-scripts` installs defer ngcc to build time
 

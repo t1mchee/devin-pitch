@@ -2,30 +2,7 @@
   padding: 32px;
   max-width: 960px;
   margin: 0 auto;
-  background: #fff;
-}
-
-// The harness surface has to follow the palette. It did not, and the result was
-// that `?theme=dark` recoloured every control's foreground white and left this
-// panel white underneath it: labels, hints, inactive tab labels, the select
-// trigger and the datepicker toggle icon all rendered at 1.0:1 on the exact
-// route the dark contract runs on.
-:host-context(.bofa-theme-dark) {
-  .showcase {
-    background: #303030;
-  }
-
-  .showcase__panel {
-    background: #3f4550;
-  }
-
-  .showcase__panel--detail {
-    background: #4a4f57;
-  }
-
-  .showcase__back {
-    color: #9ec5ff;
-  }
+  background: var(--bofa-surface);
 }
 
 .showcase__header {
@@ -36,7 +13,7 @@
   display: block;
   margin-bottom: 12px;
   font-size: 13px;
-  color: #012169;
+  color: var(--bofa-link);
   text-decoration: none;
 }
 
@@ -48,7 +25,7 @@
   font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #5d6673;
+  color: var(--bofa-text-muted);
 }
 
 .showcase__title {
@@ -76,13 +53,13 @@
 
 .showcase__result {
   font-size: 13px;
-  color: #1b7f4d;
+  color: var(--bofa-text-success);
   font-weight: 600;
 }
 
 .showcase__cell {
   padding: 16px;
-  border: 1px solid #eceef2;
+  border: 1px solid var(--bofa-border);
   border-radius: 4px;
   min-height: 96px;
   display: flex;
@@ -91,7 +68,7 @@
 
 .showcase__dialog {
   width: 420px;
-  border: 1px solid #eceef2;
+  border: 1px solid var(--bofa-border);
 }
 
 .showcase__dialog-actions {
@@ -101,12 +78,16 @@
   margin-top: 16px;
 }
 
+// Surface tokens, not hexes: the whole reason this file needed a dark override
+// in the first place was that it stated colours the dark palette had never heard
+// of. `_theme.scss` owns both values; this file states intent (raised panel,
+// sunken detail pane) and nothing else.
 .showcase__panel {
   padding: 24px;
-  background: #f6f7f9;
+  background: var(--bofa-surface-raised);
   border-radius: 4px;
 }
 
 .showcase__panel--detail {
-  background: #eceef2;
+  background: var(--bofa-surface-sunken);
 }

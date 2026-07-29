@@ -146,12 +146,23 @@ those figures were read from are now committed verbatim under `docs/evidence/pr-
 every figure is pinned to the commit SHA it describes. A session link is now corroboration, not the
 record.
 
-**What is still a link and not a demonstration:** the audit-log API itself. I have not exercised
-`/v3/enterprise/audit-logs` here — it needs an enterprise admin key this demo account does not have
-— so I cannot show you the schema, and I am not going to describe fields I have not seen. What the
-logs record (prompts? tool calls? files read? egress?) is a question to answer against a live
-endpoint in week 0. It is exit criterion #4 for exactly that reason, and it is your team that should
-run it, not me.
+**The schema, exported rather than described.** One real migration session — Run B of the phase-1
+hop, the one behind PR #2 — is exported in full and committed at
+`docs/evidence/session-audit/`: **3,525 events**, each with an immutable id, a UTC timestamp, a
+direction, a type, a category and a payload. For one 18-minute run that is 168 shell commands with
+their exit codes, 66 file opens and edits by absolute path, 24 git/CI actions with their URLs, every
+message in and out, five `rules_injected: AGENTS` events (this repository's own rules, re-injected on
+every resumption, not once), and — for a run that cloned a repo, installed an Angular 15 tree and
+opened a PR — **zero `secret` events and zero `browser` events**. Three things on that page are
+verifiable by `grep` rather than by trust, including the OV-17 refusal with a timestamp on it.
+
+**What is still a link and not a demonstration:** the *enterprise* audit-log API. The export above is
+the session-events API, scoped to sessions this account owns. `/v3/enterprise/audit-logs` needs an
+enterprise admin key this demo account does not have, so whether the org-wide endpoint records the
+same granularity across every session in a tenant is a question to answer against a live endpoint in
+week 0 — I am not going to describe fields I have not seen. It is exit criterion #4 for exactly that
+reason, and it is your team that should run it, not me. Retention of these events is likewise a
+contract question, not a technical one, and belongs in the DPA (Q9).
 
 ### Q8. Prompt injection — the repository is untrusted input.
 

@@ -1,4 +1,4 @@
-=== fault-injection-header-colour :: 2026-07-29T07:23:04Z ===
+=== fault-injection-colour :: 2026-07-29T08:47:24Z ===
 
 > bofa-digital-banking@0.0.0 visual
 > docker run --rm -u $(id -u):$(id -g) -e HOME=/tmp -e CYPRESS_CACHE_FOLDER=/root/.cache/Cypress -v "$PWD/..":/w -w /w/bofa-digital-banking --entrypoint bash cypress/included@sha256:058d1834239bf09b381325b8369d05e9e0516a46b65b32e6dc0c991801dc517a -c 'npx nx e2e retail-banking-e2e --skip-nx-cache'
@@ -11,81 +11,81 @@
 
 Initial Chunk Files                                        | Names                    |  Raw Size
 vendor.js                                                  | vendor                   |   4.97 MB | 
-styles.css, styles.js                                      | styles                   | 314.22 kB | 
+styles.css, styles.js                                      | styles                   | 315.42 kB | 
 polyfills.js                                               | polyfills                | 239.94 kB | 
-main.js                                                    | main                     | 147.15 kB | 
+main.js                                                    | main                     | 147.92 kB | 
 runtime.js                                                 | runtime                  |  12.61 kB | 
 
                                                            | Initial Total            |   5.67 MB
 
 Lazy Chunk Files                                           | Names                    |  Raw Size
-apps_retail-banking_src_app_showcase_showcase_module_ts.js | showcase-showcase-module |  48.34 kB | 
+apps_retail-banking_src_app_showcase_showcase_module_ts.js | showcase-showcase-module |  47.78 kB | 
 
-Build at: 2026-07-29T07:23:18.258Z - Hash: 592fcee647fdb16d - Time: 11671ms
+Build at: 2026-07-29T08:47:38.720Z - Hash: 1a33868a8041a5cf - Time: 11949ms
 
 ** Angular Live Development Server is listening on localhost:4200, open your browser on http://localhost:4200/ **
 
 
 ✔ Compiled successfully.
 libva error: vaGetDriverNameByIndex() failed with unknown libva error, driver_name = (null)
-[217:0729/072319.041769:ERROR:gpu_memory_buffer_support_x11.cc(44)] dri3 extension not supported.
+[220:0729/084739.521048:ERROR:gpu_memory_buffer_support_x11.cc(44)] dri3 extension not supported.
 ====================================================================================================
   (Run Starting)
   ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
   │ Cypress:        10.11.0                                                                        │
   │ Browser:        Electron 106 (headless)                                                        │
   │ Node Version:   v16.16.0 (/usr/local/bin/node)                                                 │
-  │ Specs:          2 found (design-system.cy.ts, override-contract.cy.ts)                         │
+  │ Specs:          3 found (design-system.cy.ts, legibility-sweep.cy.ts, override-contract.cy.ts) │
   │ Searched:       src/**/*.cy.{js,jsx,ts,tsx}                                                    │
   └────────────────────────────────────────────────────────────────────────────────────────────────┘
 ────────────────────────────────────────────────────────────────────────────────────────────────────
                                                                                                     
-  Running:  design-system.cy.ts                                                             (1 of 2)
+  Running:  design-system.cy.ts                                                             (1 of 3)
 
   design system — visual baseline
 [visual] button-default: 0 px (budget 40)
-    ✓ button renders to spec (825ms)
+    ✓ button renders to spec (824ms)
 [visual] form-field-default: 0 px (budget 40)
-    ✓ form-field renders to spec (419ms)
+    ✓ form-field renders to spec (386ms)
 [visual] select-default: 0 px (budget 40)
-    ✓ select renders to spec (306ms)
+    ✓ select renders to spec (332ms)
 [visual] datepicker-default: 0 px (budget 40)
-    ✓ datepicker renders to spec (439ms)
+    ✓ datepicker renders to spec (333ms)
 [visual] table-default: 753 px (budget 40)
     1) table renders to spec
 [visual] dialog-default: 0 px (budget 40)
-    ✓ dialog renders to spec (389ms)
+    ✓ dialog renders to spec (350ms)
 [visual] tabs-default: 0 px (budget 40)
-    ✓ tabs renders to spec (381ms)
+    ✓ tabs renders to spec (577ms)
 [visual] chips-default: 0 px (budget 40)
-    ✓ chips renders to spec (376ms)
+    ✓ chips renders to spec (394ms)
 [visual] slide-toggle-default: 0 px (budget 40)
-    ✓ slide-toggle renders to spec (341ms)
+    ✓ slide-toggle renders to spec (376ms)
 [visual] autocomplete-default: 0 px (budget 40)
-    ✓ autocomplete renders to spec (404ms)
+    ✓ autocomplete renders to spec (349ms)
 [visual] paginator-default: 0 px (budget 40)
-    ✓ paginator renders to spec (492ms)
+    ✓ paginator renders to spec (316ms)
 [visual] currency-input-default: 0 px (budget 40)
-    ✓ currency-input renders to spec (383ms)
+    ✓ currency-input renders to spec (336ms)
 [visual] responsive-grid-default: 0 px (budget 40)
-    ✓ responsive-grid renders to spec (348ms)
-    ✓ form field renders its disabled and error states (141ms)
-    ✓ button exposes a disabled state (105ms)
+    ✓ responsive-grid renders to spec (355ms)
+    ✓ form field renders its disabled and error states (121ms)
+    ✓ button exposes a disabled state (104ms)
 [visual] responsive-grid-md: 0 px (budget 40)
-    ✓ responsive grid collapses below the md breakpoint (305ms)
+    ✓ responsive grid collapses below the md breakpoint (322ms)
 [visual] responsive-grid-sm: 0 px (budget 40)
-    ✓ responsive grid hides the detail pane below the sm breakpoint (333ms)
+    ✓ responsive grid hides the detail pane below the sm breakpoint (290ms)
   design system — overlay and interaction states
 [visual] dialog-open: 0 px (budget 40)
-    ✓ opens the real dialog overlay (549ms)
+    ✓ opens the real dialog overlay (431ms)
 [visual] select-panel-open: 0 px (budget 40)
-    ✓ opens the select panel (430ms)
+    ✓ opens the select panel (411ms)
 [visual] autocomplete-panel-open: 0 px (budget 40)
-    ✓ opens the autocomplete panel (488ms)
+    ✓ opens the autocomplete panel (547ms)
 [visual] datepicker-calendar-open: 0 px (budget 40)
-    ✓ opens the datepicker calendar (457ms)
+    ✓ opens the datepicker calendar (517ms)
 [visual] button-focus-ring: 0 px (budget 40)
-    ✓ shows the keyboard focus ring on the primary button (350ms)
+    ✓ shows the keyboard focus ring on the primary button (355ms)
   retail banking — customer surface
 [visual] accounts-dashboard: 788 px (budget 40)
     2) renders the accounts dashboard
@@ -158,89 +158,146 @@ libva error: vaGetDriverNameByIndex() failed with unknown libva error, driver_na
      system.cy.ts/vr__accounts-dashboard.png                                                        
 ────────────────────────────────────────────────────────────────────────────────────────────────────
                                                                                                     
-  Running:  override-contract.cy.ts                                                         (2 of 2)
+  Running:  legibility-sweep.cy.ts                                                          (2 of 3)
+
+  legibility sweep — every visible text node (light)
+    ✓ /accounts (customer dashboard): all text clears WCAG AA (580ms)
+    ✓ /__showcase (index): all text clears WCAG AA (173ms)
+    ✓ /sign-in: all text clears WCAG AA (114ms)
+    ✓ /__showcase/button: all text clears WCAG AA (191ms)
+    ✓ /__showcase/form-field: all text clears WCAG AA (181ms)
+    ✓ /__showcase/select: all text clears WCAG AA (112ms)
+    ✓ /__showcase/datepicker: all text clears WCAG AA (125ms)
+    ✓ /__showcase/table: all text clears WCAG AA (179ms)
+    ✓ /__showcase/dialog: all text clears WCAG AA (104ms)
+    ✓ /__showcase/tabs: all text clears WCAG AA (114ms)
+    ✓ /__showcase/chips: all text clears WCAG AA (161ms)
+    ✓ /__showcase/slide-toggle: all text clears WCAG AA (157ms)
+    ✓ /__showcase/autocomplete: all text clears WCAG AA (113ms)
+    ✓ /__showcase/paginator: all text clears WCAG AA (124ms)
+    ✓ /__showcase/currency-input: all text clears WCAG AA (113ms)
+    ✓ /__showcase/responsive-grid: all text clears WCAG AA (120ms)
+  legibility sweep — every visible text node (dark)
+    ✓ /accounts (customer dashboard): all text clears WCAG AA (176ms)
+    ✓ /__showcase (index): all text clears WCAG AA (124ms)
+    ✓ /sign-in: all text clears WCAG AA (114ms)
+    ✓ /__showcase/button: all text clears WCAG AA (110ms)
+    ✓ /__showcase/form-field: all text clears WCAG AA (107ms)
+    ✓ /__showcase/select: all text clears WCAG AA (100ms)
+    ✓ /__showcase/datepicker: all text clears WCAG AA (249ms)
+    ✓ /__showcase/table: all text clears WCAG AA (165ms)
+    ✓ /__showcase/dialog: all text clears WCAG AA (112ms)
+    ✓ /__showcase/tabs: all text clears WCAG AA (144ms)
+    ✓ /__showcase/chips: all text clears WCAG AA (95ms)
+    ✓ /__showcase/slide-toggle: all text clears WCAG AA (128ms)
+    ✓ /__showcase/autocomplete: all text clears WCAG AA (121ms)
+    ✓ /__showcase/paginator: all text clears WCAG AA (232ms)
+    ✓ /__showcase/currency-input: all text clears WCAG AA (101ms)
+    ✓ /__showcase/responsive-grid: all text clears WCAG AA (130ms)
+  legibility sweep — the sweep itself
+    ✓ measures a substantial number of nodes on a real route (171ms)
+    ✓ catches illegible text planted on a swept route (133ms)
+    ✓ ignores text that is hidden rather than reporting it as a defect (134ms)
+  35 passing (5s)
+  (Results)
+  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
+  │ Tests:        35                                                                               │
+  │ Passing:      35                                                                               │
+  │ Failing:      0                                                                                │
+  │ Pending:      0                                                                                │
+  │ Skipped:      0                                                                                │
+  │ Screenshots:  0                                                                                │
+  │ Video:        false                                                                            │
+  │ Duration:     5 seconds                                                                        │
+  │ Spec Ran:     legibility-sweep.cy.ts                                                           │
+  └────────────────────────────────────────────────────────────────────────────────────────────────┘
+────────────────────────────────────────────────────────────────────────────────────────────────────
+                                                                                                    
+  Running:  override-contract.cy.ts                                                         (3 of 3)
 
   design system — override contract (computed styles)
-    ✓ OV-01: Disabled field label stays legible (WCAG AA) against the slate palette (570ms)
-    ✓ OV-01b: Field underline uses the BoA slate rule, not the Material default (246ms)
-    ✓ OV-01c: Disabled field *value* stays legible, not just its label (147ms)
-    ✓ OV-01d: Validation copy uses the brand danger red, which clears AA (Material’s does not) (120ms)
-    ✓ OV-02: Error text sits on a 20px line box so field height never jumps on validation (121ms)
-    ✓ OV-03: Primary button is brand red with 8px optical icon/label spacing (122ms)
-    ✓ OV-04: Keyboard focus ring is visible on white and on slate-50 (148ms)
-    ✓ OV-05: Statement rows keep fixed heights so 50 rows paginate predictably in print (216ms)
-    ✓ OV-05b: Currency figures use tabular numerals and right-align on the decimal (168ms)
+    ✓ OV-01: Disabled field label stays legible (WCAG AA) against the slate palette (534ms)
+    ✓ OV-01b: Field underline uses the BoA slate rule, not the Material default (276ms)
+    ✓ OV-01c: Disabled field *value* stays legible, not just its label (140ms)
+    ✓ OV-01d: Validation copy uses the brand danger red, which clears AA (Material’s does not) (130ms)
+    ✓ OV-02: Error text sits on a 20px line box so field height never jumps on validation (126ms)
+    ✓ OV-03: Primary button is brand red with 8px optical icon/label spacing (131ms)
+    ✓ OV-04: Keyboard focus ring is visible on white and on slate-50 (182ms)
+    ✓ OV-05: Statement rows keep fixed heights so 50 rows paginate predictably in print (207ms)
+    ✓ OV-05b: Currency figures use tabular numerals and right-align on the decimal (183ms)
     1) OV-05c: Header cells carry the slate-900 brand weight, not the Material grey
-    ✓ OV-05d: Zebra striping on even rows for statement scanability (152ms)
-    ✓ OV-06: Sort arrow is dimmed until hover so it does not read as an active filter (126ms)
-    ✓ OV-07: Active option in the account picker is tinted brand red, not Material grey (276ms)
-    ✓ OV-08: Selected option is brand red, not accent navy (navy reads as a link here) (195ms)
-    ✓ OV-09: Consent toggle is unambiguous at arm’s length on a tablet (110ms)
-    ✓ OV-09b: A granted consent reads green, not brand red (118ms)
-    ✓ OV-10: Section ink bar is legible on a 4K branch display (213ms)
-    ✓ OV-10b: The active section label is the brand accent and stays readable in both palettes (147ms)
-    ✓ OV-11: Category chips keep a 28px rhythm inside the filter drawer (126ms)
-    ✓ OV-12: Step-up dialog matches the mobile MFA modal: tight padding, squared corners (308ms)
-    ✓ OV-12b: A short confirmation body never acquires an inner scrollbar (244ms)
-    ✓ OV-13: Selected day is brand red; today is outlined, not a second filled circle (213ms)
-    ✓ OV-14: Range label stays on screen on a 1280px branch terminal (128ms)
-    ✓ OV-15: Payee panel never covers the Confirmation of Payee copy (375ms)
-    ✓ OV-16: Amount entry right-aligns on tabular numerals (118ms)
-    ✓ OV-17: Compact density is materially shorter than the default field (125ms)
-    ✓ OV-18: Legacy shell embeds tabs without a second divider line (114ms)
+    ✓ OV-05d: Zebra striping on even rows for statement scanability (139ms)
+    ✓ OV-06: Sort arrow is dimmed until hover so it does not read as an active filter (119ms)
+    ✓ OV-07: Active option in the account picker is tinted brand red, not Material grey (307ms)
+    ✓ OV-08: Selected option is brand red, not accent navy (navy reads as a link here) (251ms)
+    ✓ OV-09: Consent toggle is unambiguous at arm’s length on a tablet (156ms)
+    ✓ OV-09b: A granted consent reads green, not brand red (183ms)
+    ✓ OV-10: Section ink bar is legible on a 4K branch display (281ms)
+    ✓ OV-10b: The active section label is the brand accent and stays readable in both palettes (115ms)
+    ✓ OV-11: Category chips keep a 28px rhythm inside the filter drawer (111ms)
+    ✓ OV-12: Step-up dialog matches the mobile MFA modal: tight padding, squared corners (197ms)
+    ✓ OV-12b: A short confirmation body never acquires an inner scrollbar (179ms)
+    ✓ OV-13: Selected day is brand red; today is outlined, not a second filled circle (214ms)
+    ✓ OV-14: Range label stays on screen on a 1280px branch terminal (121ms)
+    ✓ OV-15: Payee panel never covers the Confirmation of Payee copy (406ms)
+    ✓ OV-16: Amount entry right-aligns on tabular numerals (107ms)
+    ✓ OV-17: Compact density is materially shorter than the default field (117ms)
+    ✓ OV-18: Legacy shell embeds tabs without a second divider line (106ms)
   design system — override contract (dark surface)
-    ✓ the dark surface is actually dark (else every probe below is vacuous) (258ms)
-    ✓ OV-01c [dark]: Disabled field *value* stays legible, not just its label (133ms)
-    ✓ OV-01d [dark]: Validation copy uses the brand danger red, which clears AA (Material’s does not) (229ms)
-    ✓ OV-05c [dark]: Header cells carry the slate-900 brand weight, not the Material grey (126ms)
-    ✓ OV-05d [dark]: Zebra striping on even rows for statement scanability (113ms)
-    ✓ OV-07 [dark]: Active option in the account picker is tinted brand red, not Material grey (260ms)
-    ✓ OV-10 [dark]: Section ink bar is legible on a 4K branch display (155ms)
-    ✓ OV-10b [dark]: The active section label is the brand accent and stays readable in both palettes (192ms)
-    ✓ OV-11 [dark]: Category chips keep a 28px rhythm inside the filter drawer (145ms)
-    ✓ OV-15 [dark]: Payee panel never covers the Confirmation of Payee copy (358ms)
-    ✓ OV-17 [dark]: Compact density is materially shorter than the default field (120ms)
-    ✓ OV-18 [dark]: Legacy shell embeds tabs without a second divider line (112ms)
+    ✓ the dark surface is actually dark (else every probe below is vacuous) (269ms)
+    ✓ OV-01c [dark]: Disabled field *value* stays legible, not just its label (106ms)
+    ✓ OV-01d [dark]: Validation copy uses the brand danger red, which clears AA (Material’s does not) (198ms)
+    ✓ OV-05c [dark]: Header cells carry the slate-900 brand weight, not the Material grey (160ms)
+    ✓ OV-05d [dark]: Zebra striping on even rows for statement scanability (102ms)
+    ✓ OV-07 [dark]: Active option in the account picker is tinted brand red, not Material grey (299ms)
+    ✓ OV-10 [dark]: Section ink bar is legible on a 4K branch display (113ms)
+    ✓ OV-10b [dark]: The active section label is the brand accent and stays readable in both palettes (120ms)
+    ✓ OV-11 [dark]: Category chips keep a 28px rhythm inside the filter drawer (116ms)
+    ✓ OV-15 [dark]: Payee panel never covers the Confirmation of Payee copy (367ms)
+    ✓ OV-17 [dark]: Compact density is materially shorter than the default field (117ms)
+    ✓ OV-18 [dark]: Legacy shell embeds tabs without a second divider line (115ms)
   design system — legibility (WCAG AA, light surface)
-    ✓ statement table: even (striped) row clears 4.5:1 (131ms)
-    ✓ statement table: odd row clears 4.5:1 (121ms)
-    ✓ statement table: header cell clears 4.5:1 (112ms)
-    ✓ form field: field label clears 4.5:1 (110ms)
-    ✓ form field: entered value clears 4.5:1 (144ms)
-    ✓ form field: hint clears 4.5:1 (189ms)
-    ✓ form field: disabled value clears 4.5:1 (112ms)
+    ✓ statement table: even (striped) row clears 4.5:1 (122ms)
+    ✓ statement table: odd row clears 4.5:1 (130ms)
+    ✓ statement table: header cell clears 4.5:1 (125ms)
+    ✓ form field: field label clears 4.5:1 (117ms)
+    ✓ form field: entered value clears 4.5:1 (207ms)
+    ✓ form field: hint clears 4.5:1 (130ms)
+    ✓ form field: disabled value clears 4.5:1 (108ms)
     ✓ form field: error message clears 4.5:1 (121ms)
-    ✓ tabs: inactive tab label clears 4.5:1 (113ms)
-    ✓ tabs: active tab label clears 4.5:1 (106ms)
-    ✓ select: trigger text clears 4.5:1 (103ms)
-    ✓ chips: chip label clears 4.5:1 (98ms)
-    ✓ paginator: range label clears 4.5:1 (152ms)
-    ✓ currency input: amount clears 4.5:1 (323ms)
-    ✓ tabs: the active-section ink bar clears 3:1 (non-text contrast) (163ms)
-    ✓ datepicker: the toggle icon clears 3:1 (non-text contrast) (114ms)
+    ✓ tabs: inactive tab label clears 4.5:1 (114ms)
+    ✓ tabs: active tab label clears 4.5:1 (116ms)
+    ✓ select: trigger text clears 4.5:1 (105ms)
+    ✓ chips: chip label clears 4.5:1 (243ms)
+    ✓ paginator: range label clears 4.5:1 (227ms)
+    ✓ currency input: amount clears 4.5:1 (138ms)
+    ✓ tabs: the active-section ink bar clears 3:1 (non-text contrast) (122ms)
+    ✓ datepicker: the toggle glyph clears 3:1 (non-text contrast) (101ms)
   design system — legibility (WCAG AA, dark surface)
-    ✓ statement table: even (striped) row clears 4.5:1 (111ms)
-    ✓ statement table: odd row clears 4.5:1 (109ms)
-    ✓ statement table: header cell clears 4.5:1 (121ms)
-    ✓ form field: field label clears 4.5:1 (107ms)
-    ✓ form field: entered value clears 4.5:1 (267ms)
-    ✓ form field: hint clears 4.5:1 (126ms)
-    ✓ form field: disabled value clears 4.5:1 (127ms)
-    ✓ form field: error message clears 4.5:1 (111ms)
-    ✓ tabs: inactive tab label clears 4.5:1 (124ms)
-    ✓ tabs: active tab label clears 4.5:1 (115ms)
-    ✓ select: trigger text clears 4.5:1 (113ms)
-    ✓ chips: chip label clears 4.5:1 (182ms)
-    ✓ paginator: range label clears 4.5:1 (159ms)
-    ✓ currency input: amount clears 4.5:1 (110ms)
-    ✓ tabs: the active-section ink bar clears 3:1 (non-text contrast) (119ms)
-    ✓ datepicker: the toggle icon clears 3:1 (non-text contrast) (145ms)
+    ✓ statement table: even (striped) row clears 4.5:1 (120ms)
+    ✓ statement table: odd row clears 4.5:1 (128ms)
+    ✓ statement table: header cell clears 4.5:1 (184ms)
+    ✓ form field: field label clears 4.5:1 (139ms)
+    ✓ form field: entered value clears 4.5:1 (99ms)
+    ✓ form field: hint clears 4.5:1 (112ms)
+    ✓ form field: disabled value clears 4.5:1 (97ms)
+    ✓ form field: error message clears 4.5:1 (109ms)
+    ✓ tabs: inactive tab label clears 4.5:1 (115ms)
+    ✓ tabs: active tab label clears 4.5:1 (175ms)
+    ✓ select: trigger text clears 4.5:1 (152ms)
+    ✓ chips: chip label clears 4.5:1 (101ms)
+    ✓ paginator: range label clears 4.5:1 (119ms)
+    ✓ currency input: amount clears 4.5:1 (103ms)
+    ✓ tabs: the active-section ink bar clears 3:1 (non-text contrast) (152ms)
+    ✓ datepicker: the toggle glyph clears 3:1 (non-text contrast) (115ms)
   design system — the contrast oracle itself
-    ✓ a fully transparent chain resolves to the canvas, not to opaque black (202ms)
-    ✓ composites a semi-transparent foreground instead of treating it as opaque (146ms)
-    ✓ composites a semi-transparent background over the layer behind it (190ms)
-    ✓ agrees with the published figure on a known opaque pair (142ms)
-  74 passing (23s)
+    ✓ a fully transparent chain resolves to the canvas, not to opaque black (218ms)
+    ✓ composites a semi-transparent foreground instead of treating it as opaque (136ms)
+    ✓ composites a semi-transparent background over the layer behind it (116ms)
+    ✓ agrees with the published figure on a known opaque pair (107ms)
+    ✓ folds an ancestor `opacity` into the layer instead of ignoring it (107ms)
+    ✓ refuses to score text over a gradient rather than reporting the canvas (129ms)
+  76 passing (23s)
   1 failing
   1) design system — override contract (computed styles)
        OV-05c: Header cells carry the slate-900 brand weight, not the Material grey:
@@ -249,15 +306,15 @@ libva error: vaGetDriverNameByIndex() failed with unknown libva error, driver_na
       -'rgb(200, 16, 46)'
       +'rgb(18, 22, 29)'
       
-      at eval (webpack:///./src/e2e/override-contract.cy.ts:77:25)
+      at eval (webpack:///./src/e2e/override-contract.cy.ts:78:25)
   at Array.forEach (<anonymous>)
-      at assertProbe (webpack:///./src/e2e/override-contract.cy.ts:76:27)
-      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:185:45)
+      at assertProbe (webpack:///./src/e2e/override-contract.cy.ts:77:27)
+      at Context.eval (webpack:///./src/e2e/override-contract.cy.ts:84:45)
 
   (Results)
   ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
-  │ Tests:        75                                                                               │
-  │ Passing:      74                                                                               │
+  │ Tests:        77                                                                               │
+  │ Passing:      76                                                                               │
   │ Failing:      1                                                                                │
   │ Pending:      0                                                                                │
   │ Skipped:      0                                                                                │
@@ -272,9 +329,11 @@ libva error: vaGetDriverNameByIndex() failed with unknown libva error, driver_na
   ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
   │ ✖  design-system.cy.ts                      00:09       23       21        2        -        - │
   ├────────────────────────────────────────────────────────────────────────────────────────────────┤
-  │ ✖  override-contract.cy.ts                  00:22       75       74        1        -        - │
+  │ ✔  legibility-sweep.cy.ts                   00:05       35       35        -        -        - │
+  ├────────────────────────────────────────────────────────────────────────────────────────────────┤
+  │ ✖  override-contract.cy.ts                  00:22       77       76        1        -        - │
   └────────────────────────────────────────────────────────────────────────────────────────────────┘
-    ✖  2 of 2 failed (100%)                     00:31       98       95        3        -        -  
+    ✖  2 of 3 failed (67%)                      00:37      135      132        3        -        -  
 
  
 
