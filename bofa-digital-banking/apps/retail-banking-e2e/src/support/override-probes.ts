@@ -145,7 +145,10 @@ export const OVERRIDE_PROBES: OverrideProbe[] = [
     // rgba(0, 0, 0, 0.12) whatever we write. On a merely-active option the
     // Material default is rgba(0, 0, 0, 0.04) — so this value is ours.
     keyboard: 'arrow-down',
-    target: '.bofa-select-panel .mat-option.mat-active:not(.mat-selected)',
+    // v15/MDC: `.mat-option` -> `.mat-mdc-option`, `.mat-active` ->
+    // `.mat-mdc-option-active`, `.mat-selected` -> `.mdc-list-item--selected`.
+    target:
+      '.bofa-select-panel .mat-mdc-option.mat-mdc-option-active:not(.mdc-list-item--selected)',
     expect: { 'background-color': 'rgba(200, 16, 46, 0.08)' },
   },
   {
@@ -265,7 +268,8 @@ export const OVERRIDE_PROBES: OverrideProbe[] = [
     // surrounding chrome already draws one, so ours must be 0. Measured, not
     // assumed: OV-10 above asserts the non-legacy group, so the two variants
     // pin each other.
-    target: '.bofa-tabs.bofa-legacy-shell .mat-tab-header',
+    // v15/MDC: `.mat-tab-header` -> `.mat-mdc-tab-header`.
+    target: '.bofa-tabs.bofa-legacy-shell .mat-mdc-tab-header',
     expect: { 'border-bottom-width': '0px' },
   },
 ];
