@@ -10,7 +10,7 @@ export interface CompareArgs {
 
 export interface CompareResult {
   name: string;
-  status: 'created' | 'match' | 'diff' | 'size-mismatch';
+  status: 'created' | 'match' | 'diff' | 'size-mismatch' | 'missing';
   diffPixels: number;
   diffRatio: number;
   diffPath?: string;
@@ -66,7 +66,20 @@ export function registerVisualRegressionTasks(
         throw new Error(`Screenshot not found for ${args.name} at ${actualPath}`);
       }
 
-      if (!fs.existsSync(baselinePath) || updateBaselines) {
+      // A missing baseline is a failure, not an invitation to write one. Copying the
+      // actual screenshot over an absent baseline turns `rm <baseline>.png` into a way
+      // of laundering a live regression through a green run: the snapshot is never
+      // compared, and the regression becomes the new baseline. Creating a baseline is
+      // only legitimate under the explicit, reviewed `visual:update` path.
+      if (!fs.existsSync(baselinePath)) {
+        if (!updateBaselines) {
+          return { name: args.name, status: 'missing', diffPixels: -1, diffRatio: 1 };
+        }
+        fs.copyFileSync(actualPath, baselinePath);
+        return { name: args.name, status: 'created', diffPixels: 0, diffRatio: 0 };
+      }
+
+      if (updateBaselines) {
         fs.copyFileSync(actualPath, baselinePath);
         return { name: args.name, status: 'created', diffPixels: 0, diffRatio: 0 };
       }

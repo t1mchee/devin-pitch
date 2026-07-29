@@ -43,6 +43,13 @@ Cypress.Commands.add('matchImageSnapshot', (name: string) => {
   return cy.then(() => {
     const screenshotPath = `${Cypress.config('screenshotsFolder')}/${Cypress.spec.name}/${screenshotName}.png`;
     return cy.task<CompareResult>('compareSnapshot', { name, screenshotPath }).then((result) => {
+      if (result.status === 'missing') {
+        throw new Error(
+          `No visual baseline for ${name}. A missing baseline fails: deleting one would ` +
+            `otherwise turn a live regression into a green run. Add it deliberately with ` +
+            `npm run visual:update and say so in the PR (BASELINE-CHANGE:).`
+        );
+      }
       if (result.status === 'size-mismatch') {
         throw new Error(`Visual baseline size mismatch for ${name}`);
       }

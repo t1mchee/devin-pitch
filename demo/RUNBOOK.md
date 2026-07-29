@@ -52,6 +52,11 @@ time the baselines were regenerated (785 → 875 → 753). On the current baseli
 ~753 px on `table-default` and ~788 px on `accounts-dashboard`. Point at the second one: *it is
 caught on the customer's dashboard, not only in the component gallery.*
 
+If someone asks the sharper version — *"what stops an engineer deleting the baseline?"* — delete
+one and re-run: the snapshot fails as `missing`. It used to be silently re-created, which is how a
+regression gets laundered into a green run; that was found by hostile testing of this repo, not by
+design. CI additionally requires `BASELINE-CHANGE:` in the PR body for any baseline change.
+
 If asked "how do you know 40 px isn't tuned to pass?" — `docs/evidence/ORACLE-noise-floor.md`:
 0 px across three repeat runs on the pinned renderer, 455–5,963 px across renderers (which is why
 it is digest-pinned), 753 px of signal.
@@ -114,5 +119,5 @@ migration risk they represent lives.
 |---|---|
 | Port 4200 busy / Cypress hangs | `npx nx reset`, kill 4200, rerun |
 | `nx e2e` suspiciously instant | it cached — always use `npm run visual`, which passes `--skip-nx-cache` |
-| Docker unavailable | fall back to `npx nx e2e retail-banking-e2e --skip-nx-cache` and say out loud that baselines are renderer-pinned |
+| Docker unavailable | **do not** fall back to a host `nx e2e` — it fails 21 of 21 on renderer drift (455–5,963 px) and you would be narrating design-system safety over a wall of red. Show `docs/evidence/ORACLE-noise-floor.md` and the last green CI run instead, and say why the renderer is digest-pinned. That story is stronger than the live run anyway |
 | Anything red you didn't plan | show it and read it aloud. A demo that can fail is the point |
