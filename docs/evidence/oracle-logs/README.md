@@ -5,15 +5,15 @@ Every figure quoted in `ORACLE-noise-floor.md`, `OVERRIDE-CONTRACT-dead-rules.md
 to the same standard the external control run was held to. Each log is a full
 `npm run visual` transcript (digest-pinned `cypress/included@sha256:058d1834…`, `--skip-nx-cache`),
 captured by `scripts/capture-oracle-logs.sh` on 2026-07-29. Everything except
-`dark-contrast-regression.log` was re-captured after the round-9 sweep fixes landed, so those logs
-show the current **146-test** suite (23 image + 77 computed-style + 46 sweep).
+`dark-contrast-regression.log` was re-captured after the round-10 sweep fixes landed, so those logs
+show the current **150-test** suite (23 image + 77 computed-style + 50 sweep).
 `dark-contrast-regression.log` is kept as originally captured against the 59-test suite because it is
 the record of a specific defect at a specific moment; `delete-rule-dark-zebra.log` is its current
 equivalent.
 
 | log | what it establishes | result |
 |---|---|---|
-| `noise-repeat-{1,2,3}.log` | renderer noise floor: three consecutive runs, unmodified tree | **0 px on all 21 snapshots**, all 146 tests green, three times |
+| `noise-repeat-{1,2,3}.log` | renderer noise floor: three consecutive runs, unmodified tree | **0 px on all 21 snapshots**, all 150 tests green, three times |
 | `host-renderer-drift.log` | why the image is digest-pinned: the same suite on the host renderer against the same baselines | **21 of 21 snapshots fail**, `tabs-default` 455 px … `accounts-dashboard` 5,963 px, while every sweep and override-contract test passes — the drift is the renderer, not the CSS |
 | `fault-injection-colour.log` | the budget catches a real regression: one brand colour swapped to red in `_overrides.scss` | `table-default` **753 px**, `accounts-dashboard` **788 px** — and probe `OV-05c` fails |
 | `delete-rule-ov05d.log` | positive control for the probe method: delete the zebra-striping rule | **OV-05d fails** |
@@ -37,6 +37,10 @@ equivalent.
 | `regress-oracle-fold-blind.log` | round 9 again: skip text whose rect is past the fold | the below-the-fold self-test reports **nothing** — the same illegible node passed at `top: 2212` and failed at `top: 400`, making coverage a function of page height |
 | `regress-oracle-sronly-blind.log` | round 9: the icon exemption reads `textContent`, which includes visually-hidden text | the sr-only self-test reports **nothing** — labelling an icon button the way accessibility guidance recommends hid its glyph from the gate |
 | `regress-oracle-review-blanket.log` | round 9: `closest()` for the artwork declaration, and no ratio required | the review self-test fails — `data-contrast-reviewed="lgtm"` on an ancestor exempted artwork nobody reviewed |
+| `regress-oracle-stacking-blind.log` | round 10: paint order back to the max `z-index` anywhere on the ancestor chain | the transformed-panel self-test fails — a scrim raised inside a `transform` wrapper scored its `z-index: 10` against an unrelated ancestor, so text a human cannot read measured as legible |
+| `regress-oracle-backdrop-armed.log` | round 10: inertness triggered by the mere presence of a `.cdk-overlay-backdrop` | the stray-backdrop self-test fails — one leftover `0×0; opacity: 0` backdrop switched the gate off for the entire page |
+| `regress-oracle-indicator-narrow.log` | round 10: CSS-painted marks recognised only as a downward triangle | the indicator self-test fails — a rotated chevron and an L-shaped corner mark, both invisible, went unreported |
+| `regress-oracle-clip-literal.log` | round 10: `clip-path` visibility matched only `inset(45%…50%)` | the sr-only self-test fails — the current `inset(100%)` recipe read as visible, so every screen-reader-only label became a false defect |
 | `dark-contrast-regression.log` | the defect the dark block itself shipped, reproduced: remove the dark zebra value and the WCAG assertion fires | **`expected 1.0719326855029048 to be at least 4.5`** — white statement text on the light stripe, plus `OV-05d [dark]` |
 
 Read `fault-injection-colour.log` and `delete-rule-ov08.log` together: the first is the gate

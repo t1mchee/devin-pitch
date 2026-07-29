@@ -23,7 +23,7 @@ work needs `--legacy-peer-deps` because of `@angular/flex-layout@14.0.0-beta.41`
 npx nx run-many --target=build --all --skip-nx-cache   # expect: 6 projects
 npx nx run-many --target=test --all --skip-nx-cache    # expect: 6 projects, 8 suites / 43 tests
 npx nx run-many --target=lint --all --skip-nx-cache    # expect: 7 projects, 0 errors / 3 warnings
-npm run visual                                         # expect: 23 + 36 passing, 21 snapshots (preferred)
+npm run visual                                         # expect: 23 + 50 + 77 = 150 passing, 21 snapshots (preferred)
 ```
 
 The **test tally is easy to get wrong**, and it changes as specs are added — always re-derive it,
