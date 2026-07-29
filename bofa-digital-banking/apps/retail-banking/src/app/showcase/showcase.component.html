@@ -1,5 +1,6 @@
 <div class="showcase" [attr.data-component]="component">
   <header class="showcase__header">
+    <a class="showcase__back" routerLink="/__showcase">← all components</a>
     <span class="showcase__eyebrow">@bofa/ui-core</span>
     <h1 class="showcase__title">{{ component }}</h1>
   </header>
@@ -22,25 +23,25 @@
 
     <section *ngSwitchCase="'form-field'" class="showcase__grid">
       <div class="showcase__cell" data-variant="default">
-        <bofa-form-field label="Account nickname" [control]="enabled" hint="Shown on your statements"></bofa-form-field>
+        <bofa-form-field label="Account nickname" [control]="nickname" hint="Shown on your statements"></bofa-form-field>
       </div>
       <div class="showcase__cell" data-variant="disabled">
-        <bofa-form-field label="Account nickname" [control]="disabled"></bofa-form-field>
+        <bofa-form-field label="Account nickname" [control]="nicknameDisabled"></bofa-form-field>
       </div>
       <div class="showcase__cell" data-variant="error">
         <bofa-form-field label="Account nickname" [control]="errored" errorText="Enter a nickname"></bofa-form-field>
       </div>
       <div class="showcase__cell" data-variant="compact">
-        <bofa-form-field label="Account nickname" [control]="enabled" [compact]="true"></bofa-form-field>
+        <bofa-form-field label="Account nickname" [control]="nickname" [compact]="true"></bofa-form-field>
       </div>
     </section>
 
     <section *ngSwitchCase="'select'" class="showcase__grid">
       <div class="showcase__cell" data-variant="default">
-        <bofa-select label="From account" [options]="accounts" [control]="enabled"></bofa-select>
+        <bofa-select label="From account" [options]="accounts" [control]="account"></bofa-select>
       </div>
       <div class="showcase__cell" data-variant="disabled">
-        <bofa-select label="From account" [options]="accounts" [control]="disabled"></bofa-select>
+        <bofa-select label="From account" [options]="accounts" [control]="accountDisabled"></bofa-select>
       </div>
     </section>
 
@@ -58,7 +59,11 @@
     </section>
 
     <section *ngSwitchCase="'dialog'" class="showcase__stack">
-      <!-- Rendered inline rather than through the overlay so the snapshot is stable. -->
+      <div class="showcase__cell showcase__cell--wide">
+        <bofa-button variant="primary" (click)="openDialog()">Open the real dialog</bofa-button>
+        <span class="showcase__result" *ngIf="dialogResult">{{ dialogResult }}</span>
+      </div>
+      <!-- Also rendered inline so the snapshot does not depend on overlay timing. -->
       <div class="bofa-dialog showcase__dialog" data-state="open">
         <h2 class="mat-dialog-title">Confirm this transfer</h2>
         <div class="mat-dialog-content">
@@ -96,10 +101,10 @@
 
     <section *ngSwitchCase="'autocomplete'" class="showcase__grid">
       <div class="showcase__cell" data-variant="default">
-        <bofa-autocomplete label="Payee" [control]="enabled"></bofa-autocomplete>
+        <bofa-autocomplete label="Payee" [control]="payee"></bofa-autocomplete>
       </div>
       <div class="showcase__cell" data-variant="disabled">
-        <bofa-autocomplete label="Payee" [control]="disabled"></bofa-autocomplete>
+        <bofa-autocomplete label="Payee" [control]="payeeDisabled"></bofa-autocomplete>
       </div>
     </section>
 
@@ -110,10 +115,10 @@
 
     <section *ngSwitchCase="'currency-input'" class="showcase__grid">
       <div class="showcase__cell" data-variant="default">
-        <bofa-currency-input label="Amount" [control]="enabled"></bofa-currency-input>
+        <bofa-currency-input label="Amount" [control]="amount"></bofa-currency-input>
       </div>
       <div class="showcase__cell" data-variant="disabled">
-        <bofa-currency-input label="Amount" [control]="disabled"></bofa-currency-input>
+        <bofa-currency-input label="Amount" [control]="amountDisabled"></bofa-currency-input>
       </div>
     </section>
 

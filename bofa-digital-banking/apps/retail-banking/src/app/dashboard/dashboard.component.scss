@@ -11,6 +11,18 @@
   margin-bottom: 24px;
 }
 
+.dashboard__actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.dashboard__status {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1b7f4d;
+}
+
 .dashboard__summary {
   display: flex;
   flex-direction: column;

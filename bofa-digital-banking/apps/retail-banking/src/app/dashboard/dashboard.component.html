@@ -1,7 +1,10 @@
 <main class="dashboard" [bofaTrackView]="'accounts-dashboard'">
   <header class="dashboard__header">
     <h1>Accounts</h1>
-    <bofa-button variant="primary" icon="add">Make a transfer</bofa-button>
+    <div class="dashboard__actions">
+      <span class="dashboard__status" *ngIf="transferStatus">{{ transferStatus }}</span>
+      <bofa-button variant="primary" icon="add" (pressed)="confirmTransfer()">Make a transfer</bofa-button>
+    </div>
   </header>
 
   <bofa-responsive-grid>

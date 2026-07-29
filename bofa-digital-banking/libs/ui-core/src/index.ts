@@ -1,4 +1,5 @@
 export * from './lib/ui-core.module';
+export * from './lib/icons/bofa-icons';
 
 export * from './lib/components/bofa-autocomplete/bofa-autocomplete.component';
 export * from './lib/components/bofa-button/bofa-button.component';

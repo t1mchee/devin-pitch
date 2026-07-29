@@ -100,8 +100,14 @@
 // `.mat-mdc-row` 52px), so the fixed heights have to be pinned there as well as
 // on the cell or the row default wins.
 .bofa-table {
+  width: 100%;
+
   .mat-mdc-header-row {
     height: 44px;
+  }
+
+  .mat-mdc-row {
+    height: 40px;
   }
 
   .mat-mdc-header-cell {
@@ -110,13 +116,29 @@
     color: bofa.$boa-slate-900;
   }
 
-  .mat-mdc-row {
-    height: 40px;
+  // MDC's data table pads both sides of every cell (16px); the v14 rhythm is a
+  // right-hand gutter only, with the last column flush.
+  .mat-mdc-header-cell,
+  .mat-mdc-cell {
+    padding: 0 16px 0 0;
+
+    &:last-of-type {
+      padding-right: 0;
+    }
   }
 
   .mat-mdc-cell {
     height: 40px;
     font-variant-numeric: tabular-nums;
+  }
+
+  // Currency columns align on the decimal.
+  .bofa-cell--numeric {
+    text-align: right;
+  }
+
+  .mat-mdc-header-cell.bofa-cell--numeric .mat-sort-header-container {
+    justify-content: flex-end;
   }
 
   .mat-mdc-row:nth-child(even) {
@@ -264,6 +286,25 @@
   .mdc-dialog__title {
     margin-bottom: 12px;
   }
+
+  // Short confirmation bodies must not acquire an inner scrollbar; the default
+  // 65vh scroll container reads as truncated content on a step-up prompt.
+  //
+  // MDC: `.mat-dialog-content` -> `.mat-mdc-dialog-content` (`.mdc-dialog__content`),
+  // `.mat-dialog-actions` -> `.mat-mdc-dialog-actions` (`.mdc-dialog__actions`).
+  .mat-mdc-dialog-content,
+  .mdc-dialog__content {
+    margin: 0;
+    padding: 0;
+    overflow: visible;
+  }
+
+  .mat-mdc-dialog-actions,
+  .mdc-dialog__actions {
+    margin-bottom: 0;
+    padding: 16px 0 0;
+    min-height: auto;
+  }
 }
 
 // OV-13 — Datepicker: the selected day must be brand red, and today's date is
@@ -349,6 +390,14 @@
   .mat-form-field-infix {
     padding: 0.4em 0;
     border-top-width: 0.6em;
+  }
+
+  .mat-form-field-flex {
+    padding-top: 0.4em;
+  }
+
+  .mat-form-field-wrapper {
+    padding-bottom: 1em;
   }
 }
 

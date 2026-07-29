@@ -6,8 +6,12 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <mat-tab-group class="bofa-tabs" [ngClass]="{ 'bofa-legacy-shell': legacyShell }" [attr.data-state]="null">
-      <mat-tab *ngFor="let tab of tabs" [label]="tab">
-        <div class="bofa-tabs__panel">{{ tab }} content</div>
+      <!--
+        The first tab's content is rendered by the page below the strip; the
+        remaining tabs carry an empty state rather than placeholder copy.
+      -->
+      <mat-tab *ngFor="let tab of tabs; let first = first" [label]="tab">
+        <div class="bofa-tabs__panel" *ngIf="!first">Nothing here yet.</div>
       </mat-tab>
     </mat-tab-group>
   `,

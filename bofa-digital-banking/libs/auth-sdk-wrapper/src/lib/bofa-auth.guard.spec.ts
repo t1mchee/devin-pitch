@@ -1,7 +1,7 @@
-import { TestBed } from '@angular/core/testing';
+import { discardPeriodicTasks, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { filter, firstValueFrom } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 
 import { BofaAuthGuard } from './bofa-auth.guard';
 import { BofaAuthService } from './bofa-auth.service';
@@ -23,15 +23,28 @@ describe('BofaAuthGuard', () => {
 
   const state = { url: '/accounts' } as RouterStateSnapshot;
 
-  it('redirects to sign-in when no principal is loaded', async () => {
-    const result = await firstValueFrom(guard.canActivate(route('accounts:read'), state));
-    expect(result instanceof UrlTree).toBe(true);
-  });
-
   async function loadPrincipal(): Promise<void> {
     auth.startSessionRefresh(60_000);
-    await firstValueFrom(auth.principal().pipe(filter((p) => p !== null)));
+    await auth.sessionReady();
   }
+
+  /**
+   * Regression: the guard used to emit `false` for a null principal, redirecting
+   * the very first navigation to `/sign-in` before the session had loaded.
+   */
+  it('does not decide until the principal has loaded', fakeAsync(() => {
+    let decided = false;
+    guard.canActivate(route('accounts:read'), state).subscribe(() => (decided = true));
+
+    tick(0);
+    expect(decided).toBe(false);
+
+    auth.startSessionRefresh(60_000);
+    tick(0);
+    expect(decided).toBe(true);
+
+    discardPeriodicTasks();
+  }));
 
   it('allows a principal holding the required entitlement', async () => {
     await loadPrincipal();
@@ -43,5 +56,14 @@ describe('BofaAuthGuard', () => {
     await loadPrincipal();
     const result = await firstValueFrom(guard.canActivate(route('wires:approve'), state));
     expect(result instanceof UrlTree).toBe(true);
+  });
+
+  it('preserves the attempted url on the redirect', async () => {
+    await loadPrincipal();
+    const result = (await firstValueFrom(
+      guard.canActivate(route('wires:approve'), state)
+    )) as UrlTree;
+    expect(result.toString()).toContain('sign-in');
+    expect(result.queryParams['r']).toBe('/accounts');
   });
 });

@@ -28,7 +28,7 @@
             {
               "type": "initial",
               "maximumWarning": "500kb",
-              "maximumError": "1.25mb"
+              "maximumError": "1.05mb"
             },
             {
               "type": "anyComponentStyle",
@@ -40,6 +40,10 @@
             {
               "replace": "apps/retail-banking/src/environments/environment.ts",
               "with": "apps/retail-banking/src/environments/environment.prod.ts"
+            },
+            {
+              "replace": "apps/retail-banking/src/app/app.routes.ts",
+              "with": "apps/retail-banking/src/app/app.routes.prod.ts"
             }
           ],
           "outputHashing": "all"

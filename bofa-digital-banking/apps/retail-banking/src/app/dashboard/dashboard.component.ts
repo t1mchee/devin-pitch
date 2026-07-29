@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { Store } from '@ngrx/store';
 import { firstValueFrom, Observable } from 'rxjs';
 
-import { BofaTransactionRow } from '@bofa/ui-core';
+import { BofaDialogComponent, BofaTransactionRow } from '@bofa/ui-core';
 
 import { loadTransactions } from '../state/transactions.actions';
 import { TransactionsState } from '../state/transactions.reducer';
@@ -27,7 +28,36 @@ export class DashboardComponent implements OnInit {
 
   rows$!: Observable<BofaTransactionRow[]>;
 
-  constructor(private readonly store: Store<{ transactions: TransactionsState }>) {}
+  transferStatus: string | null = null;
+
+  constructor(
+    private readonly store: Store<{ transactions: TransactionsState }>,
+    private readonly dialog: MatDialog
+  ) {}
+
+  /** Step-up confirmation. Every money movement goes through this dialog. */
+  confirmTransfer(): void {
+    const account = this.accounts.find((a) => a.value === this.accountControl.value);
+    this.transferStatus = null;
+
+    this.dialog
+      .open(BofaDialogComponent, {
+        panelClass: 'bofa-dialog',
+        data: {
+          title: 'Confirm this transfer',
+          body: `You are sending $${this.amountControl.value} to ${
+            this.payeeControl.value || 'a new payee'
+          } from ${account?.label ?? 'your account'}.`,
+          confirmLabel: 'Confirm transfer',
+        },
+      })
+      .afterClosed()
+      .subscribe((confirmed) => {
+        this.transferStatus = confirmed
+          ? `Transfer of $${this.amountControl.value} scheduled.`
+          : 'Transfer cancelled.';
+      });
+  }
 
   ngOnInit(): void {
     this.rows$ = this.store.select((state) => state.transactions.rows);
