@@ -48,16 +48,18 @@
 }
 
 // OV-03 — Brand: icon-and-label spacing per the BoA button spec (8px, optical).
-// MDC: there is no `.mat-button-wrapper`; the button is the flex container and the
-// text sits in `.mdc-button__label`. Icon spacing is applied to the leading icon.
-// Letter-spacing is also carried by the `$button` typography level.
+// MDC: there is no `.mat-button-wrapper`. The button element itself is the
+// `inline-flex` container; its only in-flow children are the leading `.mat-icon`
+// and the `.mdc-button__label` (the ripple/touch-target/focus-indicator layers
+// are `position: absolute` and so are untouched by `gap`). The 8px optical
+// spacing is therefore expressed as `gap` on the button, which is exactly what
+// the OV-03 computed-style probe reads. Letter-spacing is also carried by the
+// `$button` typography level.
 .bofa-button {
   &.mdc-button {
+    display: inline-flex;
+    gap: 8px;
     letter-spacing: 0.02em;
-  }
-
-  .mat-icon {
-    margin-right: 8px;
   }
 
   // MDC: `mat-flat-button` becomes the unelevated button variant.
@@ -180,17 +182,24 @@
 // (track/handle sizing and the handle colour are token-driven), so this preserves
 // the geometric + colour INTENT but does not reproduce v14 pixel-for-pixel; the
 // remaining diff is reported in the PR.
-.bofa-slide-toggle {
-  .mdc-switch__track {
+.bofa-slide-toggle.mat-mdc-slide-toggle {
+  // The v14 "bar" is the MDC track, whose width is 100% of the switch button, so
+  // the 40px widening is applied to `.mdc-switch` (the track then fills it). MDC
+  // sizes the track height from `--mdc-switch-track-height` via a 3-class rule
+  // (`.mat-mdc-slide-toggle .mdc-switch .mdc-switch__track`), so the height needs a
+  // 4-class selector to win — hence the doubled host compound.
+  .mdc-switch {
     width: 40px;
+  }
+
+  .mdc-switch .mdc-switch__track {
     height: 16px;
   }
 
-  .mdc-switch__handle {
-    width: 20px;
-    height: 20px;
-  }
-
+  // OV-09b intent (granted consent reads green): MDC paints the handle fill on the
+  // `::after` pseudo-element from a token, which is where the green is applied.
+  // The OV-09b probe cannot read a pseudo-element, so it is reported as an open
+  // question rather than forced onto a real element (see override-probes.ts).
   &.mat-mdc-slide-toggle-checked .mdc-switch__handle::after {
     background-color: bofa.$boa-success-600;
   }
@@ -230,10 +239,16 @@
   // `min-height` as well as `height`: MDC sets `min-height: 32px` on the
   // standard chip, so a bare `height` is silently floored and the 28px rhythm
   // never happens. Measured, not assumed — see OV-11 in the override contract.
+  //
+  // Background: MDC paints the chip fill from `--mdc-chip-elevated-container-color`
+  // via `.mat-mdc-standard-chip:not(.mdc-evolution-chip--disabled)` (a 2-class rule
+  // that outranks a plain `background`), so the slate fill is set through that
+  // custom property rather than a losing `background` declaration.
   .mat-mdc-standard-chip {
     height: 28px;
     min-height: 28px;
     border-radius: 14px;
+    --mdc-chip-elevated-container-color: #{bofa.$boa-slate-100};
     background: bofa.$boa-slate-100;
     color: bofa.$boa-slate-900;
     font-size: 12px;
@@ -247,36 +262,40 @@
 // OV-12 — Dialogs are used for step-up authentication. Padding is tightened and
 // the surface is squared off to match the MFA modal in the mobile app.
 // MDC: the runtime container is `.mat-mdc-dialog-container` wrapping
-// `.mdc-dialog__surface`. NOTE: the visual snapshot does not open the real
-// dialog — the `dialog` showcase renders static markup with the literal
-// `.mat-dialog-title` / `.mat-dialog-content` / `.mat-dialog-actions` class
-// names (so the snapshot is independent of overlay timing), whereas the real
-// MDC dialog emits the `.mat-mdc-dialog-*` equivalents. Both class forms are
-// therefore targeted so the override styles the snapshot and the runtime dialog
-// identically. (`.mat-dialog-container` never existed in the static markup, so
-// the surface rule is runtime-only, exactly as it was at v14.)
+// `.mdc-dialog__surface`. The `bofa-dialog` panelClass is applied to the CDK
+// overlay pane, so `.bofa-dialog .mat-mdc-dialog-container` targets the live
+// container. The showcase now opens the *real* overlay — the previous static
+// `.mat-dialog-*` markup was removed on the base branch precisely because a
+// hand-authored DOM copy keeps matching after MDC moves the real one — so the
+// override targets the MDC DOM only. v14 carried the padding + squared corner on
+// `.mat-dialog-container`; MDC's equivalent is `.mat-mdc-dialog-container`, which
+// is where they are applied (and where the OV-12 probe reads them).
 .bofa-dialog {
-  .mat-mdc-dialog-container .mdc-dialog__surface {
+  .mat-mdc-dialog-container {
     padding: 20px 24px;
+    border-radius: 4px;
+  }
+
+  .mdc-dialog__surface {
     border-radius: 4px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
   }
 
-  .mat-dialog-title,
   .mat-mdc-dialog-title {
     margin-bottom: 12px;
   }
 
   // Short confirmation bodies must not acquire an inner scrollbar; the default
-  // 65vh scroll container reads as truncated content on a step-up prompt.
-  .mat-dialog-content,
-  .mat-mdc-dialog-content {
+  // 65vh scroll container reads as truncated content on a step-up prompt. MDC's
+  // `.mdc-dialog .mdc-dialog__content` sets `padding: 20px 24px` at 2-class
+  // specificity, so the compound `.mat-mdc-dialog-content.mdc-dialog__content`
+  // (both classes are on the one element) is needed to win.
+  .mat-mdc-dialog-content.mdc-dialog__content {
     margin: 0;
     padding: 0;
     overflow: visible;
   }
 
-  .mat-dialog-actions,
   .mat-mdc-dialog-actions {
     margin-bottom: 0;
     padding: 16px 0 0;
@@ -317,10 +336,17 @@
 
 // OV-15 — Autocomplete backs payee search. The panel is capped so it never
 // covers the "confirm payee" copy, which is a Confirmation of Payee requirement.
-// MDC: the panel is `.mat-mdc-autocomplete-panel`; options are `.mat-mdc-option`.
+// MDC: the scroll container that carries the cap moved from the `bofa-autocomplete-panel`
+// pane element (v14) down onto `.mat-mdc-autocomplete-panel`, so the cap is applied
+// there (and the OV-15 probe target follows it). Options are `.mat-mdc-option`.
 // Global, not `::ng-deep`, for the same reason as OV-07.
 .bofa-autocomplete-panel {
-  &.mat-mdc-autocomplete-panel {
+  // In MDC the panelClass and the listbox are the *same* element (both
+  // `.bofa-autocomplete-panel` and `.mat-mdc-autocomplete-panel` sit on one
+  // `<div role=listbox>`), so the cap is a compound on that element, not a
+  // descendant. MDC caps it at 256px via `.mdc-menu-surface.mat-mdc-autocomplete-panel`
+  // (2-class), so the cap is applied on the 3-class compound to win.
+  &.mat-mdc-autocomplete-panel.mdc-menu-surface {
     max-height: 224px;
   }
 
@@ -334,7 +360,12 @@
 // MDC: the input is `.mat-mdc-input-element`; a `matPrefix` renders inside
 // `.mat-mdc-form-field-text-prefix` / `.mat-mdc-form-field-icon-prefix`.
 .bofa-currency-input {
-  .mat-mdc-input-element {
+  // `input.mat-mdc-input-element` (a 2-class + element selector) is needed because
+  // Material resets the font with `.mat-mdc-form-field-input-control.mat-mdc-form-field-input-control
+  // { font: inherit }` (a deliberately doubled 2-class rule), and `font` is a
+  // shorthand that clears `font-variant-numeric`. The extra element bumps
+  // specificity above that so the tabular numerals survive.
+  input.mat-mdc-input-element {
     text-align: right;
     font-variant-numeric: tabular-nums;
   }
@@ -346,29 +377,21 @@
   }
 }
 
-// OV-17 — Tightened for density.
-//
-// STOP-AND-ASK (unmapped): the intent comment states only "tightened for density"
-// and does not record the target dimensions. The v14 mechanism — padding on
-// `.mat-form-field-infix` plus a `border-top-width` used to reserve label space —
-// does not exist in MDC: MDC form fields use a fixed container height driven by the
-// theme `density` token, not infix border padding. There is no way to derive which
-// MDC density scale (or container-height override) reproduces the intended compact
-// field from `0.4em / 0.6em` without knowing the target height. Per the playbook
-// this is a design-system-owner decision, not a guess, so the override is left
-// intact (below) and reported as an open question rather than mapped.
+// OV-17 — Compact density: the field must be materially shorter than the default.
+// MDC: the infix element survives as `.mat-mdc-form-field-infix`, and it is still
+// the height-bearing box (MDC's own density is token-driven, but the infix's own
+// vertical padding still compresses the field). v14 left the target dimensions
+// unrecorded, which is why this override could not be mapped from the comment
+// alone; the computed-style contract (OV-17) now *records* the intent as
+// `padding-top/bottom: 6.4px` (0.4em at the 16px root), so the compact padding is
+// applied to the MDC infix to satisfy that recorded contract. The v14
+// `border-top-width` reserved label space in the old label mechanism and has no
+// MDC equivalent (the floating label no longer overlaps the infix border), so it
+// is dropped rather than mechanically ported.
 .bofa-form-field.bofa-density-compact {
-  .mat-form-field-infix {
-    padding: 0.4em 0;
-    border-top-width: 0.6em;
-  }
-
-  .mat-form-field-flex {
-    padding-top: 0.4em;
-  }
-
-  .mat-form-field-wrapper {
-    padding-bottom: 1em;
+  .mat-mdc-form-field-infix {
+    padding-top: 6.4px;
+    padding-bottom: 6.4px;
   }
 }
 
