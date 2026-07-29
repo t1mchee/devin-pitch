@@ -273,11 +273,11 @@ Two conclusions the CI makes unarguable:
   (`ui-core-public-api.spec.ts` passes; `BofaResponsiveGridComponent` selector, `dense` input and
   content slots are unchanged). The responsive-grid *behaviour* is characterized by the e2e
   breakpoint assertions and the §3.2 geometry measurements.
-- **OV-17 — STOP AND ASK (unchanged from ph1):** still expresses "compact" through v14-only
-  box-model internals (`.mat-form-field-infix` padding / label-spacer border-top) that MDC does not
-  have; the target height cannot be recovered from the code, so the block is left inert rather than
-  guessed. **Open question for the design-system owner: which `mat.form-field-density` step
-  (−1/−2/…) is the intended compact height?** Not resolvable without a human decision.
+- **OV-17 — RESOLVED upstream (see §10).** Originally left as STOP-AND-ASK. The base branch
+  `run/ph1-cb4f31e3-material15` subsequently pinned the intent in the override contract (6.4px
+  top/bottom infix padding, the v14 `0.4em` at the 14px MDC body font) and reimplemented it by
+  releasing the MDC `min-height`/`height` floors so the padding takes effect. That resolution merged
+  in cleanly and its oracle probe passes; the density question no longer needs a human decision.
 
 ---
 
@@ -292,8 +292,9 @@ Two conclusions the CI makes unarguable:
   floor (hundreds–thousands of px) could hide behind an already-red suite. Mitigated here by the
   same-environment v15↔v16 diff; **recommended fix:** ship the `BoA Sans` font asset (or a metric
   match) into the e2e image so the baselines are satisfiable.
-- **`card-services` dead `fx*` attributes** compile and lint clean (they are just unknown
-  attributes), so no gate flags them; noted in §3.3.
+- **`card-services` dead `fx*` attributes** compiled and lint-clean (just unknown attributes), so
+  no gate flagged them — until the base branch added a consumer spec that imported
+  `FlexLayoutModule`. They are now removed (see §10); noted originally in §3.3.
 
 ---
 
@@ -310,4 +311,80 @@ Two conclusions the CI makes unarguable:
   met against the actual contract, not merely "looks the same".
 - **Other (text-heavy) baselines:** fail on the pre-existing font substitution — identically on the
   base branch (§6 CI table) — **not** a Phase-2 regression and not worked around by re-baselining.
-- **Stopped / needs a human:** OV-17 density target (§7).
+- **Stopped / needs a human:** none outstanding. OV-17 (the only carried-forward open question) was
+  resolved by the base branch and reconciled here (§7, §10).
+
+---
+
+## 10. Merge reconciliation with the updated base branch
+
+After this PR opened, `run/ph1-cb4f31e3-material15` advanced with a new **computed-style override
+oracle** (`apps/retail-banking-e2e/src/e2e/override-contract.cy.ts` +
+`src/support/override-probes.ts`) that asserts each `OV-nn` intent as a *computed style* rather than
+a pixel snapshot — a font-independent gate that runs alongside the image suite. Merging that base
+work into this branch produced three conflicts, resolved as follows. **No baseline was regenerated;
+no check was weakened.**
+
+### 10.1 `_overrides.scss` — OV-09 (slide-toggle), combined resolution
+
+The two branches fixed OV-09 differently and both are needed under v16:
+
+- **This branch (v16 colour):** the *visible* selected thumb is painted by
+  `--mdc-switch-selected-*-handle-color`; a `background-color` on `.mdc-switch__handle::after` no
+  longer wins the rendered knob, so the token is set green for every selected interaction state.
+- **Base branch (oracle-measurable colour + geometry):** sets `background-color` on the
+  `.mdc-switch__handle` element itself (the oracle reads a computed style off the handle, which
+  cannot see an `::after`), plus MDC geometry tokens (`--mdc-switch-track-*` / `--mdc-switch-handle-*`).
+
+Resolution keeps **both**: base's handle-background rule and geometry tokens *and* this branch's
+selected-handle colour tokens, under base's stronger `.bofa-slide-toggle.mat-mdc-slide-toggle`
+selector. Verified: `OV-09` and `OV-09b` (green thumb, `rgb(11,122,59)`) both pass the oracle, and
+the thumb renders green in the browser.
+
+### 10.2 `_overrides.scss` — OV-01 (disabled field label), new v16 fix
+
+The oracle's `OV-01` probe (disabled floating label must be slate `rgb(93,102,115)`, not Material's
+`rgba(0,0,0,0.38)`) **failed under v16** even though it passed on the v15 base. CDP inspection of the
+rendered MDC DOM showed why: a disabled field *floats* its label, and Material paints the floated
+disabled label with
+`color: var(--mdc-filled-text-field-disabled-label-text-color)` on
+`.mdc-text-field--filled.mdc-text-field--disabled .mdc-floating-label--float-above` — a selector that
+**ties the plain override on specificity (3 classes each) and wins on source order.** Fix (same
+token strategy as OV-09): set `--mdc-filled-text-field-disabled-label-text-color: $boa-slate-600` on
+`.bofa-form-field`, so the computed colour resolves to slate regardless of which rule wins. The
+direct `color` rule is kept for the resting (non-floated) label. Verified: computed label colour =
+`rgb(93, 102, 115)`; `OV-01` passes.
+
+### 10.3 OV-17 — resolved upstream, accepted
+
+Base's OV-17 rework (compact density via 6.4px infix padding + released MDC height floors) merged in
+cleanly and its oracle probe passes. The ph1/Phase-2 STOP-AND-ASK is therefore closed (§7).
+
+### 10.4 `package.json` / `package-lock.json`
+
+Conflict was over `cypress` (base pinned exactly `10.11.0` to match the oracle Docker image;
+this branch's nx-16 migration had bumped it to `^13`) and the eslint toolchain. Resolution keeps
+**base's `cypress: 10.11.0`** (the deterministic-oracle pin is deliberate and must not drift) and
+**this branch's `eslint 8.46.0` / `@typescript-eslint 5.62.0`** (required by `angular-eslint` 16).
+`package-lock.json` was regenerated with `npm install --legacy-peer-deps` on Node 18.20.8 and is
+internally consistent (cypress resolves to 10.11.0).
+
+### 10.5 `card-services` — flex-layout removed from the new consumer spec
+
+Base added `apps/card-services/src/app/cards/cards.component.spec.ts` (a downstream-consumer check)
+that imported `FlexLayoutModule` — a module this phase removes workspace-wide, so the merged spec
+failed to compile. The import was dropped and the template's dead `fx*` attributes (never active:
+`card-services` never imported `FlexLayoutModule` in production, so they rendered as plain block
+divs) were removed. Rendering is unchanged; the never-active *intended* layout was deliberately
+**not** invented in CSS (that would be a behaviour change). The consumer spec's three assertions
+(shared table rows, wrapped select/currency-input, analytics boundary) pass.
+
+### 10.6 Post-merge gates
+
+- `nx run-many --target=build --all` → **6/6 pass**
+- `nx run-many --target=test --all` → **6/6 pass** (incl. base's new `card-services` consumer spec)
+- `nx run-many --target=lint --all` → **7/7 pass** (3 deliberate `any` warnings in
+  `analytics-sdk-shim`, unchanged)
+- `npm run visual` → **override-contract oracle 22/22 pass** (font-independent, incl. OV-01, OV-09b);
+  the image `design-system` snapshots still fail on the container font substitution (§6) — the same
+  pre-existing condition, not touched.
