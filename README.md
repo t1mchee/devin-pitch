@@ -62,7 +62,7 @@ responsive breakpoints, and the customer-facing `/accounts` dashboard. Overlays 
 opening them, not by rendering look-alike markup — a hand-authored copy of Material's DOM keeps
 matching after MDC changes the real one, which makes it a decoration rather than a test.
 
-And **22 computed-style probes** (`override-contract.cy.ts`), one per intent in
+And **23 computed-style probes** (`override-contract.cy.ts`), one per intent in
 `_overrides.scss`, asserting the value the override exists to control on the running app. A
 screenshot proves the surface still looks right; the probe proves the rule is still the thing
 making it look right. Those come apart when a migration rewrites a selector onto something that

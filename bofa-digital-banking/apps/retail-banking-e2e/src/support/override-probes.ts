@@ -34,6 +34,8 @@ export interface OverrideProbe {
   open?: 'select' | 'datepicker' | 'autocomplete' | 'dialog';
   /** Optional interaction before probing. */
   act?: 'focus-keyboard';
+  /** Optional key to press once the overlay is open. */
+  keyboard?: 'arrow-down';
   /** Element carrying the styled property today. */
   target: string;
   /** Computed properties and the values the intent requires. */
@@ -132,10 +134,33 @@ export const OVERRIDE_PROBES: OverrideProbe[] = [
     // MDC: MatSort DOM is unchanged; `.mat-sort-header-arrow` still applies.
   },
   {
+    ov: 'OV-07',
+    intent: 'Active option in the account picker is tinted brand red, not Material grey',
+    component: 'select',
+    open: 'select',
+    // Deliberately the *active, not selected* option. Two traps here, both found
+    // by measuring rather than reasoning: the theme's primary palette is brand
+    // red, so an assertion on the selected option holds with our rule deleted
+    // (see OV-08); and Material's `.mat-option.mat-selected:not(...):not(...)`
+    // rule outranks the active tint, so the selected option reports
+    // rgba(0, 0, 0, 0.12) whatever we write. On a merely-active option the
+    // Material default is rgba(0, 0, 0, 0.04) — so this value is ours.
+    // MDC: active option is `.mat-mdc-option.mat-mdc-option-active`; selected is
+    // `.mdc-list-item--selected` (see OV-07 in _overrides.scss).
+    keyboard: 'arrow-down',
+    target: '.bofa-select-panel .mat-mdc-option.mat-mdc-option-active:not(.mdc-list-item--selected)',
+    expect: { 'background-color': 'rgba(200, 16, 46, 0.08)' },
+  },
+  {
     ov: 'OV-08',
     intent: 'Selected option is brand red, not accent navy (navy reads as a link here)',
     component: 'select',
     open: 'select',
+    // KNOWN WEAK: passes with the rule deleted, because the theme's primary is
+    // brand red and Material paints the selected option with primary. Kept as a
+    // regression tripwire on the *rendered* colour, not as proof the rule works.
+    // OV-07 above is the load-bearing assertion for this overlay.
+    // MDC: selected option is `.mat-mdc-option.mdc-list-item--selected`.
     target: '.bofa-select-panel .mat-mdc-option.mdc-list-item--selected',
     expect: { color: RED_600 },
   },
@@ -165,15 +190,17 @@ export const OVERRIDE_PROBES: OverrideProbe[] = [
     ov: 'OV-10',
     intent: 'Section ink bar is legible on a 4K branch display',
     component: 'tabs',
-    // MDC-migration OPEN QUESTION (design-system owner): the v14 ink bar was a 2px
-    // solid element (a `height` + `background-color`). MDC draws the active-tab
-    // indicator as a `border-top` on `.mdc-tab-indicator__content--underline`. The
-    // 3px brand-red bar is preserved via `border-top-width: 3px` + `border-color`
-    // (see OV-10 in _overrides.scss), so the intent is intact, but the underline
-    // element itself computes `height: 0` and a transparent `background-color`.
-    // Satisfying this probe would mean re-drawing the bar as a filled box (fighting
-    // MDC's mechanism) or measuring `border-top-*` instead of `height`/
-    // `background-color` — an `expect` change that needs the owner.
+    // MDC-migration OPEN QUESTION (design-system owner): the base notes `height` is
+    // the load-bearing half here (the bar is brand red under the theme regardless,
+    // but Material's own bar is 2px vs our 3px). The v14 ink bar was a solid element
+    // with a real `height`; MDC draws the active-tab indicator as a `border-top` on
+    // `.mdc-tab-indicator__content--underline`. The 3px brand-red bar is preserved
+    // via `border-top-width: 3px` + `border-color` (see OV-10 in _overrides.scss),
+    // so the visible thickness is intact, but the underline element computes
+    // `height: 0` and a transparent `background-color`. Satisfying this probe would
+    // mean re-drawing the bar as a filled box (fighting MDC's mechanism) or
+    // measuring `border-top-width` instead of `height` — an `expect` change that
+    // needs the owner.
     target: '.bofa-tabs:not(.bofa-legacy-shell) .mdc-tab-indicator__content--underline',
     expect: { height: '3px', 'background-color': RED_600 },
   },
@@ -206,6 +233,8 @@ export const OVERRIDE_PROBES: OverrideProbe[] = [
     component: 'datepicker',
     open: 'datepicker',
     target: '.mat-calendar-body-selected',
+    // KNOWN WEAK, same reason as OV-08: primary is brand red, so Material fills
+    // the selected day red on its own. OV-13b carries the part that is ours.
     expect: { 'background-color': RED_600, color: 'rgb(255, 255, 255)' },
   },
   {

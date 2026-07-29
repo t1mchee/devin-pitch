@@ -9,7 +9,7 @@ diff. Its closing line was that the cheapest fix is *a computed-style assertion 
 custom override, captured before the migration and re-asserted after*.
 
 So we built it — `apps/retail-banking-e2e/src/e2e/override-contract.cy.ts`, driven by
-`src/support/override-probes.ts`: 22 probes, one per intent in `_overrides.scss`, each
+`src/support/override-probes.ts`: 23 probes, one per intent in `_overrides.scss`, each
 asserting the computed value of the property the override exists to control, on the
 running app, in the pinned container.
 
@@ -68,7 +68,28 @@ migration diff is "does `.mat-mdc-x` look like the right rename?" — a guess. W
 contract, the rename is *checked*: if the new selector does not carry the value the intent
 requires, the build is red regardless of how plausible the rename looked.
 
-**Limits, stated.** The contract asserts 22 properties across 18 overrides; it is not a
+## How many of the assertions actually constrain our CSS? 21 of 23.
+
+A gate that passes whether or not the code is there is decoration, so every probe was
+tested by deleting the rule it claims to protect and re-running. `OV-05d` (zebra striping)
+is the positive control: delete the rule, the probe fails, so the method works.
+
+Three assertions did **not** fail when their rule was deleted, all for the same reason:
+`bofa-theme.scss` builds Material's **primary** palette from `$boa-red-600`, so Material
+paints these brand red on its own.
+
+| Probe | Why it was weak | What was done |
+|---|---|---|
+| OV-07 active option tint | The original probe measured the *selected* option, which reports `rgba(0, 0, 0, 0.12)` from Material's own selected rule regardless of the override — it was not weak, it was **wrong**, and it caught a fourth ineffective rule. | Re-pointed at the *active, not selected* option, where the Material default is `rgba(0, 0, 0, 0.04)`. Now fails when deleted. |
+| OV-08 selected option colour | Primary is red, so the option is red without us. | Kept, marked `KNOWN WEAK` in the probe file. It is a tripwire on the rendered colour, not proof the rule works; OV-07 is the load-bearing assertion for that overlay. |
+| OV-13 selected calendar day | Same: primary fills the selected day. The "today is outlined in navy" half of OV-13 *is* ours, but the showcase renders a fixed month so that today never appears — it cannot be asserted deterministically. | Kept, marked `KNOWN WEAK`. Honest gap. |
+| OV-10 ink bar | `background-color` is vacuous for the same reason; **`height: 3px` is not** — Material's bar is 2px. | Kept as-is; the colour half is documented as vacuous, the height half has teeth. |
+
+So the number to quote in the room is **21 of 23 assertions constrain our own CSS**, not 23.
+This was found by hostile testing of the gate, not by writing it, which is the general point:
+a gate nobody has tried to defeat is an assumption.
+
+**Limits, stated.** The contract asserts 23 properties across 18 overrides; it is not a
 complete description of the design system. It runs at one viewport, in the light theme, on
 the pinned renderer. It cannot tell you an intent is *wrong* — only that the code no longer
 delivers the value someone wrote down. And its expectations were captured from the running

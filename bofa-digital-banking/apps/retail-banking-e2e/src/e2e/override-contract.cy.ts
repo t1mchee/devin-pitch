@@ -39,6 +39,12 @@ function openOverlay(probe: OverrideProbe): void {
     default:
       break;
   }
+
+  if (probe.keyboard === 'arrow-down') {
+    // Moves the active option off the selected one: Material's selected-option
+    // rule outranks the active tint, so the two must be measured separately.
+    cy.focused().type('{downarrow}');
+  }
 }
 
 function act(probe: OverrideProbe): void {
