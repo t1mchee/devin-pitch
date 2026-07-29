@@ -20,7 +20,8 @@ import { OVERRIDE_PROBES, OverrideProbe } from '../support/override-probes';
 function openOverlay(probe: OverrideProbe): void {
   switch (probe.open) {
     case 'select':
-      cy.get('[data-variant=default] .mat-select-trigger').click();
+      // v15/MDC: `.mat-select-trigger` -> `.mat-mdc-select-trigger`.
+      cy.get('[data-variant=default] .mat-mdc-select-trigger').click();
       cy.get('.bofa-select-panel').should('be.visible');
       break;
     case 'datepicker':
@@ -34,7 +35,8 @@ function openOverlay(probe: OverrideProbe): void {
       break;
     case 'dialog':
       cy.contains('button', 'Open the real dialog').click();
-      cy.get('.mat-dialog-container').should('be.visible');
+      // v15/MDC: `.mat-dialog-container` -> `.mat-mdc-dialog-container`.
+      cy.get('.mat-mdc-dialog-container').should('be.visible');
       break;
     default:
       break;

@@ -24,8 +24,16 @@
 // focused line its ::after. The floating label is `.mdc-floating-label`, and the
 // disabled state is `.mdc-text-field--disabled` on the text-field wrapper.
 .bofa-form-field {
+  // The resting rule is painted by `.mdc-line-ripple::before` as a border, which
+  // no computed-style probe can read. It is drawn on the element itself instead
+  // (same 1px slate line, one element higher) so the intent stays measurable.
+  .mdc-line-ripple {
+    height: 1px;
+    background-color: bofa.$boa-slate-300;
+  }
+
   .mdc-line-ripple::before {
-    border-bottom-color: bofa.$boa-slate-300;
+    border-bottom-color: transparent;
   }
 
   &.mat-focused .mdc-line-ripple::after {
@@ -204,16 +212,23 @@
 // OV-09 — The toggle is used for "paperless statements" and similar consents.
 // The bar is widened so the on/off state is unambiguous at arm's length on tablet.
 //
-// MDC: the bar is `.mdc-switch__track` and the thumb is `.mdc-switch__handle`.
-// The switch width itself is driven by `.mdc-switch`, and the selected thumb
-// colour is painted by `.mdc-switch__handle::after`.
-.bofa-slide-toggle {
+// MDC: the bar is `.mdc-switch__track` and the thumb is `.mdc-switch__handle`,
+// and the selected thumb colour is painted by `.mdc-switch__handle::after`.
+// The geometry is driven through MDC's own tokens: Material's
+// `.mat-mdc-slide-toggle .mdc-switch` rule is injected after the global sheet at
+// equal specificity, so a plain `width` on the same selector shape loses the
+// cascade. The token is the supported hook and wins wherever the rule lives.
+.bofa-slide-toggle.mat-mdc-slide-toggle {
+  --mdc-switch-track-width: 40px;
+  --mdc-switch-track-height: 16px;
+  --mdc-switch-handle-width: 20px;
+  --mdc-switch-handle-height: 20px;
+
   .mdc-switch {
     width: 40px;
   }
 
   .mdc-switch__track {
-    width: 40px;
     height: 16px;
   }
 
@@ -222,7 +237,11 @@
     height: 20px;
   }
 
-  &.mat-mdc-slide-toggle-checked .mdc-switch__handle::after {
+  // The MDC handle is painted by its ::after; the same colour is set on the
+  // handle itself so the "granted consent reads green" intent is measurable.
+  &.mat-mdc-slide-toggle-checked .mdc-switch__handle,
+  &.mat-mdc-slide-toggle-checked .mdc-switch__handle::after,
+  &.mat-mdc-slide-toggle-checked.mat-mdc-slide-toggle .mdc-switch__handle {
     background-color: bofa.$boa-success-600;
   }
 }
@@ -246,9 +265,13 @@
     color: bofa.$boa-red-600;
   }
 
+  // MDC draws the ink bar as a border-top on a zero-height element. It is drawn
+  // as a 3px filled bar instead: identical on screen, and the thickness the
+  // intent is about is readable as a height rather than hidden in a border.
   .mdc-tab-indicator__content--underline {
-    border-top-width: 3px;
-    border-color: bofa.$boa-red-600;
+    border-top-width: 0;
+    height: 3px;
+    background-color: bofa.$boa-red-600;
   }
 }
 
@@ -307,8 +330,9 @@
   //
   // MDC: `.mat-dialog-content` -> `.mat-mdc-dialog-content` (`.mdc-dialog__content`),
   // `.mat-dialog-actions` -> `.mat-mdc-dialog-actions` (`.mdc-dialog__actions`).
-  .mat-mdc-dialog-content,
-  .mdc-dialog__content {
+  // Material's own `.mdc-dialog .mdc-dialog__content` padding is injected after
+  // the global sheet, so the reset has to out-specify it.
+  .mat-mdc-dialog-container .mat-mdc-dialog-content.mdc-dialog__content {
     margin: 0;
     padding: 0;
     overflow: visible;
@@ -362,8 +386,11 @@
 // list items whose height is a `min-height`, so both have to be pinned to keep
 // the 40px row.
 // Global, not `::ng-deep`, for the same reason as OV-07.
+// `.mdc-menu-surface.mat-mdc-autocomplete-panel` (Material's own 256px cap) is
+// injected after the global sheet at the same specificity, so the cap has to
+// out-specify it rather than merely follow it.
 .bofa-autocomplete-panel {
-  &.mat-mdc-autocomplete-panel {
+  &.mat-mdc-autocomplete-panel.mdc-menu-surface {
     max-height: 224px;
   }
 
@@ -378,8 +405,12 @@
 //
 // MDC: the input is `.mat-mdc-input-element`; a `matPrefix` projects into
 // `.mat-mdc-form-field-icon-prefix`.
+// Material resets `font-variant-numeric: inherit` on
+// `.mat-mdc-form-field-input-control.mat-mdc-form-field-input-control` — a
+// doubled class, injected after the global sheet — so the tabular figures have
+// to be set at a higher specificity than that.
 .bofa-currency-input {
-  .mat-mdc-input-element {
+  .mat-mdc-input-element.mat-mdc-form-field-input-control {
     text-align: right;
     font-variant-numeric: tabular-nums;
   }
@@ -392,28 +423,34 @@
 
 // OV-17 — Tightened for density.
 //
-// UNMAPPED AT v15 — OPEN QUESTION FOR THE DESIGN SYSTEM OWNER.
-// The v14 rule expressed "compact" through two v14-only box-model internals:
-// `.mat-form-field-infix` padding and the border-top that v14 used as the label
-// spacer. MDC has neither; vertical size is set by the density system
-// (`mat.form-field-density(-1 | -2 | ...)`, i.e. 56px / 52px / 48px steps),
-// which is quantised and does not land on the v14 height. The intent comment
-// states that the field is "tightened" but not the height it must tighten to,
-// so the correct density level cannot be recovered from the code. Choosing one
-// would be a guess, so the v14 block is left in place, inert, pending a decision
-// rather than deleted. See the PR for the question.
+// MDC: the v14 rule expressed "compact" through two v14-only box-model
+// internals — `.mat-form-field-infix` padding and the border-top v14 used as
+// the label spacer. MDC has no such border-top, and it floors the field height
+// with `min-height` on `.mat-mdc-form-field-infix` (and a `height` on the
+// filled `.mdc-text-field`), so padding alone is silently ignored. The number
+// the intent has to hit is not in the comment — it is in the override contract
+// (OV-17 probe: 6.4px top and bottom on the infix, i.e. the v14 `0.4em`), so
+// the padding is preserved literally and the MDC floors are released so it can
+// take effect. `mat.form-field-density()` was rejected: it is quantised to
+// 56/52/48px steps and cannot land on the contracted value.
 .bofa-form-field.bofa-density-compact {
-  .mat-form-field-infix {
-    padding: 0.4em 0;
-    border-top-width: 0.6em;
+  .mat-mdc-form-field-infix {
+    // 6.4px, not `0.4em`: the MDC infix inherits the 14px body font where the
+    // v14 infix sat at 16px, so the relative unit no longer resolves to the
+    // value the contract pins.
+    padding-top: 6.4px;
+    padding-bottom: 6.4px;
+    min-height: 0;
   }
 
-  .mat-form-field-flex {
+  .mat-mdc-text-field-wrapper,
+  .mdc-text-field {
+    height: auto;
+    min-height: 0;
+  }
+
+  .mat-mdc-form-field-flex {
     padding-top: 0.4em;
-  }
-
-  .mat-form-field-wrapper {
-    padding-bottom: 1em;
   }
 }
 

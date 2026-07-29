@@ -54,28 +54,35 @@ export const OVERRIDE_PROBES: OverrideProbe[] = [
     ov: 'OV-01',
     intent: 'Disabled field label stays legible (WCAG AA) against the slate palette',
     component: 'form-field',
-    target: '[data-variant=disabled] .mat-form-field-label',
+    // v15/MDC: the label is `.mdc-floating-label`; disabled is a modifier on the
+    // text-field wrapper.
+    target: '[data-variant=disabled] .mdc-text-field--disabled .mdc-floating-label',
     expect: { color: SLATE_600 },
   },
   {
     ov: 'OV-01b',
     intent: 'Field underline uses the BoA slate rule, not the Material default',
     component: 'form-field',
-    target: '[data-variant=default] .mat-form-field-underline',
+    // v15/MDC: the underline pair collapses into `.mdc-line-ripple`; the resting
+    // rule is painted by its ::before, which a computed-style probe cannot read,
+    // so the slate rule is carried on the element itself.
+    target: '[data-variant=default] .mdc-line-ripple',
     expect: { 'background-color': SLATE_300 },
   },
   {
     ov: 'OV-02',
     intent: 'Error text sits on a 20px line box so field height never jumps on validation',
     component: 'form-field',
-    target: '[data-variant=error] .mat-form-field-subscript-wrapper',
+    target: '[data-variant=error] .mat-mdc-form-field-subscript-wrapper',
     expect: { 'line-height': '20px', 'min-height': '20px', 'margin-top': '6px' },
   },
   {
     ov: 'OV-03',
     intent: 'Primary button is brand red with 8px optical icon/label spacing',
     component: 'button',
-    target: '[data-variant=default] .mat-button-wrapper',
+    // v15/MDC: `.mat-button-wrapper` is gone — the button root is the flex
+    // container that spaces the icon and `.mdc-button__label`.
+    target: '[data-variant=default] button.bofa-button',
     expect: { gap: '8px', 'letter-spacing': '0.28px', display: 'inline-flex' },
   },
   {
@@ -83,35 +90,37 @@ export const OVERRIDE_PROBES: OverrideProbe[] = [
     intent: 'Keyboard focus ring is visible on white and on slate-50',
     component: 'button',
     act: 'focus-keyboard',
-    target: '[data-variant=default] button.cdk-keyboard-focused .mat-button-focus-overlay',
+    // v15/MDC: `.mat-button-focus-overlay` is replaced by the persistent ripple;
+    // the outline the intent is about is on the button itself.
+    target: '[data-variant=default] button.bofa-button.cdk-keyboard-focused',
     expect: { 'outline-color': BLUE_500, 'outline-width': '2px', 'outline-style': 'solid' },
   },
   {
     ov: 'OV-05',
     intent: 'Statement rows keep fixed heights so 50 rows paginate predictably in print',
     component: 'table',
-    target: '.bofa-table .mat-row',
+    target: '.bofa-table .mat-mdc-row',
     expect: { height: '40px' },
   },
   {
     ov: 'OV-05b',
     intent: 'Currency figures use tabular numerals and right-align on the decimal',
     component: 'table',
-    target: '.bofa-table .mat-cell.bofa-cell--numeric',
+    target: '.bofa-table .mat-mdc-cell.bofa-cell--numeric',
     expect: { 'font-variant-numeric': 'tabular-nums', 'text-align': 'right' },
   },
   {
     ov: 'OV-05c',
     intent: 'Header cells carry the slate-900 brand weight, not the Material grey',
     component: 'table',
-    target: '.bofa-table .mat-header-cell',
+    target: '.bofa-table .mat-mdc-header-cell',
     expect: { color: SLATE_900, 'font-weight': '600' },
   },
   {
     ov: 'OV-05d',
     intent: 'Zebra striping on even rows for statement scanability',
     component: 'table',
-    target: '.bofa-table .mat-row:nth-child(even)',
+    target: '.bofa-table .mat-mdc-row:nth-child(even)',
     expect: { 'background-color': SLATE_50 },
   },
   {
@@ -126,35 +135,40 @@ export const OVERRIDE_PROBES: OverrideProbe[] = [
     intent: 'Selected option is brand red, not accent navy (navy reads as a link here)',
     component: 'select',
     open: 'select',
-    target: '.bofa-select-panel .mat-option.mat-selected',
+    // v15/MDC: options are list items; selection is `.mdc-list-item--selected`
+    // and the colour lands on the text span.
+    target: '.bofa-select-panel .mat-mdc-option.mdc-list-item--selected .mdc-list-item__primary-text',
     expect: { color: RED_600 },
   },
   {
     ov: 'OV-09',
     intent: 'Consent toggle is unambiguous at arm’s length on a tablet',
     component: 'slide-toggle',
-    target: '[data-variant=default] .mat-slide-toggle-bar',
+    // v15/MDC: the bar is `.mdc-switch__track`, the thumb `.mdc-switch__handle`.
+    target: '[data-variant=default] .mdc-switch__track',
     expect: { width: '40px', height: '16px' },
   },
   {
     ov: 'OV-09b',
     intent: 'A granted consent reads green, not brand red',
     component: 'slide-toggle',
-    target: '[data-variant=default] .mat-checked .mat-slide-toggle-thumb',
+    target: '[data-variant=default] .mat-mdc-slide-toggle-checked .mdc-switch__handle',
     expect: { 'background-color': SUCCESS_600 },
   },
   {
     ov: 'OV-10',
     intent: 'Section ink bar is legible on a 4K branch display',
     component: 'tabs',
-    target: '.bofa-tabs:not(.bofa-legacy-shell) .mat-ink-bar',
+    // v15/MDC: the ink bar is the underline indicator content, whose thickness is
+    // a border-top width.
+    target: '.bofa-tabs:not(.bofa-legacy-shell) .mdc-tab-indicator__content--underline',
     expect: { height: '3px', 'background-color': RED_600 },
   },
   {
     ov: 'OV-11',
     intent: 'Category chips keep a 28px rhythm inside the filter drawer',
     component: 'chips',
-    target: '[data-variant=default] .mat-chip.mat-standard-chip',
+    target: '[data-variant=default] .mat-mdc-chip.mat-mdc-standard-chip',
     expect: { height: '28px', 'border-radius': '14px', 'background-color': SLATE_100 },
   },
   {
@@ -162,7 +176,9 @@ export const OVERRIDE_PROBES: OverrideProbe[] = [
     intent: 'Step-up dialog matches the mobile MFA modal: tight padding, squared corners',
     component: 'dialog',
     open: 'dialog',
-    target: '.mat-dialog-container',
+    // v15/MDC: the painted surface (radius, elevation, padding) is
+    // `.mdc-dialog__surface` inside the container.
+    target: '.mat-mdc-dialog-container .mdc-dialog__surface',
     expect: { padding: '20px 24px', 'border-radius': '4px' },
   },
   {
@@ -170,7 +186,7 @@ export const OVERRIDE_PROBES: OverrideProbe[] = [
     intent: 'A short confirmation body never acquires an inner scrollbar',
     component: 'dialog',
     open: 'dialog',
-    target: '.mat-dialog-container .mat-dialog-content',
+    target: '.mat-mdc-dialog-container .mat-mdc-dialog-content',
     expect: { overflow: 'visible', margin: '0px', padding: '0px' },
   },
   {
@@ -185,7 +201,7 @@ export const OVERRIDE_PROBES: OverrideProbe[] = [
     ov: 'OV-14',
     intent: 'Range label stays on screen on a 1280px branch terminal',
     component: 'paginator',
-    target: '.bofa-paginator .mat-paginator-range-label',
+    target: '.bofa-paginator .mat-mdc-paginator-range-label',
     expect: { margin: '0px 16px', 'font-variant-numeric': 'tabular-nums' },
   },
   {
@@ -200,14 +216,14 @@ export const OVERRIDE_PROBES: OverrideProbe[] = [
     ov: 'OV-16',
     intent: 'Amount entry right-aligns on tabular numerals',
     component: 'currency-input',
-    target: '[data-variant=default] .mat-input-element',
+    target: '[data-variant=default] .mat-mdc-input-element',
     expect: { 'text-align': 'right', 'font-variant-numeric': 'tabular-nums' },
   },
   {
     ov: 'OV-17',
     intent: 'Compact density is materially shorter than the default field',
     component: 'form-field',
-    target: '[data-variant=compact] .mat-form-field-infix',
+    target: '[data-variant=compact] .mat-mdc-form-field-infix',
     expect: { 'padding-top': '6.4px', 'padding-bottom': '6.4px' },
   },
 ];
