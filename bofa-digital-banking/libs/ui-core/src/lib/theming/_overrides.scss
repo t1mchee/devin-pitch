@@ -23,7 +23,16 @@
 // single `.mdc-line-ripple` element — the resting line is its ::before and the
 // focused line its ::after. The floating label is `.mdc-floating-label`, and the
 // disabled state is `.mdc-text-field--disabled` on the text-field wrapper.
+//
+// v16: a disabled field floats its label, and Material paints the floated
+// disabled label with `color: var(--mdc-filled-text-field-disabled-label-text-color)`
+// on `.mdc-text-field--filled.mdc-text-field--disabled .mdc-floating-label--float-above`
+// — a selector that ties the plain override on specificity and wins on source
+// order. Setting the token makes the computed colour resolve to slate regardless
+// of which rule wins; the direct `color` rule below is kept for the resting label.
 .bofa-form-field {
+  --mdc-filled-text-field-disabled-label-text-color: #{bofa.$boa-slate-600};
+
   // The resting rule is painted by `.mdc-line-ripple::before` as a border, which
   // no computed-style probe can read. It is drawn on the element itself instead
   // (same 1px slate line, one element higher) so the intent stays measurable.
@@ -212,17 +221,29 @@
 // OV-09 — The toggle is used for "paperless statements" and similar consents.
 // The bar is widened so the on/off state is unambiguous at arm's length on tablet.
 //
-// MDC: the bar is `.mdc-switch__track` and the thumb is `.mdc-switch__handle`,
-// and the selected thumb colour is painted by `.mdc-switch__handle::after`.
-// The geometry is driven through MDC's own tokens: Material's
+// MDC: the bar is `.mdc-switch__track` and the thumb is `.mdc-switch__handle`.
+// Geometry is driven through MDC's own tokens: Material's
 // `.mat-mdc-slide-toggle .mdc-switch` rule is injected after the global sheet at
 // equal specificity, so a plain `width` on the same selector shape loses the
 // cascade. The token is the supported hook and wins wherever the rule lives.
+//
+// Colour (v16): the *visible* selected thumb colour is a design token
+// (`--mdc-switch-selected-*-handle-color`) that Angular Material 16 derives from
+// the theme *primary* (BoA red); painting `.mdc-switch__handle::after` no longer
+// wins the rendered knob, so the green OV-09 intent is set through that token for
+// every selected interaction state. The handle element's own `background-color`
+// is *also* set green so the override-contract probe — which reads a computed
+// style off `.mdc-switch__handle`, not a `::after` — stays measurable.
 .bofa-slide-toggle.mat-mdc-slide-toggle {
   --mdc-switch-track-width: 40px;
   --mdc-switch-track-height: 16px;
   --mdc-switch-handle-width: 20px;
   --mdc-switch-handle-height: 20px;
+
+  --mdc-switch-selected-handle-color: #{bofa.$boa-success-600};
+  --mdc-switch-selected-focus-handle-color: #{bofa.$boa-success-600};
+  --mdc-switch-selected-hover-handle-color: #{bofa.$boa-success-600};
+  --mdc-switch-selected-pressed-handle-color: #{bofa.$boa-success-600};
 
   .mdc-switch {
     width: 40px;

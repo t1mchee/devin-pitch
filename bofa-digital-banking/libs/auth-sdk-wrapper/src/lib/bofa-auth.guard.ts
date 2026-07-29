@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -15,7 +15,7 @@ import { BofaAuthService } from './bofa-auth.service';
  * cold navigation is never denied because the SDK has not answered yet.
  */
 @Injectable({ providedIn: 'root' })
-export class BofaAuthGuard implements CanActivate {
+export class BofaAuthGuard {
   constructor(private readonly auth: BofaAuthService, private readonly router: Router) {}
 
   canActivate(

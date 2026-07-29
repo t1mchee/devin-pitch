@@ -78,7 +78,7 @@
       }
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "options": {
         "lintFilePatterns": [
           "apps/retail-banking/**/*.ts",
@@ -87,7 +87,7 @@
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/retail-banking"],
       "options": {
         "jestConfig": "apps/retail-banking/jest.config.ts",

@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FlexLayoutModule } from '@angular/flex-layout';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AnalyticsSdkShimModule } from '@bofa/analytics-sdk-shim';
@@ -22,7 +21,7 @@ describe('CardsComponent (consumer of @bofa/ui-core)', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       declarations: [CardsComponent],
-      imports: [NoopAnimationsModule, UiCoreModule, FlexLayoutModule, AnalyticsSdkShimModule],
+      imports: [NoopAnimationsModule, UiCoreModule, AnalyticsSdkShimModule],
     }).compileComponents();
 
     fixture = TestBed.createComponent(CardsComponent);

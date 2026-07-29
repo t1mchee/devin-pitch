@@ -6,7 +6,7 @@ import { RouterModule } from '@angular/router';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 
-import { UiCoreModule, BofaDialogComponent } from '@bofa/ui-core';
+import { UiCoreModule } from '@bofa/ui-core';
 import { BofaAuthModule } from '@bofa/auth-sdk-wrapper';
 import { AnalyticsSdkShimModule } from '@bofa/analytics-sdk-shim';
 
@@ -50,8 +50,5 @@ const animationsDisabled =
     AnalyticsSdkShimModule,
   ],
   bootstrap: [AppComponent],
-  // Removed as a concept in Ivy but still accepted in 14; a v15+ upgrade
-  // should delete it rather than carry it forward.
-  entryComponents: [BofaDialogComponent],
 })
 export class AppModule {}

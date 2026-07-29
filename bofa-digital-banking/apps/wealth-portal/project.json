@@ -74,7 +74,7 @@
       }
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "options": {
         "lintFilePatterns": [
           "apps/wealth-portal/**/*.ts",
@@ -83,7 +83,7 @@
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/apps/wealth-portal"],
       "options": {
         "jestConfig": "apps/wealth-portal/jest.config.ts",

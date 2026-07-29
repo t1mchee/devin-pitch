@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { DomSanitizer } from '@angular/platform-browser';
 import { MatIconRegistry } from '@angular/material/icon';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { FlexLayoutModule } from '@angular/flex-layout';
 
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatButtonModule } from '@angular/material/button';
@@ -78,10 +77,9 @@ const MATERIAL = [
  * library rather than a change in every application.
  */
 @NgModule({
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, FlexLayoutModule, ...MATERIAL],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, ...MATERIAL],
   declarations: [...COMPONENTS],
   exports: [...COMPONENTS, ReactiveFormsModule],
-  entryComponents: [BofaDialogComponent],
 })
 export class UiCoreModule {
   constructor(registry: MatIconRegistry, sanitizer: DomSanitizer) {
