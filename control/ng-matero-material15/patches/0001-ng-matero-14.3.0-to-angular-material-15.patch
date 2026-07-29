@@ -1,0 +1,1564 @@
+diff --git a/angular.json b/angular.json
+index 1d3e0db..2a37533 100644
+--- a/angular.json
++++ b/angular.json
+@@ -147,5 +147,13 @@
+     "schematicCollections": [
+       "@angular-eslint/schematics"
+     ]
++  },
++  "schematics": {
++    "@angular-eslint/schematics:application": {
++      "setParserOptionsProject": true
++    },
++    "@angular-eslint/schematics:library": {
++      "setParserOptionsProject": true
++    }
+   }
+ }
+diff --git a/package.json b/package.json
+index 064f1dc..0a86fd9 100644
+--- a/package.json
++++ b/package.json
+@@ -25,26 +25,26 @@
+   },
+   "private": true,
+   "dependencies": {
+-    "@angular/animations": "~14.2.7",
+-    "@angular/cdk": "~14.2.5",
+-    "@angular/common": "~14.2.7",
+-    "@angular/compiler": "~14.2.7",
+-    "@angular/core": "~14.2.7",
+-    "@angular/flex-layout": "^14.0.0-beta.41",
+-    "@angular/forms": "~14.2.7",
+-    "@angular/localize": "~14.2.7",
+-    "@angular/material": "~14.2.5",
+-    "@angular/material-moment-adapter": "~14.2.5",
+-    "@angular/platform-browser": "~14.2.7",
+-    "@angular/platform-browser-dynamic": "~14.2.7",
+-    "@angular/router": "~14.2.7",
+-    "@ng-matero/extensions": "^14.4.1",
+-    "@ng-matero/extensions-moment-adapter": "^14.0.2",
++    "@angular/animations": "~15.2.10",
++    "@angular/cdk": "~15.2.9",
++    "@angular/common": "~15.2.10",
++    "@angular/compiler": "~15.2.10",
++    "@angular/core": "~15.2.10",
++    "@angular/flex-layout": "^15.0.0-beta.42",
++    "@angular/forms": "~15.2.10",
++    "@angular/localize": "~15.2.10",
++    "@angular/material": "~15.2.9",
++    "@angular/material-moment-adapter": "~15.2.9",
++    "@angular/platform-browser": "~15.2.10",
++    "@angular/platform-browser-dynamic": "~15.2.10",
++    "@angular/router": "~15.2.10",
++    "@ng-matero/extensions": "^15.6.5",
++    "@ng-matero/extensions-moment-adapter": "^15.0.1",
+     "@ngx-formly/core": "^6.0.1",
+     "@ngx-formly/material": "^6.0.1",
+     "@ngx-translate/core": "^14.0.0",
+     "@ngx-translate/http-loader": "^7.0.0",
+-    "angular-in-memory-web-api": "~0.14.0",
++    "angular-in-memory-web-api": "^0.15.0",
+     "apexcharts": "^3.36.0",
+     "moment": "^2.29.4",
+     "moment-timezone": "^0.5.38",
+@@ -58,27 +58,27 @@
+     "zone.js": "~0.11.8"
+   },
+   "devDependencies": {
+-    "@angular-devkit/build-angular": "~14.2.6",
+-    "@angular-eslint/builder": "^14.1.2",
+-    "@angular-eslint/eslint-plugin": "^14.1.2",
+-    "@angular-eslint/eslint-plugin-template": "^14.1.2",
+-    "@angular-eslint/schematics": "^14.1.2",
+-    "@angular-eslint/template-parser": "^14.1.2",
+-    "@angular/cli": "~14.2.6",
+-    "@angular/compiler-cli": "~14.2.7",
+-    "@angular/language-service": "~14.2.7",
++    "@angular-devkit/build-angular": "~15.2.11",
++    "@angular-eslint/builder": "^15.2.1",
++    "@angular-eslint/eslint-plugin": "^15.2.1",
++    "@angular-eslint/eslint-plugin-template": "^15.2.1",
++    "@angular-eslint/schematics": "^15.2.1",
++    "@angular-eslint/template-parser": "^15.2.1",
++    "@angular/cli": "~15.2.11",
++    "@angular/compiler-cli": "~15.2.10",
++    "@angular/language-service": "~15.2.10",
+     "@commitlint/cli": "^17.1.0",
+     "@commitlint/config-conventional": "^17.1.0",
+     "@types/jasmine": "~4.0.3",
+     "@types/jasminewd2": "~2.0.10",
+     "@types/node": "^18.0.0",
+     "@types/parse5": "^6.0.3",
+-    "@typescript-eslint/eslint-plugin": "^5.40.0",
+-    "@typescript-eslint/parser": "^5.40.0",
++    "@typescript-eslint/eslint-plugin": "^5.43.0",
++    "@typescript-eslint/parser": "^5.43.0",
+     "angular-cli-ghpages": "^1.0.3",
+     "chalk": "^5.1.2",
+     "cpr": "^3.0.1",
+-    "eslint": "^8.26.0",
++    "eslint": "^8.28.0",
+     "gulp": "^4.0.2",
+     "gulp-each": "^0.5.0",
+     "husky": "^8.0.1",
+diff --git a/schematics/ng-add/files/src/styles/_app-theme.scss b/schematics/ng-add/files/src/styles/_app-theme.scss
+index 99b73ba..39cd383 100644
+--- a/schematics/ng-add/files/src/styles/_app-theme.scss
++++ b/schematics/ng-add/files/src/styles/_app-theme.scss
+@@ -10,6 +10,15 @@
+ 
+ @use './custom/table-theme';
+ 
++// TODO(v15): As of v15 mat.legacy-core no longer includes default typography styles.
++//  The following line adds:
++//    1. Default typography styles for all components
++//    2. Styles for typography hierarchy classes (e.g. .mat-headline-1)
++//  If you specify typography styles for the components you use elsewhere, you should delete this line.
++//  If you don't need the default component typographies but still want the hierarchy styles,
++//  you can delete this line and instead use:
++//    `@include mat.legacy-typography-hierarchy(mat.define-typography-config());`
++@include mat.all-component-typographies();
+ @include mat.core();
+ 
+ // Styles for the app that are based on the current theme.
+diff --git a/src/app/formly-templates.ts b/src/app/formly-templates.ts
+index fe7d588..db6b2cf 100755
+--- a/src/app/formly-templates.ts
++++ b/src/app/formly-templates.ts
+@@ -1,6 +1,6 @@
+ import { ViewChild, ChangeDetectionStrategy, Component } from '@angular/core';
+ import { FieldType } from '@ngx-formly/material/form-field';
+-import { MtxSelectComponent } from '@ng-matero/extensions/select';
++import { MtxSelect } from '@ng-matero/extensions/select';
+ import { FieldTypeConfig } from '@ngx-formly/core';
+ 
+ /**
+@@ -24,7 +24,7 @@ import { FieldTypeConfig } from '@ngx-formly/core';
+   changeDetection: ChangeDetectionStrategy.OnPush,
+ })
+ export class FormlyFieldComboboxComponent extends FieldType<FieldTypeConfig> {
+-  @ViewChild('select', { static: true }) select!: MtxSelectComponent;
++  @ViewChild('select', { static: true }) select!: MtxSelect;
+ 
+   get bindLabel() {
+     return typeof this.props.labelProp === 'string' ? this.props.labelProp : '';
+diff --git a/src/app/routes/dashboard/dashboard.component.html b/src/app/routes/dashboard/dashboard.component.html
+index d6baea6..48b6a6d 100755
+--- a/src/app/routes/dashboard/dashboard.component.html
++++ b/src/app/routes/dashboard/dashboard.component.html
+@@ -5,7 +5,7 @@
+   <!-- Statistics -->
+   <div class="matero-col" fxFlex.gt-sm="25" fxFlex.gt-xs="50" fxFlex="100"
+        *ngFor="let stat of stats">
+-    <mat-card [ngClass]="['text-white', stat.color]">
++    <mat-card appearance="outlined" [ngClass]="['text-white', stat.color]">
+       <mat-card-title class="f-s-12 f-w-100">{{stat.title}}</mat-card-title>
+       <mat-card-content>
+         <h2>{{stat.amount}}</h2>
+@@ -21,13 +21,13 @@
+ 
+   <!-- Charts -->
+   <div class="matero-col" fxFlex="100" fxFlex.gt-sm="60">
+-    <mat-card>
++    <mat-card appearance="outlined">
+       <mat-card-subtitle>Traffic</mat-card-subtitle>
+       <div id="chart1"></div>
+     </mat-card>
+   </div>
+   <div class="matero-col" fxFlex="100" fxFlex.gt-sm="40">
+-    <mat-card>
++    <mat-card appearance="outlined">
+       <mat-card-subtitle>Weekly Revenue</mat-card-subtitle>
+       <div id="chart2"></div>
+     </mat-card>
+@@ -35,7 +35,7 @@
+ 
+   <!-- Others -->
+   <div class="matero-col" fxFlex.gt-sm="50" fxFlex="100">
+-    <mat-card>
++    <mat-card appearance="outlined">
+       <mat-tab-group class="m--16">
+         <mat-tab label="First">
+           <div class="m-16">
+@@ -92,7 +92,7 @@
+         </mat-tab>
+       </mat-tab-group>
+     </mat-card>
+-    <mat-card>
++    <mat-card appearance="outlined">
+       <mat-card-subtitle>Album</mat-card-subtitle>
+       <mat-card-content>
+         <mat-grid-list cols="2">
+@@ -106,7 +106,7 @@
+   </div>
+ 
+   <div class="matero-col" fxFlex.gt-sm="50" fxFlex="100">
+-    <mat-card>
++    <mat-card appearance="outlined">
+       <mat-card-subtitle>Avatar List</mat-card-subtitle>
+       <mat-list>
+         <mat-list-item *ngFor="let message of messages">
+@@ -119,7 +119,7 @@
+       </mat-list>
+     </mat-card>
+ 
+-    <mat-card>
++    <mat-card appearance="outlined">
+       <mat-card-subtitle>Revenue Table</mat-card-subtitle>
+       <mat-card-content>
+         <table class="w-full" mat-table [dataSource]="dataSource">
+@@ -145,20 +145,20 @@
+       </mat-card-content>
+     </mat-card>
+ 
+-    <mat-card>
++    <mat-card appearance="outlined">
+       <mat-card-subtitle>Chips & Buttons</mat-card-subtitle>
+       <mat-card-content>
+-        <mat-chip-list>
+-          <mat-chip>One fish</mat-chip>
+-          <mat-chip color="primary" selected>Primary fish</mat-chip>
+-          <mat-chip color="accent" selected>Accent fish</mat-chip>
+-          <mat-chip color="warn" selected>Two fish</mat-chip>
+-          <mat-chip class="bg-orange-500" selected>Orange fish</mat-chip>
+-          <mat-chip class="bg-teal-500" selected>Teal fish</mat-chip>
+-          <mat-chip class="bg-cyan-500" selected>Cyan fish</mat-chip>
+-          <mat-chip class="bg-purple-500" selected>Purple fish</mat-chip>
+-          <mat-chip class="bg-green-500" selected>Green fish</mat-chip>
+-        </mat-chip-list>
++        <mat-chip-listbox>
++          <mat-chip-option>One fish</mat-chip-option>
++          <mat-chip-option color="primary" selected>Primary fish</mat-chip-option>
++          <mat-chip-option color="accent" selected>Accent fish</mat-chip-option>
++          <mat-chip-option color="warn" selected>Two fish</mat-chip-option>
++          <mat-chip-option class="bg-orange-500" selected>Orange fish</mat-chip-option>
++          <mat-chip-option class="bg-teal-500" selected>Teal fish</mat-chip-option>
++          <mat-chip-option class="bg-cyan-500" selected>Cyan fish</mat-chip-option>
++          <mat-chip-option class="bg-purple-500" selected>Purple fish</mat-chip-option>
++          <mat-chip-option class="bg-green-500" selected>Green fish</mat-chip-option>
++        </mat-chip-listbox>
+ 
+         <div>
+           <button mat-raised-button>Basic</button>
+diff --git a/src/app/routes/dashboard/dashboard.component.ts b/src/app/routes/dashboard/dashboard.component.ts
+index 6b6b1f5..3f40210 100755
+--- a/src/app/routes/dashboard/dashboard.component.ts
++++ b/src/app/routes/dashboard/dashboard.component.ts
+@@ -16,11 +16,11 @@ import { DashboardService } from './dashboard.srevice';
+   templateUrl: './dashboard.component.html',
+   styles: [
+     `
+-      .mat-raised-button {
+-        margin-right: 8px;
+-        margin-top: 8px;
+-      }
+-    `,
++          .mat-mdc-raised-button {
++            margin-right: 8px;
++            margin-top: 8px;
++          }
++        `,
+   ],
+   changeDetection: ChangeDetectionStrategy.OnPush,
+   providers: [DashboardService],
+diff --git a/src/app/routes/design/icons/icons.component.html b/src/app/routes/design/icons/icons.component.html
+index e5c8cf7..10e1b55 100644
+--- a/src/app/routes/design/icons/icons.component.html
++++ b/src/app/routes/design/icons/icons.component.html
+@@ -1,7 +1,7 @@
+ <page-header class="bg-purple-500"></page-header>
+ 
+ <ng-container *ngFor=" let group of icons | keyvalue; trackBy: trackByIcon">
+-  <mat-card>
++  <mat-card appearance="outlined">
+     <mat-card-title class="mat-h1 f-w-300 text-capitalize m-b-16 text-gray-500">{{group.key}}
+     </mat-card-title>
+     <mat-card-content>
+diff --git a/src/app/routes/forms/datetime/datetime.component.html b/src/app/routes/forms/datetime/datetime.component.html
+index da04e43..62b6591 100644
+--- a/src/app/routes/forms/datetime/datetime.component.html
++++ b/src/app/routes/forms/datetime/datetime.component.html
+@@ -7,16 +7,15 @@
+   <a href="https://github.com/ng-matero/extensions" target="_blank">Material Extensions</a>.
+ </p>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <mat-card-title>Date types with: {{ type }}</mat-card-title>
+ 
+   <form [formGroup]="group">
+     <mat-form-field>
+-      <mat-placeholder>DateTime</mat-placeholder>
+       <mtx-datetimepicker-toggle [for]="datetimePicker" matSuffix></mtx-datetimepicker-toggle>
+       <mtx-datetimepicker #datetimePicker startView="month" [timeInterval]="5" type="datetime">
+       </mtx-datetimepicker>
+-      <input [mtxDatetimepicker]="datetimePicker" [max]="tomorrow" [min]="today"
++      <input placeholder="DateTime" [mtxDatetimepicker]="datetimePicker" [max]="tomorrow" [min]="today"
+              autocomplete="false" formControlName="dateTime" matInput required>
+       <mat-error *ngIf="group.get('dateTime')?.errors?.required">required</mat-error>
+       <mat-error *ngIf="group.get('dateTime')?.errors?.mtxDatetimepickerMin">min</mat-error>
+@@ -24,11 +23,10 @@
+     </mat-form-field>
+ 
+     <mat-form-field>
+-      <mat-placeholder>DateTime Year selector</mat-placeholder>
+       <mtx-datetimepicker-toggle [for]="datetimeYearPicker" matSuffix></mtx-datetimepicker-toggle>
+       <mtx-datetimepicker #datetimeYearPicker [multiYearSelector]="true" startView="month"
+                           [timeInterval]="5" type="datetime"></mtx-datetimepicker>
+-      <input [mtxDatetimepicker]="datetimeYearPicker" [max]="tomorrow" [min]="today"
++      <input placeholder="DateTime Year selector" [mtxDatetimepicker]="datetimeYearPicker" [max]="tomorrow" [min]="today"
+              autocomplete="false" formControlName="dateTimeYear" matInput required>
+       <mat-error *ngIf="group.get('dateTimeYear')?.errors?.required">required</mat-error>
+       <mat-error *ngIf="group.get('dateTimeYear')?.errors?.mtxDatetimepickerMin">min</mat-error>
+@@ -36,51 +34,45 @@
+     </mat-form-field>
+ 
+     <mat-form-field>
+-      <mat-placeholder>Time</mat-placeholder>
+       <mtx-datetimepicker-toggle [for]="timePicker" matSuffix></mtx-datetimepicker-toggle>
+       <mtx-datetimepicker #timePicker [timeInterval]="5" type="time">
+       </mtx-datetimepicker>
+-      <input [mtxDatetimepicker]="timePicker" formControlName="time" matInput required>
++      <input placeholder="Time" [mtxDatetimepicker]="timePicker" formControlName="time" matInput required>
+       <mat-error *ngIf="group.get('time')?.errors?.required">required</mat-error>
+     </mat-form-field>
+ 
+     <mat-form-field>
+-      <mat-placeholder>Time AM/PM</mat-placeholder>
+       <mtx-datetimepicker-toggle [for]="timeAMPMPicker" matSuffix></mtx-datetimepicker-toggle>
+       <mtx-datetimepicker #timeAMPMPicker [timeInterval]="5" [twelvehour]="true" type="time">
+       </mtx-datetimepicker>
+-      <input [mtxDatetimepicker]="timeAMPMPicker" formControlName="timeAMPM" matInput required>
++      <input placeholder="Time AM/PM" [mtxDatetimepicker]="timeAMPMPicker" formControlName="timeAMPM" matInput required>
+       <mat-error *ngIf="group.get('timeAMPM')?.errors?.required">required</mat-error>
+     </mat-form-field>
+ 
+     <mat-form-field>
+-      <mat-placeholder>Date</mat-placeholder>
+       <mtx-datetimepicker-toggle [for]="datePicker" matSuffix></mtx-datetimepicker-toggle>
+       <mtx-datetimepicker #datePicker type="date"></mtx-datetimepicker>
+-      <input [mtxDatetimepicker]="datePicker" formControlName="date" matInput required>
++      <input placeholder="Date" [mtxDatetimepicker]="datePicker" formControlName="date" matInput required>
+       <mat-error *ngIf="group.get('date')?.errors?.required">required</mat-error>
+     </mat-form-field>
+ 
+     <mat-form-field>
+-      <mat-placeholder>Month</mat-placeholder>
+       <mtx-datetimepicker-toggle [for]="monthPicker" matSuffix></mtx-datetimepicker-toggle>
+       <mtx-datetimepicker #monthPicker mode="portrait" type="month">
+       </mtx-datetimepicker>
+-      <input [mtxDatetimepicker]="monthPicker" formControlName="month" matInput required>
++      <input placeholder="Month" [mtxDatetimepicker]="monthPicker" formControlName="month" matInput required>
+       <mat-error *ngIf="group.get('month')?.errors?.required">required</mat-error>
+     </mat-form-field>
+ 
+     <mat-form-field>
+-      <mat-placeholder>Year</mat-placeholder>
+       <mtx-datetimepicker-toggle [for]="yearPicker" matSuffix></mtx-datetimepicker-toggle>
+       <mtx-datetimepicker #yearPicker type="year"></mtx-datetimepicker>
+-      <input [mtxDatetimepicker]="yearPicker" formControlName="year" matInput required>
++      <input placeholder="Year" [mtxDatetimepicker]="yearPicker" formControlName="year" matInput required>
+       <mat-error *ngIf="group.get('year')?.errors?.required">required</mat-error>
+     </mat-form-field>
+ 
+     <mat-form-field>
+-      <mat-placeholder>Min/Max Test</mat-placeholder>
+-      <input [mtxDatetimepicker]="minTestPicker" [max]="max" [min]="min" formControlName="mintest"
++      <input placeholder="Min/Max Test" [mtxDatetimepicker]="minTestPicker" [max]="max" [min]="min" formControlName="mintest"
+              matInput required>
+       <mtx-datetimepicker-toggle [for]="minTestPicker" matSuffix></mtx-datetimepicker-toggle>
+       <mtx-datetimepicker #minTestPicker mode="landscape" [timeInterval]="5" type="datetime">
+@@ -91,8 +83,7 @@
+     </mat-form-field>
+ 
+     <mat-form-field>
+-      <mat-placeholder>Filter Test</mat-placeholder>
+-      <input [mtxDatetimepickerFilter]="filter" [mtxDatetimepicker]="filterTestPicker"
++      <input placeholder="Filter Test" [mtxDatetimepickerFilter]="filter" [mtxDatetimepicker]="filterTestPicker"
+              formControlName="filtertest" matInput required>
+       <mtx-datetimepicker-toggle [for]="filterTestPicker" matSuffix></mtx-datetimepicker-toggle>
+       <mtx-datetimepicker #filterTestPicker mode="landscape" [timeInterval]="5" type="datetime">
+@@ -102,8 +93,7 @@
+     </mat-form-field>
+ 
+     <mat-form-field>
+-      <mat-placeholder>TouchUi</mat-placeholder>
+-      <input [mtxDatetimepicker]="touch" [min]="min" formControlName="touch" matInput required>
++      <input placeholder="TouchUi" [mtxDatetimepicker]="touch" [min]="min" formControlName="touch" matInput required>
+       <mtx-datetimepicker-toggle [for]="touch" matSuffix></mtx-datetimepicker-toggle>
+       <mtx-datetimepicker #touch mode="portrait" [timeInterval]="5" [touchUi]="true"
+                           type="datetime"></mtx-datetimepicker>
+diff --git a/src/app/routes/forms/datetime/datetime.component.scss b/src/app/routes/forms/datetime/datetime.component.scss
+index 0c33625..1da2297 100644
+--- a/src/app/routes/forms/datetime/datetime.component.scss
++++ b/src/app/routes/forms/datetime/datetime.component.scss
+@@ -1,3 +1,3 @@
+-.mat-form-field {
++.mat-mdc-form-field {
+   margin: 0 8px;
+ }
+diff --git a/src/app/routes/forms/dynamic/dynamic.component.html b/src/app/routes/forms/dynamic/dynamic.component.html
+index 9dd9d89..f75e7da 100644
+--- a/src/app/routes/forms/dynamic/dynamic.component.html
++++ b/src/app/routes/forms/dynamic/dynamic.component.html
+@@ -7,7 +7,7 @@
+   </a>.
+ </p>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <mat-card-title>Simple</mat-card-title>
+ 
+   <form [formGroup]="form" (ngSubmit)="submit()">
+@@ -16,7 +16,7 @@
+   </form>
+ </mat-card>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <mat-card-title>Advanced Layout</mat-card-title>
+ 
+   <form [formGroup]="form2" (ngSubmit)="submit2()">
+diff --git a/src/app/routes/forms/elements/elements.component.html b/src/app/routes/forms/elements/elements.component.html
+index 4dab01e..f00dc88 100644
+--- a/src/app/routes/forms/elements/elements.component.html
++++ b/src/app/routes/forms/elements/elements.component.html
+@@ -2,7 +2,7 @@
+ 
+ <div fxLayout="row wrap" class="matero-row">
+   <div fxFlex="100" class="matero-col">
+-    <mat-card>
++    <mat-card appearance="outlined">
+       <mat-card-title>Form Inline</mat-card-title>
+ 
+       <form>
+@@ -29,7 +29,7 @@
+     </mat-card>
+   </div>
+   <div fxFlex="33.33" fxFlex.lt-sm="100" class="matero-col">
+-    <mat-card>
++    <mat-card appearance="outlined">
+       <mat-card-title>Form Horizontal</mat-card-title>
+ 
+       <form [formGroup]="reactiveForm1" class="form-field-full">
+@@ -111,7 +111,7 @@
+   </div>
+ 
+   <div fxFlex="66.67" fxFlex.lt-sm="100" class="matero-col">
+-    <mat-card>
++    <mat-card appearance="outlined">
+       <mat-card-title>Form Horizontal</mat-card-title>
+ 
+       <form [formGroup]="reactiveForm2" class="form-field-full">
+diff --git a/src/app/routes/forms/select/select.component.html b/src/app/routes/forms/select/select.component.html
+index 932e128..e801e26 100644
+--- a/src/app/routes/forms/select/select.component.html
++++ b/src/app/routes/forms/select/select.component.html
+@@ -10,7 +10,7 @@
+ 
+ <div fxLayout="row wrap" class="matero-row">
+   <div fxFlex="100" fxFlex.gt-sm="50" class="matero-col">
+-    <mat-card>
++    <mat-card appearance="outlined">
+       <mat-card-title>Data Source</mat-card-title>
+       <div>
+         <p>
+@@ -75,7 +75,7 @@
+   </div>
+ 
+   <div fxFlex="100" fxFlex.gt-sm="50" class="matero-col">
+-    <mat-card>
++    <mat-card appearance="outlined">
+       <mat-card-title>Tags</mat-card-title>
+       <div>
+         <label>Default tags</label>
+@@ -131,7 +131,7 @@
+   </div>
+ 
+   <div fxFlex="100" fxFlex.gt-sm="50" class="matero-col">
+-    <mat-card>
++    <mat-card appearance="outlined">
+       <mat-card-title>Select in dialog</mat-card-title>
+ 
+       <p>Test ng-select in a dialog.</p>
+diff --git a/src/app/routes/material/autocomplete/autocomplete.component.html b/src/app/routes/material/autocomplete/autocomplete.component.html
+index 56ad033..ba19e92 100644
+--- a/src/app/routes/material/autocomplete/autocomplete.component.html
++++ b/src/app/routes/material/autocomplete/autocomplete.component.html
+@@ -1,6 +1,6 @@
+ <breadcrumb></breadcrumb>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <section>
+     <h2>Filtering and selection</h2>
+     <p>Select your favorite state</p>
+diff --git a/src/app/routes/material/badge/badge.component.html b/src/app/routes/material/badge/badge.component.html
+index fc557c3..b37a473 100644
+--- a/src/app/routes/material/badge/badge.component.html
++++ b/src/app/routes/material/badge/badge.component.html
+@@ -1,6 +1,6 @@
+ <breadcrumb></breadcrumb>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <p>
+     <span matBadge="4" matBadgeOverlap="false">Text with a badge</span>
+   </p>
+diff --git a/src/app/routes/material/bottom-sheet/bottom-sheet.component.html b/src/app/routes/material/bottom-sheet/bottom-sheet.component.html
+index 318a7bf..0ab1d8c 100644
+--- a/src/app/routes/material/bottom-sheet/bottom-sheet.component.html
++++ b/src/app/routes/material/bottom-sheet/bottom-sheet.component.html
+@@ -1,6 +1,6 @@
+ <breadcrumb></breadcrumb>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <p>You have received a file called "cat-picture.jpeg".</p>
+   <button mat-raised-button (click)="openBottomSheet()">Open file</button>
+ </mat-card>
+\ No newline at end of file
+diff --git a/src/app/routes/material/button-toggle/button-toggle.component.html b/src/app/routes/material/button-toggle/button-toggle.component.html
+index a74a69d..7e3b8f1 100644
+--- a/src/app/routes/material/button-toggle/button-toggle.component.html
++++ b/src/app/routes/material/button-toggle/button-toggle.component.html
+@@ -1,6 +1,6 @@
+ <breadcrumb></breadcrumb>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+     <section>
+       <h2>Single button toggle</h2>
+       <mat-button-toggle>Yes</mat-button-toggle>
+diff --git a/src/app/routes/material/button/button.component.html b/src/app/routes/material/button/button.component.html
+index 47a4cae..82bea0c 100644
+--- a/src/app/routes/material/button/button.component.html
++++ b/src/app/routes/material/button/button.component.html
+@@ -1,6 +1,6 @@
+ <breadcrumb></breadcrumb>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <div class="demo-button">
+     <section>
+       <h2>Button elements</h2>
+diff --git a/src/app/routes/material/card/card.component.html b/src/app/routes/material/card/card.component.html
+index 3d93a26..d15d195 100644
+--- a/src/app/routes/material/card/card.component.html
++++ b/src/app/routes/material/card/card.component.html
+@@ -3,7 +3,7 @@
+ <section>
+   <h2>Dogs group</h2>
+   <p>Showing a card with a group of content.</p>
+-  <mat-card class="demo-card" role="group">
++  <mat-card appearance="outlined" class="demo-card" role="group">
+     <mat-card-content>
+       <p>Herding Group</p>
+       <p>Hound Group</p>
+@@ -21,7 +21,7 @@
+ <section>
+   <h2>Husky</h2>
+   <p>Showing a card with title only.</p>
+-  <mat-card class="demo-card">
++  <mat-card appearance="outlined" class="demo-card">
+     Siberian Husky
+   </mat-card>
+ </section>
+@@ -29,7 +29,7 @@
+ <section>
+   <h2>Malamute</h2>
+   <p>Showing a Card with title and subtitle.</p>
+-  <mat-card class="demo-card">
++  <mat-card appearance="outlined" class="demo-card">
+     <mat-card-title>Alaskan Malamute</mat-card-title>
+     <mat-card-subtitle>Dog breed</mat-card-subtitle>
+   </mat-card>
+@@ -39,7 +39,7 @@
+ <section>
+   <h2>German Shepherd</h2>
+   <p>Showing a card with title, subtitle, and a footer.</p>
+-  <mat-card class="demo-card">
++  <mat-card appearance="outlined" class="demo-card">
+     <mat-card-subtitle>Dog breed</mat-card-subtitle>
+     <mat-card-title>German Shepherd</mat-card-title>
+     <mat-card-content>
+@@ -56,7 +56,7 @@
+ <section>
+   <h2>Dachshund</h2>
+   <p>Showing a card with title, subtitle, and avatar as header and a card image.</p>
+-  <mat-card class="demo-card">
++  <mat-card appearance="outlined" class="demo-card">
+     <mat-card-header>
+       <img mat-card-avatar src="https://material.angularjs.org/material2_assets/ngconf/Porter.png"
+            aria-label="Dachshund avatar">
+@@ -74,7 +74,7 @@
+ <section>
+   <h2>Shiba Inu</h2>
+   <p>Showing a card with header, content, image, and two action buttons: "share" and "like".</p>
+-  <mat-card class="demo-card">
++  <mat-card appearance="outlined" class="demo-card">
+     <mat-card-header>
+       <img mat-card-avatar src="https://material.angularjs.org/material2_assets/ngconf/Molly.png"
+            aria-label="Shiba Inu avatar">
+diff --git a/src/app/routes/material/checkbox/checkbox.component.html b/src/app/routes/material/checkbox/checkbox.component.html
+index 307be19..20f014c 100644
+--- a/src/app/routes/material/checkbox/checkbox.component.html
++++ b/src/app/routes/material/checkbox/checkbox.component.html
+@@ -1,6 +1,6 @@
+ <breadcrumb></breadcrumb>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <section>
+     <h2>Checkbox without label</h2>
+     <mat-checkbox aria-label="A single checkbox with no label example"></mat-checkbox>
+diff --git a/src/app/routes/material/chips/chips.component.html b/src/app/routes/material/chips/chips.component.html
+index 19872dc..d768055 100644
+--- a/src/app/routes/material/chips/chips.component.html
++++ b/src/app/routes/material/chips/chips.component.html
+@@ -1,35 +1,35 @@
+ <breadcrumb></breadcrumb>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <section>
+     <h2>Basic chips</h2>
+-    <mat-chip-list>
+-      <mat-chip>Carnation</mat-chip>
+-      <mat-chip>Irises</mat-chip>
+-      <mat-chip>Buttercup</mat-chip>
+-    </mat-chip-list>
++    <mat-chip-listbox>
++      <mat-chip-option>Carnation</mat-chip-option>
++      <mat-chip-option>Irises</mat-chip-option>
++      <mat-chip-option>Buttercup</mat-chip-option>
++    </mat-chip-listbox>
+   </section>
+ 
+   <section>
+     <h2>Unstyled chips</h2>
+ 
+-    <mat-chip-list>
++    <mat-chip-listbox>
+       <mat-basic-chip>Husky </mat-basic-chip>
+       <mat-basic-chip>Golden Retriever </mat-basic-chip>
+       <mat-basic-chip>Border Collie </mat-basic-chip>
+-    </mat-chip-list>
++    </mat-chip-listbox>
+   </section>
+ 
+   <section>
+     <h2>Removable chips in a form field</h2>
+ 
+     <mat-form-field>
+-      <mat-chip-list matPrefix #chipList>
+-        <mat-chip *ngFor="let person of people" [color]="color" (removed)="remove(person)">
++      <mat-chip-grid matPrefix #chipList>
++        <mat-chip-row *ngFor="let person of people" [color]="color" (removed)="remove(person)">
+           {{person.name}}
+           <mat-icon matChipRemove>cancel</mat-icon>
+-        </mat-chip>
+-      </mat-chip-list>
++        </mat-chip-row>
++      </mat-chip-grid>
+       <input matInput placeholder="New Contributor..."
+              aria-label="New contributor"
+              [matChipInputFor]="chipList"
+@@ -41,19 +41,19 @@
+   <section>
+     <h2>Colored chips</h2>
+     <p>This example is good for contrast-radio checking.</p>
+-    <mat-chip-list>
+-      <mat-chip color="primary" selected="true">Primary</mat-chip>
+-      <mat-chip color="accent" selected="true">Accent</mat-chip>
+-      <mat-chip color="warn" selected="true">Warn</mat-chip>
+-    </mat-chip-list>
++    <mat-chip-listbox>
++      <mat-chip-option color="primary" selected="true">Primary</mat-chip-option>
++      <mat-chip-option color="accent" selected="true">Accent</mat-chip-option>
++      <mat-chip-option color="warn" selected="true">Warn</mat-chip-option>
++    </mat-chip-listbox>
+   </section>
+ 
+   <section>
+     <h2>Stacked chips</h2>
+-    <mat-chip-list class="mat-chip-list-stacked">
+-      <mat-chip [selectable]="false">Lemon</mat-chip>
+-      <mat-chip [selectable]="false">Lime</mat-chip>
+-      <mat-chip [selectable]="false">Grapefruit</mat-chip>
+-    </mat-chip-list>
++    <mat-chip-listbox class="mat-chip-list-stacked">
++      <mat-chip-option [selectable]="false">Lemon</mat-chip-option>
++      <mat-chip-option [selectable]="false">Lime</mat-chip-option>
++      <mat-chip-option [selectable]="false">Grapefruit</mat-chip-option>
++    </mat-chip-listbox>
+   </section>
+ </mat-card>
+\ No newline at end of file
+diff --git a/src/app/routes/material/datepicker/datepicker.component.html b/src/app/routes/material/datepicker/datepicker.component.html
+index 7219002..9df3f74 100644
+--- a/src/app/routes/material/datepicker/datepicker.component.html
++++ b/src/app/routes/material/datepicker/datepicker.component.html
+@@ -1,6 +1,6 @@
+ <breadcrumb></breadcrumb>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <section>
+     <h2>Choose a date (e.g. choose your date of birth)</h2>
+     <mat-form-field>
+diff --git a/src/app/routes/material/dialog/dialog.component.html b/src/app/routes/material/dialog/dialog.component.html
+index 96cd0f2..af686e1 100644
+--- a/src/app/routes/material/dialog/dialog.component.html
++++ b/src/app/routes/material/dialog/dialog.component.html
+@@ -1,6 +1,6 @@
+ <breadcrumb></breadcrumb>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <section>
+     <h2>Welcome message</h2>
+     <p>Activate the button to see a welcome dialog with a simple message and a close button.</p>
+diff --git a/src/app/routes/material/dialog/dialog.component.ts b/src/app/routes/material/dialog/dialog.component.ts
+index 8dc31b6..464d9ab 100644
+--- a/src/app/routes/material/dialog/dialog.component.ts
++++ b/src/app/routes/material/dialog/dialog.component.ts
+@@ -58,10 +58,10 @@ export class DialogNeptuneComponent {
+   selector: 'dialog-neptune-iframe-dialog',
+   styles: [
+     `
+-      iframe {
+-        width: 800px;
+-      }
+-    `,
++          iframe {
++            width: 800px;
++          }
++        `,
+   ],
+   templateUrl: './dialog-neptune-iframe.html',
+ })
+@@ -71,10 +71,10 @@ export class DialogNeptuneIFrameComponent {}
+   selector: 'dialog-address-form',
+   styles: [
+     `
+-      .demo-full-width {
+-        width: 100%;
+-      }
+-    `,
++          .demo-full-width {
++            width: 100%;
++          }
++        `,
+   ],
+   templateUrl: 'dialog-address-form.html',
+ })
+diff --git a/src/app/routes/material/divider/divider.component.html b/src/app/routes/material/divider/divider.component.html
+index 7c429c3..8172ed9 100644
+--- a/src/app/routes/material/divider/divider.component.html
++++ b/src/app/routes/material/divider/divider.component.html
+@@ -2,7 +2,7 @@
+ 
+ <div fxLayout="row wrap" class="matero-row">
+   <div [fxFlex.gt-sm]="50" [fxFlex]="100" class="matero-col">
+-    <mat-card>
++    <mat-card appearance="outlined">
+       <mat-list>
+         <mat-list-item>Item 1</mat-list-item>
+         <mat-divider></mat-divider>
+@@ -13,7 +13,7 @@
+     </mat-card>
+   </div>
+   <div [fxFlex.gt-sm]="50" [fxFlex]="100" class="matero-col">
+-    <mat-card>
++    <mat-card appearance="outlined">
+       <mat-list>
+         <mat-list-item>Item 1</mat-list-item>
+         <mat-divider [inset]="true"></mat-divider>
+@@ -24,7 +24,7 @@
+     </mat-card>
+   </div>
+   <div [fxFlex.gt-sm]="50" [fxFlex]="100" class="matero-col">
+-    <mat-card>
++    <mat-card appearance="outlined">
+       <mat-list fxLayout="row">
+         <mat-list-item>Item 1</mat-list-item>
+         <mat-divider [vertical]="true"></mat-divider>
+diff --git a/src/app/routes/material/form-field/form-field.component.html b/src/app/routes/material/form-field/form-field.component.html
+index ef2cd2c..a76e0a7 100644
+--- a/src/app/routes/material/form-field/form-field.component.html
++++ b/src/app/routes/material/form-field/form-field.component.html
+@@ -1,6 +1,6 @@
+ <breadcrumb></breadcrumb>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <div class="example-container">
+     <mat-form-field>
+       <input matInput placeholder="Input">
+@@ -18,7 +18,7 @@
+   </div>
+ </mat-card>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <div class="example-container">
+     <form class="example-container" [formGroup]="options">
+       <mat-checkbox formControlName="hideRequired">Hide required marker</mat-checkbox>
+@@ -55,9 +55,9 @@
+   </div>
+ </mat-card>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <p>
+-    <mat-form-field appearance="legacy">
++    <mat-form-field>
+       <mat-label>Legacy form field</mat-label>
+       <input matInput placeholder="Placeholder">
+       <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+@@ -65,7 +65,7 @@
+     </mat-form-field>
+   </p>
+   <p>
+-    <mat-form-field appearance="standard">
++    <mat-form-field>
+       <mat-label>Standard form field</mat-label>
+       <input matInput placeholder="Placeholder">
+       <mat-icon matSuffix>sentiment_very_satisfied</mat-icon>
+diff --git a/src/app/routes/material/form-field/form-field.component.scss b/src/app/routes/material/form-field/form-field.component.scss
+index 333087a..a06bedf 100644
+--- a/src/app/routes/material/form-field/form-field.component.scss
++++ b/src/app/routes/material/form-field/form-field.component.scss
+@@ -15,6 +15,6 @@
+   margin: 5px 0;
+ }
+ 
+-.example-container .mat-radio-button {
++.example-container .mat-mdc-radio-button {
+   margin: 0 5px;
+ }
+diff --git a/src/app/routes/material/grid-list/grid-list.component.html b/src/app/routes/material/grid-list/grid-list.component.html
+index e9e9047..25c776b 100644
+--- a/src/app/routes/material/grid-list/grid-list.component.html
++++ b/src/app/routes/material/grid-list/grid-list.component.html
+@@ -1,6 +1,6 @@
+ <breadcrumb></breadcrumb>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <section>
+     <h2>Types of coffee (fix-height grid-list)</h2>
+     <mat-grid-list role="list" [cols]="fixedCols" [rowHeight]="fixedRowHeight">
+diff --git a/src/app/routes/material/icon/icon.component.html b/src/app/routes/material/icon/icon.component.html
+index 7eb6ba6..dff429c 100644
+--- a/src/app/routes/material/icon/icon.component.html
++++ b/src/app/routes/material/icon/icon.component.html
+@@ -1,6 +1,6 @@
+ <breadcrumb></breadcrumb>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <section>
+     <h2>Fingerprint status</h2>
+     <p>Showing a status message with a purely decorative icon</p>
+diff --git a/src/app/routes/material/input/input.component.html b/src/app/routes/material/input/input.component.html
+index e611533..fdddcc3 100644
+--- a/src/app/routes/material/input/input.component.html
++++ b/src/app/routes/material/input/input.component.html
+@@ -1,15 +1,13 @@
+ <breadcrumb></breadcrumb>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <section>
+     <h2>Basic input box (e.g. name field)</h2>
+-    <mat-form-field floatLabel="never">
+-      <mat-label>First name</mat-label>
+-      <input matInput [(ngModel)]="firstName">
++    <mat-form-field>
++      <input matInput placeholder="First name" [(ngModel)]="firstName">
+     </mat-form-field>
+-    <mat-form-field floatLabel="never">
+-      <mat-label>Last name</mat-label>
+-      <input matInput [(ngModel)]="lastName">
++    <mat-form-field>
++      <input matInput placeholder="Last name" [(ngModel)]="lastName">
+     </mat-form-field>
+   </section>
+ 
+diff --git a/src/app/routes/material/list/list.component.html b/src/app/routes/material/list/list.component.html
+index e912851..430ed2b 100644
+--- a/src/app/routes/material/list/list.component.html
++++ b/src/app/routes/material/list/list.component.html
+@@ -1,6 +1,6 @@
+ <breadcrumb></breadcrumb>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <div class="demo-list">
+     <section>
+       <h2> Seasoning </h2>
+diff --git a/src/app/routes/material/list/list.component.scss b/src/app/routes/material/list/list.component.scss
+index fd3e4af..cacb770 100644
+--- a/src/app/routes/material/list/list.component.scss
++++ b/src/app/routes/material/list/list.component.scss
+@@ -1,6 +1,6 @@
+ .demo-list {
+-  .mat-list,
+-  .mat-nav-list {
++  .mat-mdc-list,
++  .mat-mdc-nav-list {
+     max-width: 350px;
+     margin: 20px 20px 0 0;
+     border: 1px solid rgba(0, 0, 0, .12);
+diff --git a/src/app/routes/material/menu/menu.component.html b/src/app/routes/material/menu/menu.component.html
+index 25d6663..95b74f4 100644
+--- a/src/app/routes/material/menu/menu.component.html
++++ b/src/app/routes/material/menu/menu.component.html
+@@ -1,6 +1,6 @@
+ <breadcrumb></breadcrumb>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <div class="demo-menu">
+ 
+     <section>
+diff --git a/src/app/routes/material/paginator/paginator.component.html b/src/app/routes/material/paginator/paginator.component.html
+index 0264475..71482a7 100644
+--- a/src/app/routes/material/paginator/paginator.component.html
++++ b/src/app/routes/material/paginator/paginator.component.html
+@@ -1,6 +1,6 @@
+ <breadcrumb></breadcrumb>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <mat-form-field>
+     List length:
+     <input matInput [(ngModel)]="length">
+diff --git a/src/app/routes/material/progress-bar/progress-bar.component.html b/src/app/routes/material/progress-bar/progress-bar.component.html
+index 1a85db3..7aa1dff 100644
+--- a/src/app/routes/material/progress-bar/progress-bar.component.html
++++ b/src/app/routes/material/progress-bar/progress-bar.component.html
+@@ -1,6 +1,6 @@
+ <breadcrumb></breadcrumb>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <section>
+     <h2>Survey progress (Determinate progress bar)</h2>
+     <mat-progress-bar mode="determinate" [value]="surveyProgress" color="primary"
+diff --git a/src/app/routes/material/progress-spinner/progress-spinner.component.html b/src/app/routes/material/progress-spinner/progress-spinner.component.html
+index e0e814f..6f41102 100644
+--- a/src/app/routes/material/progress-spinner/progress-spinner.component.html
++++ b/src/app/routes/material/progress-spinner/progress-spinner.component.html
+@@ -1,6 +1,6 @@
+ <breadcrumb></breadcrumb>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <section>
+     <h2>Loading indicator (Indeterminate progress spinner)</h2>
+     <mat-spinner color="indeterminate" [strokeWidth]="1" aria-label="Loading"></mat-spinner>
+diff --git a/src/app/routes/material/radio-button/radio-button.component.html b/src/app/routes/material/radio-button/radio-button.component.html
+index 7cc133e..49dc378 100644
+--- a/src/app/routes/material/radio-button/radio-button.component.html
++++ b/src/app/routes/material/radio-button/radio-button.component.html
+@@ -1,6 +1,6 @@
+ <breadcrumb></breadcrumb>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <section>
+     <h2>Radio buttons in group</h2>
+     <mat-radio-group name="seasons" [(ngModel)]="favoriteSeason" aria-label="Seasons">
+diff --git a/src/app/routes/material/ripple/ripple.component.html b/src/app/routes/material/ripple/ripple.component.html
+index 60280da..f0d5b77 100644
+--- a/src/app/routes/material/ripple/ripple.component.html
++++ b/src/app/routes/material/ripple/ripple.component.html
+@@ -1,6 +1,6 @@
+ <breadcrumb></breadcrumb>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <mat-checkbox [(ngModel)]="centered" class="example-ripple-checkbox">Centered</mat-checkbox>
+   <mat-checkbox [(ngModel)]="disabled" class="example-ripple-checkbox">Disabled</mat-checkbox>
+   <mat-checkbox [(ngModel)]="unbounded" class="example-ripple-checkbox">Unbounded</mat-checkbox>
+diff --git a/src/app/routes/material/select/select.component.html b/src/app/routes/material/select/select.component.html
+index 1f1b2ee..0fc35f2 100644
+--- a/src/app/routes/material/select/select.component.html
++++ b/src/app/routes/material/select/select.component.html
+@@ -1,6 +1,6 @@
+ <breadcrumb></breadcrumb>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <section>
+     <h2>Single selection</h2>
+     <p>Select your favorite color</p>
+diff --git a/src/app/routes/material/sidenav/sidenav.component.html b/src/app/routes/material/sidenav/sidenav.component.html
+index 3e8fcdd..017a359 100644
+--- a/src/app/routes/material/sidenav/sidenav.component.html
++++ b/src/app/routes/material/sidenav/sidenav.component.html
+@@ -1,6 +1,6 @@
+ <breadcrumb></breadcrumb>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <mat-card-content>
+ 
+     <section>
+diff --git a/src/app/routes/material/slide-toggle/slide-toggle.component.html b/src/app/routes/material/slide-toggle/slide-toggle.component.html
+index 8d78c1f..6c8f9a0 100644
+--- a/src/app/routes/material/slide-toggle/slide-toggle.component.html
++++ b/src/app/routes/material/slide-toggle/slide-toggle.component.html
+@@ -1,6 +1,6 @@
+ <breadcrumb></breadcrumb>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <section>
+     <h2>Receive email update</h2>
+     <p>Showing a toggle to manage whether receive email update.</p>
+diff --git a/src/app/routes/material/slider/slider.component.html b/src/app/routes/material/slider/slider.component.html
+index ff7ea70..06c462d 100644
+--- a/src/app/routes/material/slider/slider.component.html
++++ b/src/app/routes/material/slider/slider.component.html
+@@ -1,6 +1,6 @@
+ <breadcrumb></breadcrumb>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <section>
+     <h2>Continuous slider (e.g. color component sliders)</h2>
+     <p>Move the red, green, and blue sliders to choose a color.</p>
+@@ -8,17 +8,17 @@
+       <div class="demo-color-sliders">
+         <div>
+           <label class="demo-color-label" for="r-slider">Red</label>
+-          <mat-slider aria-label="Red" id="r-slider" min="0" max="255" [(ngModel)]="red">
++          <mat-slider aria-label="Red" id="r-slider" min="0" max="255" [(ngModel)]="red"><input matSliderThumb />
+           </mat-slider>
+         </div>
+         <div>
+           <label class="demo-color-label" for="g-slider">Green</label>
+-          <mat-slider aria-label="Green" id="g-slider" min="0" max="255" [(ngModel)]="green">
++          <mat-slider aria-label="Green" id="g-slider" min="0" max="255" [(ngModel)]="green"><input matSliderThumb />
+           </mat-slider>
+         </div>
+         <div>
+           <label class="demo-color-label" for="b-slider">Blue</label>
+-          <mat-slider aria-label="Blue" id="b-slider" min="0" max="255" [(ngModel)]="blue">
++          <mat-slider aria-label="Blue" id="b-slider" min="0" max="255" [(ngModel)]="blue"><input matSliderThumb />
+           </mat-slider>
+         </div>
+       </div>
+@@ -29,7 +29,8 @@
+   <section>
+     <h2>Discrete slider (e.g. rate a product)</h2>
+     <p>Please rate our product on a scale of 1 (not satisfied) to 5 (extremely satisfied).</p>
+-    <mat-slider min="1" max="5" tickInterval="1" thumbLabel aria-label="Rating"></mat-slider>
++    <!-- TODO: The 'tickInterval' property no longer exists -->
++    <mat-slider min="1" max="5" thumbLabel aria-label="Rating"><input matSliderThumb /></mat-slider>
+   </section>
+ 
+   <section>
+@@ -40,7 +41,8 @@
+         <mat-icon aria-hidden>volume_up</mat-icon>
+         <span class="cdk-visually-hidden">Volume</span>
+       </label>
+-      <mat-slider aria-label="Volume" id="vol-slider" min="0" max="100" vertical inverted>
++      <!-- TODO: The 'vertical' property no longer exists -->
++      <mat-slider aria-label="Volume" id="vol-slider" min="0" max="100" inverted><input matSliderThumb />
+       </mat-slider>
+     </div>
+   </section>
+diff --git a/src/app/routes/material/snack-bar/snack-bar.component.html b/src/app/routes/material/snack-bar/snack-bar.component.html
+index 373f94c..cfcc03c 100644
+--- a/src/app/routes/material/snack-bar/snack-bar.component.html
++++ b/src/app/routes/material/snack-bar/snack-bar.component.html
+@@ -1,6 +1,6 @@
+ <breadcrumb></breadcrumb>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <section>
+     <h2>Notification</h2>
+     <p>Showing a notification by snack bar without showing actions</p>
+diff --git a/src/app/routes/material/sort/sort.component.html b/src/app/routes/material/sort/sort.component.html
+index 85fdc90..655fe56 100644
+--- a/src/app/routes/material/sort/sort.component.html
++++ b/src/app/routes/material/sort/sort.component.html
+@@ -1,6 +1,6 @@
+ <breadcrumb></breadcrumb>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <table matSort (matSortChange)="sortData($event)">
+     <tr>
+       <th mat-sort-header="name">Dessert (100g)</th>
+diff --git a/src/app/routes/material/stepper/stepper.component.html b/src/app/routes/material/stepper/stepper.component.html
+index 592a128..207eb7e 100644
+--- a/src/app/routes/material/stepper/stepper.component.html
++++ b/src/app/routes/material/stepper/stepper.component.html
+@@ -1,6 +1,6 @@
+ <breadcrumb></breadcrumb>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <button mat-raised-button (click)="isLinear = !isLinear" id="toggle-linear">
+     {{!isLinear ? 'Enable linear mode' : 'Disable linear mode'}}
+   </button>
+diff --git a/src/app/routes/material/tab/tab.component.html b/src/app/routes/material/tab/tab.component.html
+index d5968eb..e7a4cd3 100644
+--- a/src/app/routes/material/tab/tab.component.html
++++ b/src/app/routes/material/tab/tab.component.html
+@@ -1,6 +1,6 @@
+ <breadcrumb></breadcrumb>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <section>
+     <h2>Weather</h2>
+     <p>Switch tabs to navigate</p>
+diff --git a/src/app/routes/material/table/table.component.html b/src/app/routes/material/table/table.component.html
+index f99356d..564405e 100644
+--- a/src/app/routes/material/table/table.component.html
++++ b/src/app/routes/material/table/table.component.html
+@@ -1,6 +1,6 @@
+ <breadcrumb></breadcrumb>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <section>
+     <h2>Basic Table</h2>
+     <p>Shows name, color and age data.</p>
+diff --git a/src/app/routes/material/toolbar/toolbar.component.html b/src/app/routes/material/toolbar/toolbar.component.html
+index 3d2e184..a73f1f2 100644
+--- a/src/app/routes/material/toolbar/toolbar.component.html
++++ b/src/app/routes/material/toolbar/toolbar.component.html
+@@ -1,6 +1,6 @@
+ <breadcrumb></breadcrumb>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <div class="demo-toolbar">
+     <section>
+       <h2>Basic Toolbar with Text (e.g. Only display app’s name)</h2>
+diff --git a/src/app/routes/material/tooltip/tooltip.component.html b/src/app/routes/material/tooltip/tooltip.component.html
+index b116532..ca06309 100644
+--- a/src/app/routes/material/tooltip/tooltip.component.html
++++ b/src/app/routes/material/tooltip/tooltip.component.html
+@@ -1,6 +1,6 @@
+ <breadcrumb></breadcrumb>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <section>
+     <h2>Mouse over or tab to trigger a tooltip</h2>
+     <p>Mouse over or focus the button to show and hide the tooltip</p>
+diff --git a/src/app/routes/material/tree/tree.component.html b/src/app/routes/material/tree/tree.component.html
+index a090bc3..86df7f1 100644
+--- a/src/app/routes/material/tree/tree.component.html
++++ b/src/app/routes/material/tree/tree.component.html
+@@ -1,6 +1,6 @@
+ <breadcrumb></breadcrumb>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+     <mat-tree-node *matTreeNodeDef="let node;" matTreeNodePadding>
+       <button mat-icon-button disabled></button>
+diff --git a/src/app/routes/profile/layout/layout.component.html b/src/app/routes/profile/layout/layout.component.html
+index 8c7ae30..bf17831 100644
+--- a/src/app/routes/profile/layout/layout.component.html
++++ b/src/app/routes/profile/layout/layout.component.html
+@@ -4,7 +4,7 @@
+ 
+ <div fxLayout="row wrap" class="matero-row">
+   <div class="matero-col" fxFlex="100" fxFlex.gt-xs="50" fxFlex.gt-sm="33.33" fxFlex.gt-md="25">
+-    <mat-card>
++    <mat-card appearance="outlined">
+       <div class="text-center">
+         <img class="m-b-8 r-full" [src]="user.avatar" alt="" width="80">
+         <h2 class="m-t-0 m-b-8 f-w-400">{{ user.name }}</h2>
+diff --git a/src/app/routes/profile/overview/overview.component.html b/src/app/routes/profile/overview/overview.component.html
+index 493e5ba..0a1e1cc 100644
+--- a/src/app/routes/profile/overview/overview.component.html
++++ b/src/app/routes/profile/overview/overview.component.html
+@@ -1,4 +1,4 @@
+-<mat-card>
++<mat-card appearance="outlined">
+   <mat-tab-group class="m--16">
+     <mat-tab label="First">
+       <div class="m-16">
+diff --git a/src/app/routes/profile/settings/settings.component.html b/src/app/routes/profile/settings/settings.component.html
+index 9c4f711..03d9d42 100644
+--- a/src/app/routes/profile/settings/settings.component.html
++++ b/src/app/routes/profile/settings/settings.component.html
+@@ -1,4 +1,4 @@
+-<mat-card>
++<mat-card appearance="outlined">
+   <mat-card-title>Edit Profile</mat-card-title>
+ 
+   <form [formGroup]="reactiveForm" class="form-field-full">
+diff --git a/src/app/routes/routes-routing.module.ts b/src/app/routes/routes-routing.module.ts
+index 7a9be4a..4f6ebd9 100644
+--- a/src/app/routes/routes-routing.module.ts
++++ b/src/app/routes/routes-routing.module.ts
+@@ -73,9 +73,8 @@ const routes: Routes = [
+ @NgModule({
+   imports: [
+     RouterModule.forRoot(routes, {
+-      useHash: environment.useHash,
+-      relativeLinkResolution: 'legacy',
+-    }),
++    useHash: environment.useHash
++}),
+   ],
+   exports: [RouterModule],
+ })
+diff --git a/src/app/routes/sessions/login/login.component.html b/src/app/routes/sessions/login/login.component.html
+index ea95f1a..35aaaeb 100644
+--- a/src/app/routes/sessions/login/login.component.html
++++ b/src/app/routes/sessions/login/login.component.html
+@@ -1,5 +1,5 @@
+ <div class="w-full h-full" fxLayout="row wrap">
+-  <mat-card class="mat-elevation-z4 m-auto" style="max-width: 380px;">
++  <mat-card appearance="outlined" class="mat-elevation-z4 m-auto" style="max-width: 380px;">
+     <mat-card-title class="text-center m-b-24">{{'login.title' | translate}}!</mat-card-title>
+ 
+     <form class="form-field-full" [formGroup]="loginForm">
+diff --git a/src/app/routes/sessions/register/register.component.html b/src/app/routes/sessions/register/register.component.html
+index 0e465e1..9dcf003 100644
+--- a/src/app/routes/sessions/register/register.component.html
++++ b/src/app/routes/sessions/register/register.component.html
+@@ -1,5 +1,5 @@
+ <div class="w-full h-full" fxLayout="row wrap">
+-  <mat-card class="mat-elevation-z4 m-auto" style="max-width: 380px;">
++  <mat-card appearance="outlined" class="mat-elevation-z4 m-auto" style="max-width: 380px;">
+     <mat-card-title class="m-b-24">
+       {{'register.welcome' | translate}}, <br />
+       {{'register.title' | translate}}
+diff --git a/src/app/routes/utilities/css-grid/css-grid.component.html b/src/app/routes/utilities/css-grid/css-grid.component.html
+index f536b12..3e6a1a4 100644
+--- a/src/app/routes/utilities/css-grid/css-grid.component.html
++++ b/src/app/routes/utilities/css-grid/css-grid.component.html
+@@ -8,7 +8,7 @@
+   <a routerLink="/forms/dynamic">advanced layout example</a>.
+ </p>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <mat-card-title>All breakpoints</mat-card-title>
+ 
+   <div class="p-x-8 text-center">
+@@ -25,7 +25,7 @@
+   </div>
+ </mat-card>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <mat-card-title>Stacked to horizontal</mat-card-title>
+ 
+   <div class="p-x-8 text-center">
+@@ -41,7 +41,7 @@
+   </div>
+ </mat-card>
+ 
+-<mat-card>
++<mat-card appearance="outlined">
+   <mat-card-title>Mix and match</mat-card-title>
+ 
+   <div class="p-x-8 text-center">
+diff --git a/src/app/routes/utilities/css-helpers/css-helpers.component.html b/src/app/routes/utilities/css-helpers/css-helpers.component.html
+index 3536377..c15eaef 100644
+--- a/src/app/routes/utilities/css-helpers/css-helpers.component.html
++++ b/src/app/routes/utilities/css-helpers/css-helpers.component.html
+@@ -1,6 +1,6 @@
+ <page-header></page-header>
+ 
+-<mat-card class="p-0">
++<mat-card appearance="outlined" class="p-0">
+   <mat-tab-group>
+     <mat-tab label="Material">
+       <div fxLayout="row wrap">
+diff --git a/src/app/theme/header/_header-theme.scss b/src/app/theme/header/_header-theme.scss
+index d93b564..cfaf176 100644
+--- a/src/app/theme/header/_header-theme.scss
++++ b/src/app/theme/header/_header-theme.scss
+@@ -6,7 +6,7 @@
+   $foreground: map.get($theme, foreground);
+ 
+   .matero-toolbar-button {
+-    &.mat-icon-button {
++    &.mat-mdc-icon-button {
+       &:hover {
+         background-color: mat.get-color-from-palette($background, hover);
+       }
+diff --git a/src/app/theme/header/header.component.scss b/src/app/theme/header/header.component.scss
+index 97d1511..84ba1f2 100644
+--- a/src/app/theme/header/header.component.scss
++++ b/src/app/theme/header/header.component.scss
+@@ -21,12 +21,12 @@
+ 
+ // Customize toolbar button
+ .matero-toolbar-button {
+-  &.mat-button,
+-  &.mat-icon-button {
++  &.mat-mdc-button,
++  &.mat-mdc-icon-button {
+     margin: 0 4px;
+   }
+ 
+-  &.mat-button {
++  &.mat-mdc-button {
+     min-width: unset;
+     line-height: 40px;
+     border-radius: 50rem;
+diff --git a/src/app/theme/sidebar/user-panel.component.scss b/src/app/theme/sidebar/user-panel.component.scss
+index 1047a16..ad3e622 100644
+--- a/src/app/theme/sidebar/user-panel.component.scss
++++ b/src/app/theme/sidebar/user-panel.component.scss
+@@ -30,7 +30,7 @@
+ .matero-user-panel-icons {
+   white-space: nowrap;
+ 
+-  .mat-icon-button {
++  .mat-mdc-icon-button {
+     width: 24px;
+     height: 24px;
+     line-height: 24px;
+diff --git a/src/app/theme/topmenu/_topmenu-theme.scss b/src/app/theme/topmenu/_topmenu-theme.scss
+index 15a0727..59fb4ed 100644
+--- a/src/app/theme/topmenu/_topmenu-theme.scss
++++ b/src/app/theme/topmenu/_topmenu-theme.scss
+@@ -11,7 +11,7 @@
+   .matero-topmenu {
+     background: mat.get-color-from-palette($background, app-bar);
+ 
+-    .mat-button {
++    .mat-mdc-button:not(:disabled) {
+       color: mat.get-color-from-palette($foreground, text);
+ 
+       &.active {
+@@ -21,7 +21,7 @@
+   }
+ 
+   .matero-topmenu-panel {
+-    .mat-menu-item {
++    .mat-mdc-menu-item {
+       color: mat.get-color-from-palette($foreground, text);
+ 
+       &.active {
+diff --git a/src/app/theme/topmenu/topmenu.component.scss b/src/app/theme/topmenu/topmenu.component.scss
+index 06e080a..c90db48 100644
+--- a/src/app/theme/topmenu/topmenu.component.scss
++++ b/src/app/theme/topmenu/topmenu.component.scss
+@@ -45,14 +45,14 @@
+     border-radius: 50rem;
+   }
+ 
+-  .mat-tab-nav-bar,
+-  .mat-tab-header {
++  .mat-mdc-tab-nav-bar,
++  .mat-mdc-tab-header {
+     border-bottom: none;
+   }
+ }
+ 
+ .matero-topmenu-panel {
+-  .mat-menu-item {
++  .mat-mdc-menu-item {
+     .menu-name {
+       margin-right: 8px;
+       vertical-align: middle;
+diff --git a/src/styles/_app-theme.scss b/src/styles/_app-theme.scss
+index 99b73ba..39cd383 100644
+--- a/src/styles/_app-theme.scss
++++ b/src/styles/_app-theme.scss
+@@ -10,6 +10,15 @@
+ 
+ @use './custom/table-theme';
+ 
++// TODO(v15): As of v15 mat.legacy-core no longer includes default typography styles.
++//  The following line adds:
++//    1. Default typography styles for all components
++//    2. Styles for typography hierarchy classes (e.g. .mat-headline-1)
++//  If you specify typography styles for the components you use elsewhere, you should delete this line.
++//  If you don't need the default component typographies but still want the hierarchy styles,
++//  you can delete this line and instead use:
++//    `@include mat.legacy-typography-hierarchy(mat.define-typography-config());`
++@include mat.all-component-typographies();
+ @include mat.core();
+ 
+ // Styles for the app that are based on the current theme.
+diff --git a/src/styles/custom/_material.scss b/src/styles/custom/_material.scss
+index 1b3f060..55b8681 100644
+--- a/src/styles/custom/_material.scss
++++ b/src/styles/custom/_material.scss
+@@ -2,7 +2,7 @@
+ 
+ @use '../../app/theme/style/variables';
+ 
+-.mat-card {
++.mat-mdc-card {
+   margin-bottom: variables.$gutter;
+ }
+ 
+@@ -11,13 +11,13 @@
+   margin-bottom: variables.$gutter;
+ }
+ 
+-.mat-list-base {
++.mat-mdc-list-base {
+   position: relative;
+ }
+ 
+-.mat-checkbox,
+-.mat-radio-button,
+-.mat-slide-toggle {
++.mat-mdc-checkbox,
++.mat-mdc-radio-button,
++.mat-mdc-slide-toggle {
+   margin-right: variables.$gutter * .5;
+ 
+   [dir='rtl'] & {
+@@ -27,7 +27,7 @@
+ }
+ 
+ .form-field-full {
+-  .mat-form-field {
++  .mat-mdc-form-field {
+     width: 100%;
+   }
+ }
+diff --git a/src/styles/custom/_table-theme.scss b/src/styles/custom/_table-theme.scss
+index 149211a..81c70e1 100644
+--- a/src/styles/custom/_table-theme.scss
++++ b/src/styles/custom/_table-theme.scss
+@@ -15,7 +15,7 @@
+   $row-odd-bg-dark: color.adjust(mat.get-color-from-palette(mat.$gray-palette, 900), $lightness: 10%);
+ 
+   mtx-grid.mtx-grid {
+-    .mat-table {
++    .mat-mdc-table {
+       &.mat-table-striped {
+         .mat-row-odd {
+           background-color: if($is-dark-theme, $row-odd-bg-dark, $row-odd-bg);
+@@ -23,14 +23,14 @@
+       }
+ 
+       &.mat-table-hover {
+-        .mat-row {
++        .mat-mdc-row {
+           &:hover {
+             background-color: if($is-dark-theme, $row-hover-bg-dark, $row-hover-bg);
+           }
+         }
+       }
+ 
+-      .mat-row {
++      .mat-mdc-row {
+         &.selected {
+           background-color: if($is-dark-theme, $row-hover-bg-dark, $row-hover-bg);
+         }
+diff --git a/src/styles/custom/_table.scss b/src/styles/custom/_table.scss
+index a9e7c66..820f497 100644
+--- a/src/styles/custom/_table.scss
++++ b/src/styles/custom/_table.scss
+@@ -1,7 +1,7 @@
+ /** Custom table style not with theme */
+ 
+ mtx-grid.mtx-grid {
+-  .mat-header-cell {
++  .mat-mdc-header-cell {
+     white-space: nowrap;
+   }
+ }
+diff --git a/src/test.ts b/src/test.ts
+index 32942ee..c777b4d 100644
+--- a/src/test.ts
++++ b/src/test.ts
+@@ -7,13 +7,7 @@ import {
+   platformBrowserDynamicTesting,
+ } from '@angular/platform-browser-dynamic/testing';
+ 
+-declare const require: any;
+-
+ // First, initialize the Angular testing environment.
+ getTestBed().initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDynamicTesting(), {
+   teardown: { destroyAfterEach: false },
+ });
+-// Then we find all the tests.
+-const context = require.context('./', true, /\.spec\.ts$/);
+-// And load the modules.
+-context.keys().map(context);
+diff --git a/tsconfig.json b/tsconfig.json
+index d1caa0e..968a0ce 100644
+--- a/tsconfig.json
++++ b/tsconfig.json
+@@ -15,21 +15,47 @@
+     "emitDecoratorMetadata": true,
+     "experimentalDecorators": true,
+     "importHelpers": true,
+-    "target": "es2020",
+-    "typeRoots": ["node_modules/@types"],
+-    "lib": ["es2019", "dom"],
++    "target": "ES2022",
++    "typeRoots": [
++      "node_modules/@types"
++    ],
++    "lib": [
++      "es2019",
++      "dom"
++    ],
+     "paths": {
+-      "@core": ["app/core"],
+-      "@core/*": ["app/core/*"],
+-      "@shared": ["app/shared"],
+-      "@shared/*": ["app/shared/*"],
+-      "@theme": ["app/theme"],
+-      "@theme/*": ["app/theme/*"],
+-      "@testing": ["testing"],
+-      "@testing/*": ["testing/*"],
+-      "@env": ["environments"],
+-      "@env/*": ["environments/*"]
+-    }
++      "@core": [
++        "app/core"
++      ],
++      "@core/*": [
++        "app/core/*"
++      ],
++      "@shared": [
++        "app/shared"
++      ],
++      "@shared/*": [
++        "app/shared/*"
++      ],
++      "@theme": [
++        "app/theme"
++      ],
++      "@theme/*": [
++        "app/theme/*"
++      ],
++      "@testing": [
++        "testing"
++      ],
++      "@testing/*": [
++        "testing/*"
++      ],
++      "@env": [
++        "environments"
++      ],
++      "@env/*": [
++        "environments/*"
++      ]
++    },
++    "useDefineForClassFields": false
+   },
+   "angularCompilerOptions": {
+     "enableI18nLegacyMessageIdFormat": false,

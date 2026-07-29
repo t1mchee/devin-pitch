@@ -1,0 +1,32 @@
+{
+ "topmenu": {
+  "navCls": "mat-mdc-tab-nav-bar mat-mdc-tab-header mat-mdc-tab-nav-bar-stretch-tabs mat-primary",
+  "navBorderBottom": "0px none rgba(0, 0, 0, 0.87)",
+  "btns": [
+   {
+    "cls": "mat-ripple mat-mdc-tab-header-pagination mat-mdc-tab-header-pagination-before mat-mdc-tab-header-pagination-disabled",
+    "color": "rgba(16, 16, 16, 0.3)",
+    "h": 0,
+    "lh": "24px",
+    "minw": "32px",
+    "br": "0px"
+   },
+   {
+    "cls": "mat-mdc-menu-trigger mdc-button mat-mdc-button mat-unthemed mat-mdc-button-base ng-star-inserted",
+    "color": "rgba(0, 0, 0, 0.87)",
+    "h": 36,
+    "lh": "21px",
+    "minw": "64px",
+    "br": "4px"
+   },
+   {
+    "cls": "mat-mdc-menu-trigger mdc-button mat-mdc-button mat-unthemed mat-mdc-button-base ng-star-inserted",
+    "color": "rgba(0, 0, 0, 0.87)",
+    "h": 36,
+    "lh": "21px",
+    "minw": "64px",
+    "br": "4px"
+   }
+  ]
+ }
+}

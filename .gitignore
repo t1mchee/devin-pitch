@@ -1,0 +1,3 @@
+
+# Visual diff artefacts are build output; CI uploads them as artifacts instead.
+bofa-digital-banking/apps/retail-banking-e2e/visual-diffs/

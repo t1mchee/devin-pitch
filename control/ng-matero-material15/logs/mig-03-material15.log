@@ -1,0 +1,58 @@
+Repository is not clean. Update changes will be mixed with pre-existing changes.
+Using package manager: npm
+Collecting installed dependencies...
+Found 76 dependencies.
+Fetching dependency metadata from registry...
+                  Package "@angular/flex-layout" has an incompatible peer dependency to "@angular/cdk" (requires "^14.0.0", would install "15.2.9").
+    Updating package.json with dependency @angular/cdk @ "15.2.9" (was "14.2.5")...
+    Updating package.json with dependency @angular/material @ "15.2.9" (was "14.2.5")...
+    Updating package.json with dependency @angular/material-moment-adapter @ "15.2.9" (was "14.2.5")...
+UPDATE package.json (3888 bytes)
+- Installing packages...
+✔ Packages successfully installed.
+** Executing migrations of package '@angular/cdk' **
+
+▸ Updates the Angular CDK to v15.
+    
+      ✓  Updated Angular CDK to version 15
+    
+  Migration completed (No changes made).
+
+** Executing migrations of package '@angular/material' **
+
+▸ Updates the Angular Material to v15.
+    CssSyntaxError: <css input>:11:1: Unknown word
+    
+       9 | // Light theme
+      10 | //
+    > 11 | $primary: mat.define-palette(mat.$indigo-palette);
+         | ^
+      12 | $accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+      13 | $theme: mat.define-light-theme($primary, $accent);
+    
+    Failed to process stylesheet: /schematics/ng-add/files/src/styles/_themes.scss (see error above).
+    
+      ✓  Updated Angular Material to version 15
+    
+UPDATE src/app/material.module.ts (4906 bytes)
+UPDATE src/styles/_themes.scss (1411 bytes)
+UPDATE schematics/ng-add/files/src/styles/_app-theme.scss (1521 bytes)
+UPDATE src/styles/_app-theme.scss (1521 bytes)
+UPDATE src/app/theme/topmenu/topmenu-panel.component.ts (2253 bytes)
+UPDATE src/app/routes/material/sidenav/dual-sidenav.ts (547 bytes)
+UPDATE src/app/routes/material/chips/chips.component.ts (1672 bytes)
+UPDATE src/app/routes/tables/remote-data/remote-data.component.ts (2882 bytes)
+UPDATE src/app/routes/forms/select/edit/edit.component.ts (709 bytes)
+UPDATE src/app/routes/tables/kitchen-sink/edit/edit.component.ts (517 bytes)
+UPDATE src/app/routes/material/table/table.component.ts (3101 bytes)
+UPDATE src/app/shared/services/paginator-i18n.service.ts (1824 bytes)
+UPDATE src/app/routes/forms/select/select.component.ts (1936 bytes)
+UPDATE src/app/routes/material/button/button.component.ts (566 bytes)
+UPDATE src/app/routes/material/card/card.component.ts (451 bytes)
+UPDATE src/app/routes/material/icon/icon.component.ts (416 bytes)
+UPDATE src/app/routes/material/slide-toggle/slide-toggle.component.ts (537 bytes)
+UPDATE src/app/routes/material/snack-bar/snack-bar.component.ts (569 bytes)
+UPDATE src/app/routes/material/dialog/dialog.component.ts (1721 bytes)
+UPDATE src/app/routes/material/paginator/paginator.component.ts (596 bytes)
+  Migration completed (20 files modified).
+

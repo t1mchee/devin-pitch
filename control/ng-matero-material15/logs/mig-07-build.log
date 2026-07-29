@@ -1,0 +1,254 @@
+One or more browsers which are configured in the project's Browserslist configuration will be ignored as ES5 output is not supported by the Angular CLI.
+Ignored browsers: kaios 2.5, op_mini all
+- Generating browser application bundles (phase: setup)...
+✔ Browser application bundle generation complete.
+✔ Browser application bundle generation complete.
+- Copying assets...
+✔ Copying assets complete.
+- Generating index html...
+✔ Index html generation complete.
+
+Initial Chunk Files           | Names                          |  Raw Size | Estimated Transfer Size
+main.e16ca3b51be76173.js      | main                           |   2.47 MB |               459.32 kB
+scripts.ce8fad6e473e3ab5.js   | scripts                        | 484.97 kB |               104.56 kB
+styles.5a0014e5d947c935.css   | styles                         | 282.51 kB |                24.32 kB
+polyfills.ed1305d6bff4ee8f.js | polyfills                      |  33.09 kB |                10.67 kB
+runtime.95d495b079bdbdd1.js   | runtime                        |   3.38 kB |                 1.60 kB
+
+| Initial Total                  |   3.26 MB |               600.47 kB
+
+Lazy Chunk Files              | Names                          |  Raw Size | Estimated Transfer Size
+671.11773377eae038dd.js       | material-material-module       | 115.34 kB |                22.02 kB
+847.54b50dacac431fe9.js       | forms-forms-module             |  35.37 kB |                 7.50 kB
+135.ee7ce608115f98ce.js       | tables-tables-module           |  17.76 kB |                 3.89 kB
+458.4086d35744cd7578.js       | profile-profile-module         |  13.80 kB |                 3.21 kB
+490.4fb0e71f994df764.js       | utilities-utilities-module     |  12.20 kB |                 2.58 kB
+686.b33c4cdcb56d9608.js       | permissions-permissions-module |   9.31 kB |                 2.07 kB
+319.39a14a2fb8edee19.js       | design-design-module           |   4.17 kB |                 1.36 kB
+614.c5042e4c7652047c.js       | media-media-module             |   1.92 kB |               952 bytes
+
+Build at: 2026-07-29T03:28:17.546Z - Hash: b57491be8de43ad2 - Time: 25308ms
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (5) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (10) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (15) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (20) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (25) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (30) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (35) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (40) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (45) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (50) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (55) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (60) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (65) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (70) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (75) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (80) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (85) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (90) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (95) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+./src/app/shared/components/error-code/error-code.component.scss?ngResource - Warning: Module Warning (from ./node_modules/sass-loader/dist/cjs.js):
+Deprecation $weight: Passing a number without unit % (100) is deprecated.
+
+To preserve current behavior: $weight * 1%
+
+More info: https://sass-lang.com/d/function-units
+
+src/app/shared/components/error-code/_long-shadow.scss 39:9          long-shadow()
+src/app/shared/components/error-code/error-code.component.scss 11:5  root stylesheet
+
+
+Warning: bundle initial exceeded maximum budget. Budget 2.00 MB was not met by 1.26 MB with a total of 3.26 MB.
+
+

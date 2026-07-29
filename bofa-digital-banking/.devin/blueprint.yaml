@@ -23,7 +23,8 @@ setup:
 verify:
   - cd bofa-digital-banking && npx nx run-many --target=build --all
   - cd bofa-digital-banking && npx nx run-many --target=test --all
-  - cd bofa-digital-banking && npx nx e2e retail-banking-e2e
+  - cd bofa-digital-banking && npx nx run-many --target=lint --all
+  - cd bofa-digital-banking && npm run visual
 
 # Visual baselines are captured and compared inside the same container image.
 # Font rendering differs between images; comparing across them produces false
@@ -31,5 +32,6 @@ verify:
 notes:
   visual_regression:
     baselines: bofa-digital-banking/apps/retail-banking-e2e/visual-baselines
-    runner: cypress 10.11.0, electron 106, viewport 1280x900
-    diff_budget: 0.1% of pixels
+    runner: pinned container cypress/included:10.11.0, electron 106, viewport 1280x900 (docker required)
+    command: npm run visual   # runs the container with --skip-nx-cache
+    diff_budget: 40 absolute pixels (MAX_DIFF_PIXELS), not a ratio
