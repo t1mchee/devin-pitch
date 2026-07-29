@@ -38,8 +38,9 @@ npm ci
 npx nx build ui-core
 npx nx run-many --target=build --all
 npx nx run-many --target=test --all
-npx nx e2e retail-banking-e2e       # visual regression, compares to baselines
-UPDATE_VISUAL_BASELINES=1 npx nx e2e retail-banking-e2e   # re-baseline (reviewable act)
+npx nx run-many --target=lint --all
+npm run visual                      # visual regression in the pinned Cypress image
+npm run visual:update               # re-baseline (reviewable act)
 ```
 
 ## Definition of done
@@ -48,7 +49,7 @@ A change is complete when **all** of the following hold:
 
 1. `nx run-many --target=build --all` passes.
 2. `nx run-many --target=test --all` passes.
-3. `nx e2e retail-banking-e2e` passes, **or** every visual diff is explained in the PR.
+3. `npm run visual` passes, **or** every visual diff is explained in the PR.
 4. Any change to a `ui-core` public API has a characterisation test.
 5. The PR contains a per-file rationale for everything under `theming/`.
 

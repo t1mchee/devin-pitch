@@ -48,7 +48,7 @@ nvm use 16.20.2          # Angular 14 requires Node 14–16
 npm ci --legacy-peer-deps
 npx nx run-many --target=build --all
 npx nx run-many --target=test --all
-npx nx e2e retail-banking-e2e            # visual regression against committed baselines
+npm run visual                           # visual regression in the pinned Cypress image
 npx nx serve retail-banking              # http://localhost:4200/__showcase/button
 ```
 

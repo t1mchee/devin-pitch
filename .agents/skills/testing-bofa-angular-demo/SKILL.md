@@ -21,9 +21,32 @@ work needs `--legacy-peer-deps` because of `@angular/flex-layout@14.0.0-beta.41`
 
 ```bash
 npx nx run-many --target=build --all --skip-nx-cache   # expect: 6 projects
-npx nx run-many --target=test --all --skip-nx-cache    # expect: 10 tests (1 + 3 + 6)
-npx nx e2e retail-banking-e2e                          # expect: 17 passing, 15 baselines
+npx nx run-many --target=test --all --skip-nx-cache    # expect: 3 suites / 7 tests
+npx nx run-many --target=lint --all --skip-nx-cache    # expect: 7 projects
+npx nx e2e retail-banking-e2e --skip-nx-cache          # expect: 17 passing, 15 baselines
 ```
+
+### `nx e2e` is a CACHED target — this matters for determinism claims
+
+Running `npx nx e2e retail-banking-e2e` twice back to back does **not** run Cypress twice. The
+second invocation replays stored output:
+
+```
+> nx run retail-banking-e2e:e2e  [existing outputs match the cache, left as is]
+   17 passing (6s)
+   Nx read the output from the cache instead of running the command for 1 out of 1 tasks.
+```
+
+So "I ran it twice and got 17/17 both times" proves nothing on its own. **Always pass
+`--skip-nx-cache` when testing determinism or flakiness.** To confirm Cypress really executed,
+check that the screenshot mtimes advanced:
+
+```bash
+ls --time-style=+%H:%M:%S -l dist/cypress/apps/retail-banking-e2e/screenshots/design-system.cy.ts/
+```
+
+If the timestamps are unchanged after a "passing" run, you got a cache replay. Measured properly,
+this suite is byte-deterministic: max diff across all 15 baselines is 0 px on repeated forced runs.
 
 ## Serving the three apps
 
@@ -57,6 +80,17 @@ poll `curl -s -o /dev/null -w '%{http_code}' http://localhost:4200/` rather than
   blocks bootstrap until the first principal resolves, and `/sign-in` is a real route, so a denied
   navigation terminates instead of looping. If this page is ever blank with chrome at 100% CPU,
   suspect a reintroduced router redirect loop rather than a slow build.
+- `/sign-in?r=/accounts` renders a terminal page showing the attempted route. Note the
+  "Continue to sign in" button has **no click binding** — it is a deliberate stub for the SSO
+  handoff, so "nothing happens when I click it" is expected, not a new bug. Also, the stub principal
+  always carries `accounts:read`, so the guard's deny path is **unreachable through normal
+  navigation** — you can only reach `/sign-in` by typing the URL. Don't claim you proved the
+  deny-redirect end to end.
+- Verifying the production build really drops the showcase: `curl` returns **200** for `/__showcase`
+  on a static server purely because of SPA `index.html` fallback. That is not evidence the route
+  exists. Check the client-side router in a browser (it should land on `/accounts`) and grep the
+  bundle for `__showcase` / `Design system`, plus a positive control like `Make a transfer` to prove
+  you grepped a real bundle.
 - `/__showcase` → index page listing every component. 13 components:
   `button, form-field, select, datepicker, table, dialog, tabs, chips, slide-toggle, autocomplete,
   paginator, currency-input, responsive-grid` (source of truth:
@@ -79,9 +113,18 @@ re-run the suite. **Never** set `UPDATE_VISUAL_BASELINES=1` and never commit the
 
 Choose the injection carefully — many plausible tweaks are no-ops or fall under the budget:
 
-- `color:` change on `.bofa-table .mat-header-cell` (slate → brand red) → 875 px → **fails**. Under
-  the old 0.1% ratio budget this passed silently; the budget is now absolute for exactly this case.
-  This is the injection to use when asked whether the oracle catches MDC colour breakage.
+- `color:` change on `.bofa-table .mat-header-cell` (slate → brand red) → 875 px (0.0949%) →
+  **fails**. Under the old 0.1% ratio budget this passed silently; the budget is now absolute for
+  exactly this case. This is the injection to use when asked whether the oracle catches MDC colour
+  breakage. The diff is correctly localised to the header row (bbox ~`y 150-161`).
+  (An older note said 785 px — that was measured against the pre-round-2 baselines, which have since
+  been deliberately regenerated. 875 px is correct for current baselines.)
+
+**Edit the single line surgically — do not use a blunt `sed`.** `color: bofa.$boa-slate-900;`
+appears on **two** lines: 79 (`.bofa-table .mat-header-cell`) and 182 (`.bofa-chips .mat-chip`).
+A global `sed -i 's/color: bofa.$boa-slate-900;/.../'` changes both and makes `chips-default` fail
+too, which looks exactly like a flaky snapshot and will waste your time. Verify with
+`grep -n 'color: bofa.$boa-slate-900;' libs/ui-core/src/lib/theming/_overrides.scss` before running.
 - `height:` on `.mat-header-cell` → **0 diff pixels**: the row, not the cell, drives height. Row
   height now lives on `.mat-header-row` / `.mat-row` (OV-05), so inject there instead.
 - `background:` on the same selector → 27126 px (2.943%) → fails loudly with the diff ratio in the

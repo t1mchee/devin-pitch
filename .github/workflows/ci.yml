@@ -37,8 +37,20 @@ jobs:
       - name: Unit tests
         run: npx nx run-many --target=test --all
 
+      - name: Lint all
+        run: npx nx run-many --target=lint --all
+
+      # Pixel baselines are only meaningful against a pinned renderer: font
+      # hinting differs between this runner and a developer laptop by enough
+      # pixels to trip the 40px budget. The image is the contract, and
+      # --skip-nx-cache keeps a cached result from standing in for a real run.
       - name: Visual regression
-        run: npx nx e2e retail-banking-e2e
+        run: |
+          docker run --rm -u $(id -u):$(id -g) \
+            -e HOME=/tmp -e CYPRESS_CACHE_FOLDER=/root/.cache/Cypress \
+            -v "$GITHUB_WORKSPACE":/w -w /w/bofa-digital-banking \
+            --entrypoint bash cypress/included:10.11.0 \
+            -c "npx nx e2e retail-banking-e2e --skip-nx-cache"
 
       - name: Upload visual diffs
         if: failure()

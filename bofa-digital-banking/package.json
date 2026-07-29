@@ -7,7 +7,9 @@
     "postinstall": "node ./decorate-angular-cli.js && ngcc --properties es2020 browser module main",
     "start": "nx serve",
     "build": "nx build",
-    "test": "nx test"
+    "test": "nx test",
+    "visual": "docker run --rm -u $(id -u):$(id -g) -e HOME=/tmp -e CYPRESS_CACHE_FOLDER=/root/.cache/Cypress -e UPDATE_VISUAL_BASELINES -v \"$PWD/..\":/w -w /w/bofa-digital-banking --entrypoint bash cypress/included:10.11.0 -c 'npx nx e2e retail-banking-e2e --skip-nx-cache'",
+    "visual:update": "UPDATE_VISUAL_BASELINES=1 npm run visual"
   },
   "private": true,
   "dependencies": {

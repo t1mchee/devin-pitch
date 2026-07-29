@@ -23,7 +23,8 @@ setup:
 verify:
   - cd bofa-digital-banking && npx nx run-many --target=build --all
   - cd bofa-digital-banking && npx nx run-many --target=test --all
-  - cd bofa-digital-banking && npx nx e2e retail-banking-e2e
+  - cd bofa-digital-banking && npx nx run-many --target=lint --all
+  - cd bofa-digital-banking && npm run visual
 
 # Visual baselines are captured and compared inside the same container image.
 # Font rendering differs between images; comparing across them produces false
