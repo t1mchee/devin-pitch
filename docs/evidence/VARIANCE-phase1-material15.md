@@ -4,14 +4,28 @@
 against `bofa-digital-banking` at Angular/Material 14. Each run got its own machine, its own branch
 and no access to the others.
 
+> **Read the pin before the table.** Every figure below describes each run **at its first stop** —
+> Run B at commit `312bcbc`, Run A at commit `b8c083f` — which is the only state that answers the
+> question this page asks (*what does an unattended run do?*). Both runs were **later asked to
+> continue** (adopt the new base, remap onto the computed-style contract), and their PR bodies were
+> rewritten by them at that point. So PR #2 today says "All 18 overrides are remapped" and "OV-17
+> is now mapped … an earlier revision of this PR left it inert and asked" — that is not a
+> contradiction of this page, it is the *second* instalment, and it only exists because a human
+> answered the escalation. Current heads: Run B `7a33203`, Run A `2a39ae3`.
+>
+> Because a PR body is mutable and this page is evidence, the bodies as read are committed under
+> `docs/evidence/pr-snapshots/`. Quote those, not the live tab, and if you show the live PR in a
+> meeting, say which instalment you are looking at.
+
 Every pixel count, override tally and terminal state below is read from that run's own PR or
-session. Where a figure is not directly sourced it says so rather than being filled in: wall clock
+session at the pinned commit above. Where a figure is not directly sourced it says so rather than being filled in: wall clock
 is session start-to-last-message and only Run B's is recorded, and Run A's elapsed time is not
 reported here because the session was interleaved with unrelated work and the elapsed figure would
 not mean what a reader assumes it means.
 
 | | Run A | Run B | Run C |
 |---|---|---|---|
+| Commit these figures describe | `b8c083f` | `312bcbc` | — |
 | Session | [1fb2d704](https://app.devin.ai/sessions/1fb2d7041ac54b34b6807d93bcfc8a33) | [cb4f31e3](https://app.devin.ai/sessions/cb4f31e36dbd487f986aa79d4ae8b316) | [137e9e5a](https://app.devin.ai/sessions/137e9e5aad784c839dd8947d66f96f9e) |
 | PR | [#3](https://github.com/t1mchee/devin-pitch/pull/3) | [#2](https://github.com/t1mchee/devin-pitch/pull/2) | — |
 | Terminal state | stopped and asked | partial, stopped and asked | suspended (account usage limit) |

@@ -1,4 +1,4 @@
-=== repeat-run-2 :: 2026-07-29T05:28:03Z ===
+=== repeat-run-2 :: 2026-07-29T05:41:13Z ===
 
 > bofa-digital-banking@0.0.0 visual
 > docker run --rm -u $(id -u):$(id -g) -e HOME=/tmp -e CYPRESS_CACHE_FOLDER=/root/.cache/Cypress -v "$PWD/..":/w -w /w/bofa-digital-banking --entrypoint bash cypress/included@sha256:058d1834239bf09b381325b8369d05e9e0516a46b65b32e6dc0c991801dc517a -c 'npx nx e2e retail-banking-e2e --skip-nx-cache'
@@ -11,24 +11,24 @@
 
 Initial Chunk Files                                        | Names                    |  Raw Size
 vendor.js                                                  | vendor                   |   4.97 MB | 
+styles.css, styles.js                                      | styles                   | 313.48 kB | 
 polyfills.js                                               | polyfills                | 239.94 kB | 
-styles.css, styles.js                                      | styles                   | 236.58 kB | 
-main.js                                                    | main                     | 146.55 kB | 
+main.js                                                    | main                     | 147.15 kB | 
 runtime.js                                                 | runtime                  |  12.61 kB | 
 
-                                                           | Initial Total            |   5.59 MB
+                                                           | Initial Total            |   5.66 MB
 
 Lazy Chunk Files                                           | Names                    |  Raw Size
 apps_retail-banking_src_app_showcase_showcase_module_ts.js | showcase-showcase-module |  46.74 kB | 
 
-Build at: 2026-07-29T05:28:17.503Z - Hash: 2920221e7a894087 - Time: 11603ms
+Build at: 2026-07-29T05:41:27.296Z - Hash: bdb6573e17024b83 - Time: 11326ms
 
 ** Angular Live Development Server is listening on localhost:4200, open your browser on http://localhost:4200/ **
 
 
 ✔ Compiled successfully.
 libva error: vaGetDriverNameByIndex() failed with unknown libva error, driver_name = (null)
-[219:0729/052818.277960:ERROR:gpu_memory_buffer_support_x11.cc(44)] dri3 extension not supported.
+[221:0729/054128.079166:ERROR:gpu_memory_buffer_support_x11.cc(44)] dri3 extension not supported.
 ====================================================================================================
   (Run Starting)
   ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
@@ -44,51 +44,51 @@ libva error: vaGetDriverNameByIndex() failed with unknown libva error, driver_na
 
   design system — visual baseline
 [visual] button-default: 0 px (budget 40)
-    ✓ button renders to spec (838ms)
+    ✓ button renders to spec (812ms)
 [visual] form-field-default: 0 px (budget 40)
-    ✓ form-field renders to spec (516ms)
+    ✓ form-field renders to spec (377ms)
 [visual] select-default: 0 px (budget 40)
-    ✓ select renders to spec (347ms)
+    ✓ select renders to spec (316ms)
 [visual] datepicker-default: 0 px (budget 40)
-    ✓ datepicker renders to spec (333ms)
+    ✓ datepicker renders to spec (326ms)
 [visual] table-default: 0 px (budget 40)
-    ✓ table renders to spec (350ms)
+    ✓ table renders to spec (473ms)
 [visual] dialog-default: 0 px (budget 40)
-    ✓ dialog renders to spec (351ms)
+    ✓ dialog renders to spec (340ms)
 [visual] tabs-default: 0 px (budget 40)
-    ✓ tabs renders to spec (416ms)
+    ✓ tabs renders to spec (407ms)
 [visual] chips-default: 0 px (budget 40)
-    ✓ chips renders to spec (410ms)
+    ✓ chips renders to spec (379ms)
 [visual] slide-toggle-default: 0 px (budget 40)
-    ✓ slide-toggle renders to spec (446ms)
+    ✓ slide-toggle renders to spec (339ms)
 [visual] autocomplete-default: 0 px (budget 40)
     ✓ autocomplete renders to spec (363ms)
 [visual] paginator-default: 0 px (budget 40)
-    ✓ paginator renders to spec (369ms)
+    ✓ paginator renders to spec (317ms)
 [visual] currency-input-default: 0 px (budget 40)
-    ✓ currency-input renders to spec (342ms)
+    ✓ currency-input renders to spec (435ms)
 [visual] responsive-grid-default: 0 px (budget 40)
-    ✓ responsive-grid renders to spec (300ms)
-    ✓ form field renders its disabled and error states (123ms)
-    ✓ button exposes a disabled state (100ms)
+    ✓ responsive-grid renders to spec (318ms)
+    ✓ form field renders its disabled and error states (122ms)
+    ✓ button exposes a disabled state (107ms)
 [visual] responsive-grid-md: 0 px (budget 40)
-    ✓ responsive grid collapses below the md breakpoint (423ms)
+    ✓ responsive grid collapses below the md breakpoint (316ms)
 [visual] responsive-grid-sm: 0 px (budget 40)
-    ✓ responsive grid hides the detail pane below the sm breakpoint (312ms)
+    ✓ responsive grid hides the detail pane below the sm breakpoint (269ms)
   design system — overlay and interaction states
 [visual] dialog-open: 0 px (budget 40)
-    ✓ opens the real dialog overlay (407ms)
+    ✓ opens the real dialog overlay (463ms)
 [visual] select-panel-open: 0 px (budget 40)
-    ✓ opens the select panel (428ms)
+    ✓ opens the select panel (380ms)
 [visual] autocomplete-panel-open: 0 px (budget 40)
-    ✓ opens the autocomplete panel (483ms)
+    ✓ opens the autocomplete panel (518ms)
 [visual] datepicker-calendar-open: 0 px (budget 40)
-    ✓ opens the datepicker calendar (425ms)
+    ✓ opens the datepicker calendar (515ms)
 [visual] button-focus-ring: 0 px (budget 40)
-    ✓ shows the keyboard focus ring on the primary button (334ms)
+    ✓ shows the keyboard focus ring on the primary button (428ms)
   retail banking — customer surface
 [visual] accounts-dashboard: 0 px (budget 40)
-    ✓ renders the accounts dashboard (595ms)
+    ✓ renders the accounts dashboard (429ms)
   23 passing (9s)
   (Results)
   ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
@@ -99,7 +99,7 @@ libva error: vaGetDriverNameByIndex() failed with unknown libva error, driver_na
   │ Skipped:      0                                                                                │
   │ Screenshots:  21                                                                               │
   │ Video:        false                                                                            │
-  │ Duration:     9 seconds                                                                        │
+  │ Duration:     8 seconds                                                                        │
   │ Spec Ran:     design-system.cy.ts                                                              │
   └────────────────────────────────────────────────────────────────────────────────────────────────┘
   (Screenshots)
@@ -150,51 +150,61 @@ libva error: vaGetDriverNameByIndex() failed with unknown libva error, driver_na
   Running:  override-contract.cy.ts                                                         (2 of 2)
 
   design system — override contract (computed styles)
-    ✓ OV-01: Disabled field label stays legible (WCAG AA) against the slate palette (558ms)
-    ✓ OV-01b: Field underline uses the BoA slate rule, not the Material default (150ms)
-    ✓ OV-02: Error text sits on a 20px line box so field height never jumps on validation (128ms)
-    ✓ OV-03: Primary button is brand red with 8px optical icon/label spacing (134ms)
-    ✓ OV-04: Keyboard focus ring is visible on white and on slate-50 (153ms)
-    ✓ OV-05: Statement rows keep fixed heights so 50 rows paginate predictably in print (149ms)
-    ✓ OV-05b: Currency figures use tabular numerals and right-align on the decimal (241ms)
-    ✓ OV-05c: Header cells carry the slate-900 brand weight, not the Material grey (181ms)
-    ✓ OV-05d: Zebra striping on even rows for statement scanability (189ms)
-    ✓ OV-06: Sort arrow is dimmed until hover so it does not read as an active filter (146ms)
-    ✓ OV-07: Active option in the account picker is tinted brand red, not Material grey (272ms)
-    ✓ OV-08: Selected option is brand red, not accent navy (navy reads as a link here) (188ms)
-    ✓ OV-09: Consent toggle is unambiguous at arm’s length on a tablet (102ms)
-    ✓ OV-09b: A granted consent reads green, not brand red (245ms)
-    ✓ OV-10: Section ink bar is legible on a 4K branch display (156ms)
-    ✓ OV-11: Category chips keep a 28px rhythm inside the filter drawer (126ms)
-    ✓ OV-12: Step-up dialog matches the mobile MFA modal: tight padding, squared corners (192ms)
-    ✓ OV-12b: A short confirmation body never acquires an inner scrollbar (190ms)
-    ✓ OV-13: Selected day is brand red; today is outlined, not a second filled circle (210ms)
-    ✓ OV-14: Range label stays on screen on a 1280px branch terminal (146ms)
-    ✓ OV-15: Payee panel never covers the Confirmation of Payee copy (343ms)
-    ✓ OV-16: Amount entry right-aligns on tabular numerals (112ms)
-    ✓ OV-17: Compact density is materially shorter than the default field (162ms)
-  23 passing (5s)
+    ✓ OV-01: Disabled field label stays legible (WCAG AA) against the slate palette (586ms)
+    ✓ OV-01b: Field underline uses the BoA slate rule, not the Material default (218ms)
+    ✓ OV-02: Error text sits on a 20px line box so field height never jumps on validation (167ms)
+    ✓ OV-03: Primary button is brand red with 8px optical icon/label spacing (128ms)
+    ✓ OV-04: Keyboard focus ring is visible on white and on slate-50 (140ms)
+    ✓ OV-05: Statement rows keep fixed heights so 50 rows paginate predictably in print (136ms)
+    ✓ OV-05b: Currency figures use tabular numerals and right-align on the decimal (142ms)
+    ✓ OV-05c: Header cells carry the slate-900 brand weight, not the Material grey (174ms)
+    ✓ OV-05d: Zebra striping on even rows for statement scanability (168ms)
+    ✓ OV-06: Sort arrow is dimmed until hover so it does not read as an active filter (184ms)
+    ✓ OV-07: Active option in the account picker is tinted brand red, not Material grey (268ms)
+    ✓ OV-08: Selected option is brand red, not accent navy (navy reads as a link here) (187ms)
+    ✓ OV-09: Consent toggle is unambiguous at arm’s length on a tablet (104ms)
+    ✓ OV-09b: A granted consent reads green, not brand red (99ms)
+    ✓ OV-10: Section ink bar is legible on a 4K branch display (116ms)
+    ✓ OV-11: Category chips keep a 28px rhythm inside the filter drawer (121ms)
+    ✓ OV-12: Step-up dialog matches the mobile MFA modal: tight padding, squared corners (210ms)
+    ✓ OV-12b: A short confirmation body never acquires an inner scrollbar (197ms)
+    ✓ OV-13: Selected day is brand red; today is outlined, not a second filled circle (216ms)
+    ✓ OV-14: Range label stays on screen on a 1280px branch terminal (117ms)
+    ✓ OV-15: Payee panel never covers the Confirmation of Payee copy (249ms)
+    ✓ OV-16: Amount entry right-aligns on tabular numerals (180ms)
+    ✓ OV-17: Compact density is materially shorter than the default field (163ms)
+    ✓ OV-18: Legacy shell embeds tabs without a second divider line (114ms)
+  design system — override contract (dark surface)
+    ✓ the dark surface is actually dark (else every probe below is vacuous) (240ms)
+    ✓ OV-05d [dark]: Zebra striping on even rows for statement scanability (146ms)
+    ✓ OV-07 [dark]: Active option in the account picker is tinted brand red, not Material grey (254ms)
+    ✓ OV-10 [dark]: Section ink bar is legible on a 4K branch display (247ms)
+    ✓ OV-11 [dark]: Category chips keep a 28px rhythm inside the filter drawer (116ms)
+    ✓ OV-15 [dark]: Payee panel never covers the Confirmation of Payee copy (365ms)
+    ✓ OV-17 [dark]: Compact density is materially shorter than the default field (134ms)
+    ✓ OV-18 [dark]: Legacy shell embeds tabs without a second divider line (111ms)
+  32 passing (6s)
   (Results)
   ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
-  │ Tests:        23                                                                               │
-  │ Passing:      23                                                                               │
+  │ Tests:        32                                                                               │
+  │ Passing:      32                                                                               │
   │ Failing:      0                                                                                │
   │ Pending:      0                                                                                │
   │ Skipped:      0                                                                                │
   │ Screenshots:  0                                                                                │
   │ Video:        false                                                                            │
-  │ Duration:     4 seconds                                                                        │
+  │ Duration:     6 seconds                                                                        │
   │ Spec Ran:     override-contract.cy.ts                                                          │
   └────────────────────────────────────────────────────────────────────────────────────────────────┘
 ====================================================================================================
   (Run Finished)
        Spec                                              Tests  Passing  Failing  Pending  Skipped  
   ┌────────────────────────────────────────────────────────────────────────────────────────────────┐
-  │ ✔  design-system.cy.ts                      00:09       23       23        -        -        - │
+  │ ✔  design-system.cy.ts                      00:08       23       23        -        -        - │
   ├────────────────────────────────────────────────────────────────────────────────────────────────┤
-  │ ✔  override-contract.cy.ts                  00:04       23       23        -        -        - │
+  │ ✔  override-contract.cy.ts                  00:06       32       32        -        -        - │
   └────────────────────────────────────────────────────────────────────────────────────────────────┘
-    ✔  All specs passed!                        00:13       46       46        -        -        -  
+    ✔  All specs passed!                        00:14       55       55        -        -        -  
 
  
 

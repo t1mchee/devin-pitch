@@ -9,8 +9,10 @@ plugin now prints on **every** comparison, pass or fail. Reproduce with
 `npm run visual` (pinned container) or `npx nx e2e retail-banking-e2e
 --skip-nx-cache` (host renderer).
 
-Captures are 1280x720. The full command runs 46 tests: the 23-test image suite
-(21 compared snapshots plus two interaction tests) and the 23 computed-style
+Captures are 1280x720. The full command runs 55 tests: the 23-test image suite
+(21 compared snapshots plus two interaction tests) and 32 computed-style tests
+— 24 light-surface probes, 7 re-asserted on the dark surface, and one control
+that fails if the dark surface silently stopped rendering — the 24 computed-style
 override probes.
 
 **The raw transcripts for every number on this page are committed** under

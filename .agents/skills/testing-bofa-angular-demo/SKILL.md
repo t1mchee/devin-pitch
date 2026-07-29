@@ -23,7 +23,7 @@ work needs `--legacy-peer-deps` because of `@angular/flex-layout@14.0.0-beta.41`
 npx nx run-many --target=build --all --skip-nx-cache   # expect: 6 projects
 npx nx run-many --target=test --all --skip-nx-cache    # expect: 6 projects, 8 suites / 43 tests
 npx nx run-many --target=lint --all --skip-nx-cache    # expect: 7 projects, 0 errors / 3 warnings
-npm run visual                                         # expect: 23 passing, 21 snapshots (preferred)
+npm run visual                                         # expect: 23 + 32 passing, 21 snapshots (preferred)
 ```
 
 The **test tally is easy to get wrong**, and it changes as specs are added — always re-derive it,
@@ -266,7 +266,8 @@ console.log(n,(n/(a.width*a.height)*100).toFixed(4)+'%');"
 
 `apps/retail-banking-e2e/src/e2e/override-contract.cy.ts` + `src/support/override-probes.ts` hold 22
 probes, one per `OV-nn` intent, asserting `getComputedStyle` values on the running app. Total suite
-is **45 tests = 23 snapshot tests (21 snapshots) + 22 probes**.
+is **55 tests = 23 snapshot tests (21 snapshots) + 32 probes (24 light, 7 dark, 1 dark-surface
+anti-vacuity control)**.
 
 Run only this suite (much faster than the whole thing) in the pinned container. **The `--spec` path
 is workspace-relative — `src/e2e/...` silently finds no specs:**

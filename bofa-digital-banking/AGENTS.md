@@ -45,7 +45,7 @@ Read this before changing anything in this repository.
 
 ```bash
 nvm use 16.20.2                     # Angular 14 requires Node 14–16
-npm ci
+npm ci --legacy-peer-deps           # bare `npm ci` fails ERESOLVE on the auth peer pin
 npx nx build ui-core
 npx nx run-many --target=build --all
 npx nx run-many --target=test --all

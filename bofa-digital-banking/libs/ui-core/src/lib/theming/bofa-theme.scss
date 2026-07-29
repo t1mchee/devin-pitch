@@ -18,4 +18,16 @@ $boa-theme: mat.define-light-theme($boa-primary, $boa-accent, $boa-warn);
 @include mat.all-component-themes($boa-theme);
 @include mat.all-component-typographies(type.$boa-typography);
 
+// Dark surface. Not a product feature yet — it exists because the external
+// control run's worst finding (an override rewritten onto a dead selector,
+// where the library default happened to match the brand value) was invisible
+// in the light theme and wrong in the dark one. A single-theme oracle cannot
+// see that class of defect at all. Colours only: geometry, density and
+// typography are shared with the light theme by construction.
+$boa-dark-theme: mat.define-dark-theme($boa-primary, $boa-accent, $boa-warn);
+
+.bofa-theme-dark {
+  @include mat.all-component-colors($boa-dark-theme);
+}
+
 @import './overrides';

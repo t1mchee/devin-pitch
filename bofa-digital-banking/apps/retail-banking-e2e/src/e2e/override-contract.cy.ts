@@ -1,4 +1,4 @@
-import { OVERRIDE_PROBES, OverrideProbe } from '../support/override-probes';
+import { DARK_PROBES, OVERRIDE_PROBES, OverrideProbe } from '../support/override-probes';
 
 /**
  * The override contract: what each OV-nn override is *for*, asserted against the
@@ -58,21 +58,50 @@ function act(probe: OverrideProbe): void {
   }
 }
 
+function assertProbe(probe: OverrideProbe, theme: 'light' | 'dark'): void {
+  cy.visitShowcase(probe.component, theme);
+  act(probe);
+  openOverlay(probe);
+
+  // A probe that matches nothing is the failure this suite exists to catch:
+  // it is precisely what a migration produces when it rewrites a selector
+  // onto an element that no longer exists.
+  cy.get(probe.target).should('exist');
+
+  Object.entries(probe.expect).forEach(([property, value]) => {
+    cy.get(probe.target).should('have.css', property, value);
+  });
+}
+
 describe('design system — override contract (computed styles)', () => {
   OVERRIDE_PROBES.forEach((probe) => {
-    it(`${probe.ov}: ${probe.intent}`, () => {
-      cy.visitShowcase(probe.component);
-      act(probe);
-      openOverlay(probe);
+    it(`${probe.ov}: ${probe.intent}`, () => assertProbe(probe, 'light'));
+  });
+});
 
-      // A probe that matches nothing is the failure this suite exists to catch:
-      // it is precisely what a migration produces when it rewrites a selector
-      // onto an element that no longer exists.
-      cy.get(probe.target).should('exist');
+/**
+ * The same contract on the dark surface. This is not theme support for its own
+ * sake: the control run's worst regression was invisible in the light theme
+ * because the library default happened to equal the brand value there, and the
+ * dark palette is where that coincidence stops holding. Probes whose expected
+ * value is a fixed brand colour or a geometry must hold in both themes — if one
+ * of them only holds in the light theme, the rule is not doing the work.
+ */
+describe('design system — override contract (dark surface)', () => {
+  // Control for the controls. If `?theme=dark` silently stopped applying — a
+  // renamed class, a dropped mixin, a query param the app no longer reads —
+  // every assertion in this block would keep passing against the light theme
+  // and the whole block would be decoration. So first prove the palette moved,
+  // on a surface we do NOT override: the Material table background.
+  it('the dark surface is actually dark (else every probe below is vacuous)', () => {
+    cy.visitShowcase('table', 'light');
+    cy.get('.bofa-table').should('have.css', 'background-color', 'rgb(255, 255, 255)');
+    cy.visitShowcase('table', 'dark');
+    cy.get('body').should('have.class', 'bofa-theme-dark');
+    cy.get('.bofa-table').should('have.css', 'background-color', 'rgb(66, 66, 66)');
+  });
 
-      Object.entries(probe.expect).forEach(([property, value]) => {
-        cy.get(probe.target).should('have.css', property, value);
-      });
-    });
+  DARK_PROBES.forEach((probe) => {
+    it(`${probe.ov} [dark]: ${probe.intent}`, () => assertProbe(probe, 'dark'));
   });
 });

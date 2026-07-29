@@ -1,0 +1,20 @@
+{
+  "captured": "2026-07-29",
+  "tree": "Angular 14.2 (EOL by design)",
+  "vulnerabilities": {
+    "info": 0,
+    "low": 3,
+    "moderate": 15,
+    "high": 89,
+    "critical": 4,
+    "total": 111
+  },
+  "dependencies": {
+    "prod": 948,
+    "dev": 647,
+    "optional": 68,
+    "peer": 0,
+    "peerOptional": 0,
+    "total": 1620
+  }
+}

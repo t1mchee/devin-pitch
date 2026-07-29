@@ -25,6 +25,14 @@
 > — but **the narrative failed where the gate did not**. That is the honest phase-2 headline, and it
 > is why the reviewer, not the agent, owns the "is this diff acceptable?" decision.
 >
+> Two verbatim-copy artefacts, so nobody mistakes them for current practice: the body writes the
+> renderer as the mutable tag `cypress/included:10.11.0`, and the branch's `package.json` used that
+> tag, because the digest pin
+> (`cypress/included@sha256:058d1834…dc517a`) landed on `main` after this branch was cut. That is
+> not a second explanation for the pixels above — the digest resolves to the same image — but it does
+> mean the phase-2 run's renderer was not itself pinned, and a reviewer is entitled to say the run
+> should be re-done on the pinned image before those counts are argued about.
+>
 > What *is* corroborated: the flex-layout removal (the `responsive-grid-*` baselines pass at 0 px in
 > CI on the CSS rewrite), the Node 16 → 18 move, the two override fixes found by the computed-style
 > oracle, and the honest note that `card-services`' `fx*` attributes were already inert.
