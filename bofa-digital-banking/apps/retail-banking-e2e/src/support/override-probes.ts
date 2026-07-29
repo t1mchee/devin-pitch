@@ -40,11 +40,19 @@ export interface OverrideProbe {
   target: string;
   /** Computed properties and the values the intent requires. */
   expect: Record<string, string>;
+  /**
+   * Values that satisfy the same intent under the dark palette, where they
+   * differ. Colour constants are palette-dependent: asserting the light value
+   * on the dark surface is how a probe ends up certifying an illegible render
+   * as correct (see OV-05d). Geometry is palette-independent and needs none.
+   */
+  expectDark?: Record<string, string>;
 }
 
 const RED_600 = 'rgb(200, 16, 46)';
 const BLUE_500 = 'rgb(1, 33, 105)';
 const SLATE_50 = 'rgb(246, 247, 249)';
+const SLATE_750 = 'rgb(74, 79, 87)';
 const SLATE_100 = 'rgb(236, 238, 242)';
 const SLATE_300 = 'rgb(199, 204, 214)';
 const SLATE_600 = 'rgb(93, 102, 115)';
@@ -117,6 +125,9 @@ export const OVERRIDE_PROBES: OverrideProbe[] = [
     component: 'table',
     target: '.bofa-table .mat-mdc-header-cell',
     expect: { color: SLATE_900, 'font-weight': '600' },
+    // Slate-900 on Material's dark surface is 1.80:1. The weight is
+    // palette-independent; the colour is not.
+    expectDark: { color: SLATE_100, 'font-weight': '600' },
   },
   {
     ov: 'OV-05d',
@@ -124,6 +135,12 @@ export const OVERRIDE_PROBES: OverrideProbe[] = [
     component: 'table',
     target: '.bofa-table .mat-mdc-row:nth-child(even)',
     expect: { 'background-color': SLATE_50 },
+    // The dark surface needs a different value for the same reason a bank
+    // statement needs one: Material paints the row text white there, and
+    // slate-50 under white text is 1.07:1. The AA ratio itself is asserted
+    // separately in the dark block, because a constant can be wrong and a
+    // contrast requirement cannot.
+    expectDark: { 'background-color': SLATE_750 },
   },
   {
     ov: 'OV-06',
@@ -290,7 +307,28 @@ export const OVERRIDE_PROBES: OverrideProbe[] = [
  * second palette the coincidence stops holding and the probe goes red. That is
  * the class of defect a single-theme oracle cannot see — including a pixel
  * oracle, which only ever screenshots the light theme here.
+ *
+ * HOW MUCH OF THIS IS *INCREMENTAL* POWER — measured, not assumed. A reviewer
+ * parsed the compiled bundle: the `.bofa-theme-dark` scope emits 397 rules and
+ * not one `height`, `min-height`, `max-height`, `padding*` or
+ * `border-bottom-width`. So the honest breakdown of these 7 is:
+ *
+ *   - OV-05c, OV-05d, OV-07, OV-11 — can fail on the dark surface alone. Two of
+ *     them already did, on the first hostile review of this block: OV-05d was
+ *     asserting the light stripe colour and certifying a 1.07:1 statement row as
+ *     correct, and OV-05c was doing the same for 1.80:1 header text. Both now
+ *     carry an `expectDark`, and the ratios themselves are asserted separately.
+ *   - OV-15, OV-17, OV-18 — **geometry duplicates.** Nothing in the dark scope
+ *     touches these properties, so they fail symmetrically with their light
+ *     twins. Duplicates, not vacuous: they still fail when the rule is deleted
+ *     (`oracle-logs/delete-rule-ov18.log`), they just cannot fail dark-only.
+ *     Kept as a tripwire for a future dark rule that changes density.
+ *   - OV-10 — its `height: 3px` half has teeth; its `background-color` half is
+ *     **vacuous in both themes**, because primary is brand red in the dark
+ *     palette too. Same disclosure as OV-08 and OV-13.
+ *
+ * So: 3 probes carry the dark surface, not 7. Quote 3.
  */
 export const DARK_PROBES: OverrideProbe[] = OVERRIDE_PROBES.filter((probe) =>
-  ['OV-05d', 'OV-07', 'OV-10', 'OV-11', 'OV-15', 'OV-17', 'OV-18'].includes(probe.ov)
+  ['OV-05c', 'OV-05d', 'OV-07', 'OV-10', 'OV-11', 'OV-15', 'OV-17', 'OV-18'].includes(probe.ov)
 );
