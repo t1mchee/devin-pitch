@@ -4,13 +4,25 @@
 // fallback for environments that cannot reach it (kiosk, some ATM-adjacent surfaces).
 $boa-font-stack: '"BoA Sans", Arial, Helvetica, sans-serif';
 
+// Angular Material 15 replaced the 2014 typography level names with the 2018 names.
+// `mat.define-typography-config` now takes the 2018 names; the exact px/line-height/
+// weight values below are unchanged from v14 — only the parameter names are remapped so
+// the same rendered type scale is preserved. Mapping is taken from Material's own
+// `private-typography-to-2014-config` (the inverse of what is applied here):
+//   headline      -> headline-5
+//   title         -> headline-6
+//   subheading-2  -> subtitle-1
+//   body-1 (400)  -> body-2      // NOTE: body-1/body-2 swap between the two systems
+//   body-2 (600)  -> body-1      // NOTE: body-1/body-2 swap between the two systems
+//   caption       -> caption
+//   button        -> button
 $boa-typography: mat.define-typography-config(
   $font-family: $boa-font-stack,
-  $headline: mat.define-typography-level(28px, 34px, 600),
-  $title: mat.define-typography-level(20px, 26px, 600),
-  $subheading-2: mat.define-typography-level(16px, 22px, 600),
-  $body-1: mat.define-typography-level(14px, 20px, 400),
-  $body-2: mat.define-typography-level(14px, 20px, 600),
+  $headline-5: mat.define-typography-level(28px, 34px, 600),
+  $headline-6: mat.define-typography-level(20px, 26px, 600),
+  $subtitle-1: mat.define-typography-level(16px, 22px, 600),
+  $body-2: mat.define-typography-level(14px, 20px, 400),
+  $body-1: mat.define-typography-level(14px, 20px, 600),
   $caption: mat.define-typography-level(12px, 16px, 400),
   // Accessibility: button letter-spacing is widened because all-caps labels at
   // 14px fail internal legibility review at default tracking.

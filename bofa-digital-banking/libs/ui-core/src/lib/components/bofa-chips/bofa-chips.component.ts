@@ -5,11 +5,11 @@ import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
   selector: 'bofa-chips',
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <mat-chip-list class="bofa-chips" aria-label="Transaction categories">
+    <mat-chip-set class="bofa-chips" aria-label="Transaction categories">
       <mat-chip *ngFor="let chip of chips" [disabled]="disabled" [attr.data-state]="disabled ? 'disabled' : null">
         {{ chip }}
       </mat-chip>
-    </mat-chip-list>
+    </mat-chip-set>
   `,
 })
 export class BofaChipsComponent {
