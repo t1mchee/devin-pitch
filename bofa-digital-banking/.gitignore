@@ -39,3 +39,6 @@ testem.log
 Thumbs.db
 
 .angular
+
+# visual regression diffs (generated)
+apps/retail-banking-e2e/visual-diffs

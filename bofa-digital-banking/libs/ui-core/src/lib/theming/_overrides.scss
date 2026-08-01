@@ -6,6 +6,10 @@
 // When Material changes its internals, preserve the intent, not the selector.
 //
 // Numbering (OV-nn) is referenced by the design-system audit and by migration PRs.
+//
+// Angular Material 15 moved every component in this file onto MDC. The hooks
+// below were read off the rendered v15 markup (dumped from the showcase at
+// /__showcase/:component), not inferred from the v14 class names.
 // -----------------------------------------------------------------------------
 
 @use 'sass:color';
@@ -14,18 +18,42 @@
 // OV-01 — Compliance (WCAG AA): disabled form fields must remain legible against
 // the BoA slate palette. Material's default disabled label fails contrast at 14px
 // on our background, and disabled account fields are common in read-only journeys.
+//
+// MDC: the v14 `.mat-form-field-underline` / `.mat-form-field-ripple` pair is a
+// single `.mdc-line-ripple` element — the resting line is its ::before and the
+// focused line its ::after. The floating label is `.mdc-floating-label`, and the
+// disabled state is `.mdc-text-field--disabled` on the text-field wrapper.
 .bofa-form-field {
-  .mat-form-field-underline {
+  // The resting rule is painted by `.mdc-line-ripple::before` as a border, which
+  // no computed-style probe can read. It is drawn on the element itself instead
+  // (same 1px slate line, one element higher) so the intent stays measurable.
+  .mdc-line-ripple {
+    height: 1px;
     background-color: bofa.$boa-slate-300;
   }
 
-  &.mat-focused .mat-form-field-ripple {
-    background-color: bofa.$boa-red-600;
-    height: 2px;
+  .mdc-line-ripple::before {
+    border-bottom-color: transparent;
   }
 
-  &.mat-form-field-disabled .mat-form-field-label {
+  &.mat-focused .mdc-line-ripple::after {
+    border-bottom-color: bofa.$boa-red-600;
+    border-bottom-width: 2px;
+  }
+
+  .mdc-text-field--disabled .mdc-floating-label,
+  .mdc-text-field--disabled .mat-mdc-floating-label {
     color: bofa.$boa-slate-600;
+  }
+
+  // Same intent, dark surface, MDC-specific: the MDC filled field paints its own
+  // surface (#4a4a4a under the dark palette) where v14's label sat on the page,
+  // and labels it `rgba(255, 255, 255, 0.6)` — 4.40:1, under AA, caught by the
+  // legibility gate. Slate-300 is the value the dark disabled state below
+  // already uses: 5.50:1 on that surface. Scoped off the focused state so
+  // Material's focus colour still lands.
+  .bofa-theme-dark & .mdc-text-field:not(.mdc-text-field--focused) .mdc-floating-label {
+    color: bofa.$boa-slate-300;
   }
 
   // OV-01c — the same intent, applied to the *value* rather than the label.
@@ -34,23 +62,28 @@
   // 2.66:1 (Material's `rgba(0, 0, 0, 0.38)` on the fill surface). Found by the
   // contrast gate the day it was pointed at anything other than the table —
   // and it was wrong in the *light* theme, which is the shipping one.
-  &.mat-form-field-disabled .mat-input-element {
+  //
+  // MDC: the disabled state is `.mdc-text-field--disabled`, the value is
+  // `.mat-mdc-input-element`, and the label is `.mdc-floating-label`.
+  .mdc-text-field--disabled .mat-mdc-input-element {
     color: bofa.$boa-slate-600;
   }
 
-  .bofa-theme-dark &.mat-form-field-disabled .mat-input-element,
-  .bofa-theme-dark &.mat-form-field-disabled .mat-form-field-label {
+  .bofa-theme-dark & .mdc-text-field--disabled .mat-mdc-input-element,
+  .bofa-theme-dark & .mdc-text-field--disabled .mdc-floating-label {
     color: bofa.$boa-slate-300;
   }
 
   // OV-01d — Material's error red (#f44336) is 3.68:1 on white: it fails AA at
   // the one moment the customer must read the text. The brand danger red is
   // 7.33:1. Same intent as OV-01, same defect class, opposite end of the form.
-  .mat-error {
+  //
+  // MDC: `.mat-error` -> `.mat-mdc-form-field-error`.
+  .mat-mdc-form-field-error {
     color: bofa.$boa-danger-600;
   }
 
-  .bofa-theme-dark & .mat-error {
+  .bofa-theme-dark & .mat-mdc-form-field-error {
     color: bofa.$boa-red-100;
   }
 
@@ -85,23 +118,38 @@
 
   // OV-02 — Error text must sit on a 20px line box so field heights do not jump
   // when validation fires. Layout shift on the transfer form was a 2022 incident.
-  .mat-form-field-subscript-wrapper {
+  //
+  // MDC: same role, renamed to `.mat-mdc-form-field-subscript-wrapper`. The MDC
+  // wrapper reserves its own space through a `::before` strut on
+  // `.mat-mdc-form-field-bottom-align`, which is zeroed here so the 20px line box
+  // below is the only thing setting the height.
+  .mat-mdc-form-field-subscript-wrapper {
     margin-top: 6px;
     line-height: 20px;
     min-height: 20px;
   }
+
+  .mat-mdc-form-field-bottom-align::before {
+    height: 0;
+  }
 }
 
 // OV-03 — Brand: icon-and-label spacing per the BoA button spec (8px, optical).
+//
+// MDC: `.mat-button-wrapper` is gone. The MDC button root is itself the flex
+// container (the icon and `.mdc-button__label` are siblings inside it), so the
+// 8px optical gap belongs on the root. The ripple/touch-target spans MDC adds as
+// siblings are absolutely positioned and are not affected by `gap`.
+// `mat-flat-button` renders as `.mat-mdc-unelevated-button`.
 .bofa-button {
-  .mat-button-wrapper {
+  &.mat-mdc-button-base {
     display: inline-flex;
     align-items: center;
     gap: 8px;
     letter-spacing: 0.02em;
   }
 
-  &.mat-flat-button:not([disabled]) {
+  &.mat-mdc-unelevated-button:not(:disabled) {
     background-color: bofa.$boa-red-600;
     color: #fff;
   }
@@ -118,28 +166,40 @@
 
   // OV-04 — Focus ring must be visible against both white and slate-50 surfaces.
   // Keyboard-only journeys are audited annually by Accessibility.
-  &.cdk-keyboard-focused .mat-button-focus-overlay {
-    opacity: 0.12;
+  //
+  // MDC: `.mat-button-focus-overlay` is replaced by
+  // `.mat-mdc-button-persistent-ripple`, whose tint is painted by its ::before.
+  &.cdk-keyboard-focused {
     outline: 2px solid bofa.$boa-blue-500;
     outline-offset: 2px;
+
+    .mat-mdc-button-persistent-ripple::before {
+      opacity: 0.12;
+    }
   }
 }
 
 // OV-05 — Readability: currency columns align on the decimal, so figures use
 // tabular numerals. Row heights are fixed so a 50-row statement paginates
 // predictably in print and PDF export.
+//
+// MDC: cells are `.mat-mdc-header-cell` / `.mat-mdc-cell`, and the MDC data
+// table sets its heights on the ROW (`.mat-mdc-header-row` 56px,
+// `.mat-mdc-row` 52px), so the fixed heights have to be pinned there as well as
+// on the cell or the row default wins.
 .bofa-table {
   width: 100%;
 
-  .mat-header-row {
+  .mat-mdc-header-row {
     height: 44px;
   }
 
-  .mat-row {
+  .mat-mdc-row {
     height: 40px;
   }
 
-  .mat-header-cell {
+  .mat-mdc-header-cell {
+    height: 44px;
     font-weight: 600;
     color: bofa.$boa-slate-900;
   }
@@ -148,12 +208,14 @@
   // WCAG assertion: slate-900 header text on Material's dark surface is
   // 1.80:1. The weight is the palette-independent half of this intent; the
   // colour is not.
-  .bofa-theme-dark & .mat-header-cell {
+  .bofa-theme-dark & .mat-mdc-header-cell {
     color: bofa.$boa-slate-100;
   }
 
-  .mat-header-cell,
-  .mat-cell {
+  // MDC's data table pads both sides of every cell (16px); the v14 rhythm is a
+  // right-hand gutter only, with the last column flush.
+  .mat-mdc-header-cell,
+  .mat-mdc-cell {
     padding: 0 16px 0 0;
 
     &:last-of-type {
@@ -161,7 +223,8 @@
     }
   }
 
-  .mat-cell {
+  .mat-mdc-cell {
+    height: 40px;
     font-variant-numeric: tabular-nums;
   }
 
@@ -170,11 +233,11 @@
     text-align: right;
   }
 
-  .mat-header-cell.bofa-cell--numeric .mat-sort-header-container {
+  .mat-mdc-header-cell.bofa-cell--numeric .mat-sort-header-container {
     justify-content: flex-end;
   }
 
-  .mat-row:nth-child(even) {
+  .mat-mdc-row:nth-child(even) {
     background: bofa.$boa-slate-50;
   }
 
@@ -189,12 +252,14 @@
   // it. Hence the rule the probe file now encodes — a *colour* constant is
   // palette-dependent and must never be asserted across themes; a *geometry* is
   // not. The intent is unchanged; only the value that satisfies it is.
-  .bofa-theme-dark & .mat-row:nth-child(even) {
+  .bofa-theme-dark & .mat-mdc-row:nth-child(even) {
     background: bofa.$boa-slate-750;
   }
 
   // OV-06 — Sort arrows are dimmed until hover; a permanently visible arrow tested
   // badly with older customers who read it as an active filter.
+  //
+  // MDC: mat-sort-header is not an MDC component; the arrow hooks are unchanged.
   //
   // `!important` is load-bearing, not laziness: Material drives the arrow's
   // opacity from an Angular animation (`@arrowOpacity`), which writes an inline
@@ -213,21 +278,36 @@
 // OV-07 — MDC restructures the select overlay entirely. Values are numeric
 // (account and sort codes), so they use tabular numerals for scanability.
 //
+// MDC: options are `.mat-mdc-option` (an `mdc-list-item`) and their text sits in
+// `.mdc-list-item__primary-text`; the active option is `.mat-mdc-option-active`.
+// NOTE: `.mat-mdc-select-value-text` (the closed trigger) is not inside the
+// overlay panel, so this rule did not match at v14 either. It is translated
+// faithfully rather than silently rehomed — see the PR.
+//
 // No `::ng-deep`: this file is compiled into the global stylesheet, where
 // `::ng-deep` is not a real selector and the browser drops the whole rule. The
 // overlay lives outside the app root, so a global rule is the correct tool.
 .bofa-select-panel {
-  .mat-select-value-text {
+  .mat-mdc-select-value-text {
     font-variant-numeric: tabular-nums;
   }
 
-  .mat-option.mat-active {
+  .mat-mdc-option .mdc-list-item__primary-text {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .mat-mdc-option.mat-mdc-option-active {
     background: rgba(bofa.$boa-red-600, 0.08);
   }
 
   // OV-08 — Selected option keeps brand red text rather than the Material default
   // accent, because accent is navy and reads as a link in this context.
-  .mat-option.mat-selected:not(.mat-option-disabled) {
+  //
+  // MDC: selection is `.mdc-list-item--selected`, disabled is
+  // `.mat-mdc-option-disabled`, and the colour has to land on the text span.
+  .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-disabled),
+  .mat-mdc-option.mdc-list-item--selected:not(.mat-mdc-option-disabled)
+    .mdc-list-item__primary-text {
     color: bofa.$boa-red-600;
   }
 
@@ -244,18 +324,37 @@
 
 // OV-09 — The toggle is used for "paperless statements" and similar consents.
 // The bar is widened so the on/off state is unambiguous at arm's length on tablet.
-.bofa-slide-toggle {
-  .mat-slide-toggle-bar {
+//
+// MDC: the bar is `.mdc-switch__track` and the thumb is `.mdc-switch__handle`,
+// and the selected thumb colour is painted by `.mdc-switch__handle::after`.
+// The geometry is driven through MDC's own tokens: Material's
+// `.mat-mdc-slide-toggle .mdc-switch` rule is injected after the global sheet at
+// equal specificity, so a plain `width` on the same selector shape loses the
+// cascade. The token is the supported hook and wins wherever the rule lives.
+.bofa-slide-toggle.mat-mdc-slide-toggle {
+  --mdc-switch-track-width: 40px;
+  --mdc-switch-track-height: 16px;
+  --mdc-switch-handle-width: 20px;
+  --mdc-switch-handle-height: 20px;
+
+  .mdc-switch {
     width: 40px;
+  }
+
+  .mdc-switch__track {
     height: 16px;
   }
 
-  .mat-slide-toggle-thumb {
+  .mdc-switch__handle {
     width: 20px;
     height: 20px;
   }
 
-  &.mat-checked .mat-slide-toggle-thumb {
+  // The MDC handle is painted by its ::after; the same colour is set on the
+  // handle itself so the "granted consent reads green" intent is measurable.
+  &.mat-mdc-slide-toggle-checked .mdc-switch__handle,
+  &.mat-mdc-slide-toggle-checked .mdc-switch__handle::after,
+  &.mat-mdc-slide-toggle-checked.mat-mdc-slide-toggle .mdc-switch__handle {
     background-color: bofa.$boa-success-600;
   }
 }
@@ -263,14 +362,19 @@
 // OV-10 — Tab labels carry the section nav on the accounts dashboard. The ink bar
 // is thickened to 3px and brand red so the active section is legible on a 4K
 // monitor at a distance, per the branch-teller display standard.
+//
+// MDC: the label is `.mat-mdc-tab` (`.mdc-tab`), the active label is
+// `.mdc-tab--active`, its text is `.mdc-tab__text-label`, and the ink bar is
+// `.mdc-tab-indicator__content--underline`, whose thickness is a border-top
+// width rather than a height.
 .bofa-tabs {
-  .mat-tab-label {
+  .mat-mdc-tab {
     min-width: 120px;
     opacity: 1;
     font-weight: 600;
   }
 
-  .mat-tab-label-active {
+  .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
     color: bofa.$boa-red-600;
   }
 
@@ -280,66 +384,97 @@
   // under it failed 1.4.11's 3:1 for a non-text state indicator. Brand tints
   // carry the same signal: 8.65:1 for the label, 4.10:1 for the bar. Red-600
   // stays in the light theme, where it is the locked brand value.
-  .bofa-theme-dark & .mat-tab-label-active {
+  //
+  // MDC: `.mat-tab-label-active` -> `.mat-mdc-tab.mdc-tab--active`, and the text
+  // colour lands on `.mdc-tab__text-label` rather than on the label element.
+  .bofa-theme-dark & .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label {
     color: bofa.$boa-red-100;
   }
 
-  .mat-ink-bar {
+  // MDC draws the ink bar as a border-top on a zero-height element. It is drawn
+  // as a 3px filled bar instead: identical on screen, and the thickness the
+  // intent is about is readable as a height rather than hidden in a border.
+  .mdc-tab-indicator__content--underline {
+    border-top-width: 0;
     height: 3px;
     background-color: bofa.$boa-red-600;
   }
 
   // `&.mat-primary`, not a bare descendant: the dark theme block emits
-  // `.bofa-theme-dark .mat-tab-group.mat-primary .mat-ink-bar` (four classes),
-  // so a three-class rule of ours loses the cascade and the tint never lands.
-  // Measured — the probe reported red-600 in the dark theme until this matched.
-  .bofa-theme-dark &.mat-primary .mat-ink-bar {
+  // `.bofa-theme-dark .mat-mdc-tab-group.mat-primary .mdc-tab-indicator__content`
+  // (four classes), so a three-class rule of ours loses the cascade and the tint
+  // never lands. Measured — the probe reported red-600 in the dark theme until
+  // this matched.
+  .bofa-theme-dark &.mat-primary .mdc-tab-indicator__content--underline {
     background-color: bofa.$boa-red-300;
   }
 }
 
 // OV-11 — Chips represent transaction categories. Height is fixed at 28px so a
 // wrapping chip list keeps a predictable rhythm inside the filter drawer.
+//
+// MDC: `.mat-mdc-standard-chip` (an `mdc-evolution-chip`). The label text sits in
+// `.mdc-evolution-chip__text-label`, so the text colour has to be set there; the
+// container shape is driven by the `--mdc-chip-container-shape-radius` token.
 .bofa-chips {
-  // `min-height` as well as `height`: Material sets `min-height: 32px` on the
-  // standard chip, so a bare `height` is silently floored and the 28px rhythm
-  // never happens. Measured, not assumed — see OV-11 in the override contract.
-  .mat-chip.mat-standard-chip {
+  // `min-height` as well as `height`: Material floors the chip container height
+  // (32px at v14, and the MDC chip carries its own min-height), so a bare
+  // `height` is silently floored and the 28px rhythm never happens. Measured,
+  // not assumed — see OV-11 in the override contract.
+  .mat-mdc-chip.mat-mdc-standard-chip {
+    --mdc-chip-container-height: 28px;
+    --mdc-chip-container-shape-radius: 14px;
+
     height: 28px;
     min-height: 28px;
     border-radius: 14px;
     background: bofa.$boa-slate-100;
+    font-size: 12px;
+  }
+
+  .mat-mdc-chip.mat-mdc-standard-chip .mdc-evolution-chip__text-label {
     color: bofa.$boa-slate-900;
     font-size: 12px;
   }
 
-  .mat-chip.mat-standard-chip .mat-chip-remove {
+  .mat-mdc-chip.mat-mdc-standard-chip .mat-mdc-chip-remove {
     opacity: 0.7;
   }
 }
 
 // OV-12 — Dialogs are used for step-up authentication. Padding is tightened and
 // the surface is squared off to match the MFA modal in the mobile app.
+//
+// MDC: the container is `.mat-mdc-dialog-container` but the painted surface (the
+// element that carries radius, elevation and padding) is `.mdc-dialog__surface`
+// inside it. The title is `.mat-mdc-dialog-title` / `.mdc-dialog__title`.
 .bofa-dialog {
-  .mat-dialog-container {
+  .mat-mdc-dialog-container .mdc-dialog__surface {
     padding: 20px 24px;
     border-radius: 4px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.16);
   }
 
-  .mat-dialog-title {
+  .mat-mdc-dialog-title,
+  .mdc-dialog__title {
     margin-bottom: 12px;
   }
 
   // Short confirmation bodies must not acquire an inner scrollbar; the default
   // 65vh scroll container reads as truncated content on a step-up prompt.
-  .mat-dialog-content {
+  //
+  // MDC: `.mat-dialog-content` -> `.mat-mdc-dialog-content` (`.mdc-dialog__content`),
+  // `.mat-dialog-actions` -> `.mat-mdc-dialog-actions` (`.mdc-dialog__actions`).
+  // Material's own `.mdc-dialog .mdc-dialog__content` padding is injected after
+  // the global sheet, so the reset has to out-specify it.
+  .mat-mdc-dialog-container .mat-mdc-dialog-content.mdc-dialog__content {
     margin: 0;
     padding: 0;
     overflow: visible;
   }
 
-  .mat-dialog-actions {
+  .mat-mdc-dialog-actions,
+  .mdc-dialog__actions {
     margin-bottom: 0;
     padding: 16px 0 0;
     min-height: auto;
@@ -349,6 +484,9 @@
 // OV-13 — Datepicker: the selected day must be brand red, and today's date is
 // outlined rather than filled, because two filled circles tested as confusing
 // on the scheduled-payments calendar.
+//
+// MDC: mat-datepicker's calendar is not an MDC component; the calendar body
+// hooks are unchanged at v15 (verified against the rendered overlay).
 .bofa-datepicker-panel {
   .mat-calendar-body-selected {
     background-color: bofa.$boa-red-600;
@@ -363,12 +501,14 @@
 // OV-14 — Paginator sits under statement tables. The page-size control is
 // compressed because the default 80px label pushes the range label off-screen
 // on the 1280px branch terminals.
+//
+// MDC: same elements, `mat-mdc-` prefixed.
 .bofa-paginator {
-  .mat-paginator-page-size-label {
+  .mat-mdc-paginator-page-size-label {
     margin-right: 4px;
   }
 
-  .mat-paginator-range-label {
+  .mat-mdc-paginator-range-label {
     margin: 0 16px;
     font-variant-numeric: tabular-nums;
   }
@@ -376,26 +516,41 @@
 
 // OV-15 — Autocomplete backs payee search. The panel is capped so it never
 // covers the "confirm payee" copy, which is a Confirmation of Payee requirement.
+//
+// MDC: the panel is `.mat-mdc-autocomplete-panel`; options are `.mat-mdc-option`
+// list items whose height is a `min-height`, so both have to be pinned to keep
+// the 40px row.
 // Global, not `::ng-deep`, for the same reason as OV-07.
+// `.mdc-menu-surface.mat-mdc-autocomplete-panel` (Material's own 256px cap) is
+// injected after the global sheet at the same specificity, so the cap has to
+// out-specify it rather than merely follow it.
 .bofa-autocomplete-panel {
-  &.mat-autocomplete-panel {
+  &.mat-mdc-autocomplete-panel.mdc-menu-surface {
     max-height: 224px;
   }
 
-  .mat-option {
+  .mat-mdc-option {
     height: 40px;
+    min-height: 40px;
     line-height: 40px;
   }
 }
 
 // OV-16 — Currency input right-aligns and uses tabular numerals.
+//
+// MDC: the input is `.mat-mdc-input-element`; a `matPrefix` projects into
+// `.mat-mdc-form-field-icon-prefix`.
+// Material resets `font-variant-numeric: inherit` on
+// `.mat-mdc-form-field-input-control.mat-mdc-form-field-input-control` — a
+// doubled class, injected after the global sheet — so the tabular figures have
+// to be set at a higher specificity than that.
 .bofa-currency-input {
-  .mat-input-element {
+  .mat-mdc-input-element.mat-mdc-form-field-input-control {
     text-align: right;
     font-variant-numeric: tabular-nums;
   }
 
-  .mat-form-field-prefix {
+  .mat-mdc-form-field-icon-prefix {
     margin-right: 4px;
     color: bofa.$boa-slate-600;
   }
@@ -409,28 +564,50 @@
 }
 
 // OV-17 — Tightened for density.
+//
+// MDC: the v14 rule expressed "compact" through two v14-only box-model
+// internals — `.mat-form-field-infix` padding and the border-top v14 used as
+// the label spacer. MDC has no such border-top, and it floors the field height
+// with `min-height` on `.mat-mdc-form-field-infix` (and a `height` on the
+// filled `.mdc-text-field`), so padding alone is silently ignored. The number
+// the intent has to hit is not in the comment — it is in the override contract
+// (OV-17 probe: 6.4px top and bottom on the infix, i.e. the v14 `0.4em`), so
+// the padding is preserved literally and the MDC floors are released so it can
+// take effect. `mat.form-field-density()` was rejected: it is quantised to
+// 56/52/48px steps and cannot land on the contracted value.
 .bofa-form-field.bofa-density-compact {
-  .mat-form-field-infix {
-    padding: 0.4em 0;
-    border-top-width: 0.6em;
+  .mat-mdc-form-field-infix {
+    // 6.4px, not `0.4em`: the MDC infix inherits the 14px body font where the
+    // v14 infix sat at 16px, so the relative unit no longer resolves to the
+    // value the contract pins.
+    padding-top: 6.4px;
+    padding-bottom: 6.4px;
+    min-height: 0;
   }
 
-  .mat-form-field-flex {
+  .mat-mdc-text-field-wrapper,
+  .mdc-text-field {
+    height: auto;
+    min-height: 0;
+  }
+
+  .mat-mdc-form-field-flex {
     padding-top: 0.4em;
-  }
-
-  .mat-form-field-wrapper {
-    padding-bottom: 1em;
   }
 }
 
 // OV-18 — Keep in sync with the legacy shell.
+//
+// MDC: the two visual outcomes are recoverable from the declarations themselves
+// — the tab header carries no bottom rule, and tab body content is not clipped.
+// `.mat-tab-header` -> `.mat-mdc-tab-header`,
+// `.mat-tab-body-content` -> `.mat-mdc-tab-body-content`.
 .bofa-tabs.bofa-legacy-shell {
-  .mat-tab-header {
+  .mat-mdc-tab-header {
     border-bottom-width: 0;
   }
 
-  .mat-tab-body-content {
+  .mat-mdc-tab-body-content {
     overflow: visible;
   }
 }

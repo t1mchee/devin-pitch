@@ -7,7 +7,7 @@
   "targets": {
     "build": {
       "executor": "@nrwl/angular:ng-packagr-lite",
-      "outputs": ["dist/libs/analytics-sdk-shim"],
+      "outputs": ["{workspaceRoot}/dist/libs/analytics-sdk-shim"],
       "options": {
         "project": "libs/analytics-sdk-shim/ng-package.json"
       },
@@ -23,7 +23,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/analytics-sdk-shim"],
+      "outputs": ["{workspaceRoot}/coverage/libs/analytics-sdk-shim"],
       "options": {
         "jestConfig": "libs/analytics-sdk-shim/jest.config.ts",
         "passWithNoTests": false

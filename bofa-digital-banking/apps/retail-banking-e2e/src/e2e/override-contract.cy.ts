@@ -21,7 +21,8 @@ import { DARK_PROBES, OVERRIDE_PROBES, OverrideProbe } from '../support/override
 function openOverlay(probe: OverrideProbe): void {
   switch (probe.open) {
     case 'select':
-      cy.get('[data-variant=default] .mat-select-trigger').click();
+      // v15/MDC: `.mat-select-trigger` -> `.mat-mdc-select-trigger`.
+      cy.get('[data-variant=default] .mat-mdc-select-trigger').click();
       cy.get('.bofa-select-panel').should('be.visible');
       break;
     case 'datepicker':
@@ -35,7 +36,8 @@ function openOverlay(probe: OverrideProbe): void {
       break;
     case 'dialog':
       cy.contains('button', 'Open the real dialog').click();
-      cy.get('.mat-dialog-container').should('be.visible');
+      // v15/MDC: `.mat-dialog-container` -> `.mat-mdc-dialog-container`.
+      cy.get('.mat-mdc-dialog-container').should('be.visible');
       break;
     default:
       break;
@@ -134,24 +136,33 @@ describe('design system — override contract (dark surface)', () => {
  * Run in BOTH themes on purpose: the light theme is where these values were
  * captured, so a light-theme failure here means the palette itself regressed.
  */
+// v15/MDC: every selector below moves onto its MDC equivalent —
+// `.mat-row`/`.mat-cell`/`.mat-header-cell` -> `.mat-mdc-*`,
+// `.mat-form-field-label` -> `.mdc-floating-label`, `.mat-input-element` ->
+// `.mat-mdc-input-element`, `.mat-hint` -> `.mat-mdc-form-field-hint`,
+// `.mat-error` -> `.mat-mdc-form-field-error`, `.mat-tab-label[-active]` ->
+// `.mat-mdc-tab[.mdc-tab--active]` with the text in `.mdc-tab__text-label`,
+// `.mat-chip` -> `.mat-mdc-chip` with the text in
+// `.mdc-evolution-chip__text-label`, and the `mat-paginator`/`mat-select`
+// internals gain the `mat-mdc-` prefix. No ratio floor changed.
 const CONTRAST_TARGETS = [
-  { surface: 'statement table', component: 'table', label: 'even (striped) row', target: '.bofa-table .mat-row:nth-child(even) .mat-cell' },
-  { surface: 'statement table', component: 'table', label: 'odd row', target: '.bofa-table .mat-row:nth-child(odd) .mat-cell' },
-  { surface: 'statement table', component: 'table', label: 'header cell', target: '.bofa-table .mat-header-cell' },
-  { surface: 'form field', component: 'form-field', label: 'field label', target: '[data-variant=default] .mat-form-field-label' },
-  { surface: 'form field', component: 'form-field', label: 'entered value', target: '[data-variant=default] input.mat-input-element' },
-  { surface: 'form field', component: 'form-field', label: 'hint', target: '[data-variant=default] .mat-hint' },
+  { surface: 'statement table', component: 'table', label: 'even (striped) row', target: '.bofa-table .mat-mdc-row:nth-child(even) .mat-mdc-cell' },
+  { surface: 'statement table', component: 'table', label: 'odd row', target: '.bofa-table .mat-mdc-row:nth-child(odd) .mat-mdc-cell' },
+  { surface: 'statement table', component: 'table', label: 'header cell', target: '.bofa-table .mat-mdc-header-cell' },
+  { surface: 'form field', component: 'form-field', label: 'field label', target: '[data-variant=default] .mdc-floating-label' },
+  { surface: 'form field', component: 'form-field', label: 'entered value', target: '[data-variant=default] input.mat-mdc-input-element' },
+  { surface: 'form field', component: 'form-field', label: 'hint', target: '[data-variant=default] .mat-mdc-form-field-hint' },
   // OV-01's whole point: a disabled field must stay readable. Material greys
   // disabled text with alpha, which is why the helper composites rather than
   // parsing three channels.
-  { surface: 'form field', component: 'form-field', label: 'disabled value', target: '[data-variant=disabled] input.mat-input-element' },
-  { surface: 'form field', component: 'form-field', label: 'error message', target: '[data-variant=error] .mat-error' },
-  { surface: 'tabs', component: 'tabs', label: 'inactive tab label', target: '.bofa-tabs:not(.bofa-legacy-shell) .mat-tab-label:not(.mat-tab-label-active) .mat-tab-label-content' },
-  { surface: 'tabs', component: 'tabs', label: 'active tab label', target: '.bofa-tabs:not(.bofa-legacy-shell) .mat-tab-label-active .mat-tab-label-content' },
-  { surface: 'select', component: 'select', label: 'trigger text', target: '[data-variant=default] .mat-select-value-text' },
-  { surface: 'chips', component: 'chips', label: 'chip label', target: '[data-variant=default] .mat-chip.mat-standard-chip' },
-  { surface: 'paginator', component: 'paginator', label: 'range label', target: '.mat-paginator-range-label' },
-  { surface: 'currency input', component: 'currency-input', label: 'amount', target: '[data-variant=default] input.mat-input-element' },
+  { surface: 'form field', component: 'form-field', label: 'disabled value', target: '[data-variant=disabled] input.mat-mdc-input-element' },
+  { surface: 'form field', component: 'form-field', label: 'error message', target: '[data-variant=error] .mat-mdc-form-field-error' },
+  { surface: 'tabs', component: 'tabs', label: 'inactive tab label', target: '.bofa-tabs:not(.bofa-legacy-shell) .mat-mdc-tab:not(.mdc-tab--active) .mdc-tab__text-label' },
+  { surface: 'tabs', component: 'tabs', label: 'active tab label', target: '.bofa-tabs:not(.bofa-legacy-shell) .mat-mdc-tab.mdc-tab--active .mdc-tab__text-label' },
+  { surface: 'select', component: 'select', label: 'trigger text', target: '[data-variant=default] .mat-mdc-select-value-text' },
+  { surface: 'chips', component: 'chips', label: 'chip label', target: '[data-variant=default] .mat-mdc-chip.mat-mdc-standard-chip .mdc-evolution-chip__text-label' },
+  { surface: 'paginator', component: 'paginator', label: 'range label', target: '.mat-mdc-paginator-range-label' },
+  { surface: 'currency input', component: 'currency-input', label: 'amount', target: '[data-variant=default] input.mat-mdc-input-element' },
 ] as const;
 
 (['light', 'dark'] as const).forEach((theme) => {
@@ -180,7 +191,7 @@ const CONTRAST_TARGETS = [
     // is why the dark scope states a tint instead of inheriting the constant.
     it('tabs: the active-section ink bar clears 3:1 (non-text contrast)', () => {
       cy.visitShowcase('tabs', theme);
-      cy.get('.bofa-tabs:not(.bofa-legacy-shell) .mat-ink-bar')
+      cy.get('.bofa-tabs:not(.bofa-legacy-shell) .mdc-tab-indicator__content--underline')
         .first()
         .then(($bar) => {
           const { ratio, detail } = indicatorRatio($bar[0]);

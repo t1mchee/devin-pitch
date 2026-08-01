@@ -72,16 +72,19 @@ describe('design system — overlay and interaction states', () => {
   it('opens the real dialog overlay', () => {
     cy.visitShowcase('dialog');
     cy.contains('button', 'Open the real dialog').click();
-    cy.get('.mat-dialog-container', { timeout: 10000 }).should('be.visible');
-    cy.contains('.mat-dialog-container', 'Confirm this transfer').should('be.visible');
+    // v15/MDC: the dialog container is `.mat-mdc-dialog-container`.
+    cy.get('.mat-mdc-dialog-container', { timeout: 10000 }).should('be.visible');
+    cy.contains('.mat-mdc-dialog-container', 'Confirm this transfer').should('be.visible');
     cy.matchImageSnapshot('dialog-open');
   });
 
   it('opens the select panel', () => {
     cy.visitShowcase('select');
-    cy.get('[data-variant=default] .mat-select-trigger').click();
+    // v15/MDC: `.mat-select-trigger` -> `.mat-mdc-select-trigger`, and options
+    // are list items (`.mat-mdc-option` / `.mdc-list-item--selected`).
+    cy.get('[data-variant=default] .mat-mdc-select-trigger').click();
     cy.get('.bofa-select-panel', { timeout: 10000 }).should('be.visible');
-    cy.get('.bofa-select-panel .mat-option.mat-selected').should('exist');
+    cy.get('.bofa-select-panel .mat-mdc-option.mdc-list-item--selected').should('exist');
     cy.matchImageSnapshot('select-panel-open');
   });
 
